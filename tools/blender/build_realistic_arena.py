@@ -19,10 +19,37 @@ def pbr(name, color, rough=0.6, metal=0.0):
     m = bpy.data.materials.new(name)
     m.diffuse_color = (*color, 1)
     m.use_nodes = True
-    bs = m.node_tree.nodes.get("Principled BSDF")
+    nodes = m.node_tree.nodes
+    links = m.node_tree.links
+    bs = nodes.get("Principled BSDF")
     bs.inputs["Base Color"].default_value = (*color, 1)
     bs.inputs["Roughness"].default_value = rough
     bs.inputs["Metallic"].default_value = metal
+
+    # Procedural micro-surface detail: no external image assets required.
+    # Keep the color variation subtle so the arena reads as real materials,
+    # rather than a noisy or stylized game environment.
+    tex = nodes.new("ShaderNodeTexCoord")
+    noise = nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = 42.0 if ("concrete" in name.lower() or "floor" in name.lower()) else 115.0
+    noise.inputs["Detail"].default_value = 3.2
+    noise.inputs["Roughness"].default_value = 0.72
+    links.new(tex.outputs["Generated"], noise.inputs["Vector"])
+
+    bump = nodes.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = 0.12 if ("concrete" in name.lower() or "floor" in name.lower()) else 0.055
+    bump.inputs["Distance"].default_value = 0.035 if ("concrete" in name.lower() or "floor" in name.lower()) else 0.012
+    links.new(noise.outputs["Fac"], bump.inputs["Height"])
+    links.new(bump.outputs["Normal"], bs.inputs["Normal"])
+
+    # A restrained roughness breakup prevents large surfaces looking synthetic.
+    ramp = nodes.new("ShaderNodeMapRange")
+    ramp.inputs["From Min"].default_value = 0.0
+    ramp.inputs["From Max"].default_value = 1.0
+    ramp.inputs["To Min"].default_value = max(0.08, rough - 0.09)
+    ramp.inputs["To Max"].default_value = min(1.0, rough + 0.1)
+    links.new(noise.outputs["Fac"], ramp.inputs["Value"])
+    links.new(ramp.outputs["Result"], bs.inputs["Roughness"])
     return m
 
 M = {
@@ -152,6 +179,26 @@ for x in range(-20,21,5):
 # Acoustic roof panels, separated into long strips to preserve a believable structure.
 for x in range(-18,19,6):
     box("concrete",(x,16.35,0),(5.7,.16,48))
+# Broadcast-grade arena details: service catwalks, guard rails, aisle lighting,
+# and a continuous inner fascia make the seating bowl feel like a real venue.
+for side in (-1,1):
+    # Upper concourse handrails and structural stringers along both long sides.
+    for row in (0,1):
+        x=side*(17.2+row*.75)
+        beam("steel_light",(x,5.8,-25.5),(x,5.8,25.5),.07,.07)
+    for z in range(-24,25,4):
+        box("accent",(side*17.0,1.15,z),(.055,.12,.72))
+        box("steel",(side*17.0,.86,z),(.09,.08,.76))
+# Fine roof seams and acoustic-panel joints.
+for x in range(-18,19,3):
+    box("steel_light",(x,16.45,0),(.025,.025,47.5))
+# Additional scoreboard fascia trim and corner wayfinding light bands.
+for side in (-1,1):
+    for x in (-19.5,19.5):
+        box("accent",(x,10.0,side*25.18),(.12,.16,.12))
+# Subtle perimeter LED ribbon under the upper seating edge.
+for side in (-1,1):
+    box("accent",(side*16.5,5.9,0),(.08,.07,50.5))
 # LED lighting bars and high-bay fixtures.
 for z in (-20,-10,0,10,20):
     for x in (-15,-7.5,0,7.5,15):
