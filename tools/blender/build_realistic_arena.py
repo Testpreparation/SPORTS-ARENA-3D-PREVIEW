@@ -1,4 +1,7 @@
-import bpy, math, os
+import bpy, math, os, sys
+# Ubuntu's Blender package uses the system Python module directory for NumPy.
+if os.path.isdir('/usr/lib/python3/dist-packages'):
+    sys.path.append('/usr/lib/python3/dist-packages')
 from mathutils import Vector, Quaternion
 
 # Fast, batched Blender arena generator. Geometry is accumulated by material,
