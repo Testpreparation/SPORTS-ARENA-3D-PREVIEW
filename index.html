@@ -176,6 +176,85 @@ for(const side of [-1,1]){
 const stadiumScore=new THREE.Mesh(new THREE.BoxGeometry(6.8,3.2,.4),stadiumSteel);stadiumScore.position.set(0,8.1,-22.7);stadiumGroup.add(stadiumScore);
 for(const side of [-1,1]){const panel=new THREE.Mesh(new THREE.PlaneGeometry(6.2,2.6),new THREE.MeshBasicMaterial({color:0x063044}));panel.position.set(0,8.1,-22.48);if(side>0)panel.rotation.y=Math.PI;stadiumGroup.add(panel)}
 stadiumGroup.visible=false;
+
+// Fine architectural details: seat backs, metal supports, armrests, cup holders,
+// aisle stair treads, safety rails, fascia seams and concourse glazing.
+// Instanced meshes keep the extra detail affordable on phones and tablets.
+function addSeatDetailInstances(group, seats, {sideAxis='z'}={}){
+ const count=seats.length;
+ if(!count)return;
+ const steel=new THREE.MeshStandardMaterial({color:0x263943,roughness:.34,metalness:.72,envMapIntensity:1.15});
+ const shell=new THREE.MeshPhysicalMaterial({color:0x31596b,roughness:.42,metalness:.02,clearcoat:.32,clearcoatRoughness:.3,envMapIntensity:.8});
+ const backGeo=new THREE.BoxGeometry(.34,.23,.055);
+ const armGeo=new THREE.BoxGeometry(.045,.035,.28);
+ const legGeo=new THREE.BoxGeometry(.035,.16,.035);
+ const cupGeo=new THREE.CylinderGeometry(.045,.038,.055,10);
+ const backs=new THREE.InstancedMesh(backGeo,shell,count);
+ const arms=new THREE.InstancedMesh(armGeo,steel,count*2);
+ const legs=new THREE.InstancedMesh(legGeo,steel,count*2);
+ const cups=new THREE.InstancedMesh(cupGeo,steel,count);
+ const dummy=new THREE.Object3D();let ai=0,li=0;
+ for(let i=0;i<count;i++){
+  const s=seats[i];dummy.position.set(s.x,s.y+.13,s.z+(sideAxis==='z'?s.side*.13:0));
+  dummy.rotation.set(0,sideAxis==='z'?(s.side>0?Math.PI:0):Math.PI/2,sideAxis==='z'?-.06:0);dummy.updateMatrix();backs.setMatrixAt(i,dummy.matrix);
+  for(const sign of [-1,1]){
+   dummy.position.set(s.x+sign*.17,s.y+.025,s.z);dummy.rotation.set(0,0,0);dummy.updateMatrix();arms.setMatrixAt(ai++,dummy.matrix);
+   dummy.position.set(s.x+sign*.12,s.y-.065,s.z);dummy.scale.set(1,1,1);dummy.updateMatrix();legs.setMatrixAt(li++,dummy.matrix);
+  }
+  dummy.position.set(s.x+.105,s.y+.055,s.z-.035);dummy.scale.set(1,1,1);dummy.updateMatrix();cups.setMatrixAt(i,dummy.matrix);
+ }
+ for(const m of [backs,arms,legs,cups]){m.castShadow=true;m.receiveShadow=true;group.add(m)}
+}
+function addAisleAndVenueDetails(group, sideRows, endRows, stadium=false){
+ const railMat=new THREE.MeshStandardMaterial({color:0x4d6570,roughness:.3,metalness:.78,envMapIntensity:1.25});
+ const stepMat=new THREE.MeshStandardMaterial({color:0x9ca8aa,roughness:.78,metalness:.02});
+ const ledStrip=new THREE.MeshStandardMaterial({color:0x172d38,roughness:.3,metalness:.45,emissive:0x007b91,emissiveIntensity:.32});
+ const inst=(geo,mat,items)=>{if(!items.length)return;const m=new THREE.InstancedMesh(geo,mat,items.length),o=new THREE.Object3D();items.forEach((p,i)=>{o.position.set(p[0],p[1],p[2]);o.rotation.set(p[3]||0,p[4]||0,p[5]||0);o.scale.set(p[6]||1,p[7]||1,p[8]||1);o.updateMatrix();m.setMatrixAt(i,o.matrix)});m.castShadow=true;m.receiveShadow=true;group.add(m)};
+ const rails=[],treads=[],leds=[],joints=[];
+ for(const side of [-1,1]){
+  for(let row=0;row<endRows;row++){
+   const z=side*(17.5+row*(stadium?1.13:1.02)),y=.35+row*(stadium?.48:.48);
+   treads.push([0,y+.035,z-side*.46,0,0,0,stadium?31:29,.035,.035]);
+   leds.push([0,y+.06,z-side*.49,0,0,0,stadium?30:28,.018,.018]);
+   if(row%3===0){rails.push([stadium?16.6:15.2,y+.45,z-side*.45,0,0,0,.035,.42,.035]);rails.push([stadium?-16.6:-15.2,y+.45,z-side*.45,0,0,0,.035,.42,.035])}
+  }
+  for(let row=0;row<sideRows;row++){
+   const x=side*(stadium?7.4+row*1.05:8.8+row*1.02),y=.2+row*.5;
+   treads.push([x-side*.43,y+.035,0,0,0,0,.035,.035,stadium?31:28]);
+   leds.push([x-side*.46,y+.06,0,0,0,0,.018,.018,stadium?30:27]);
+   if(row%3===0){rails.push([x-side*.43,y+.45,16.2,0,0,0,.035,.42,.035]);rails.push([x-side*.43,y+.45,-16.2,0,0,0,.035,.42,.035])}
+  }
+ }
+ // Row-edge nosings and subtle LED strips make the tier geometry legible.
+ inst(new THREE.BoxGeometry(1,1,1),stepMat,treads);
+ inst(new THREE.BoxGeometry(1,1,1),ledStrip,leds);
+ inst(new THREE.BoxGeometry(1,1,1),railMat,rails);
+ // Concourse pillars, glazed entry bays, and service doors behind the upper rows.
+ for(const side of [-1,1]){
+  for(let x=-15;x<=15;x+=5){
+   const pillar=new THREE.Mesh(new THREE.BoxGeometry(.22,2.4,.22),railMat);pillar.position.set(x,5.8,side*29.4);pillar.castShadow=true;group.add(pillar);
+   const bay=new THREE.Mesh(new THREE.BoxGeometry(4.5,1.45,.045),new THREE.MeshPhysicalMaterial({color:0x8bb9c8,roughness:.2,metalness:.2,transparent:true,opacity:.24,envMapIntensity:1.1}));bay.position.set(x,5.85,side*29.25);group.add(bay);
+   const door=new THREE.Mesh(new THREE.BoxGeometry(.72,1.65,.06),new THREE.MeshStandardMaterial({color:0x142b37,roughness:.45,metalness:.25}));door.position.set(x+1.3,5.55,side*29.18);group.add(door);
+  }
+ }
+}
+const standardSeatPositions=[];
+for(const side of [-1,1])for(let row=0;row<5;row++)for(let x=-12.8;x<=12.8;x+=.62)standardSeatPositions.push({x,y:.1+row*.43+.12,z:side*(17+row*1.02),side});
+addSeatDetailInstances(seatGroup,standardSeatPositions);
+const venueSeatPositions=[];
+for(const side of [-1,1]){
+ for(let row=0;row<9;row++)for(let x=-14.6;x<=14.6;x+=.52)venueSeatPositions.push({x,y:.25+row*.48+.1,z:side*(17.3+row*1.02),side});
+ for(let row=0;row<6;row++)for(let z=-14.7;z<=14.7;z+=.62)venueSeatPositions.push({x:side*(8.8+row*1.02),y:.2+row*.5+.1,z,side});
+}
+addSeatDetailInstances(venueGroup,venueSeatPositions);
+addAisleAndVenueDetails(venueGroup,6,9,false);
+const stadiumSeatPositions=[];
+for(const side of [-1,1]){
+ for(let row=0;row<12;row++)for(let x=-16.1;x<=16.1;x+=.48)stadiumSeatPositions.push({x,y:.35+row*.48+.28,z:side*(17.5+row*1.13),side});
+ for(let row=0;row<7;row++)for(let z=-16.1;z<=16.1;z+=.55)stadiumSeatPositions.push({x:side*(7.4+row*1.05),y:.28+row*.53+.27,z,side});
+}
+addSeatDetailInstances(stadiumGroup,stadiumSeatPositions);
+addAisleAndVenueDetails(stadiumGroup,7,12,true);
 venueGroup.visible=false;
 const spotlights=[];for(const x of [-15,15])for(const z of [-16,16]){const pole=new THREE.Mesh(new THREE.CylinderGeometry(.11,.16,8.5,12),material(0x526875,.4,.5));pole.position.set(x,4.25,z);pole.castShadow=true;scene.add(pole);cube(2.2,.18,.4,material(0x283b48,.4,.4),x,8.55,z);for(let i=0;i<5;i++){const lamp=new THREE.Mesh(new THREE.BoxGeometry(.27,.07,.22),new THREE.MeshStandardMaterial({color:0xf0fbff,emissive:0x7bdcff,emissiveIntensity:.6}));lamp.position.set(x-.75+i*.375,8.42,z);scene.add(lamp)}const spot=new THREE.SpotLight(0xeaf8ff,2,35,Math.PI/5,.5,1.4);spot.position.set(x,8.3,z);spot.target.position.set(0,0,0);scene.add(spot,spot.target);spotlights.push(spot)}
 for(const z of [-17,17]){cube(4.1,2,.18,material(0x101d26,.3,.4),0,3,z);const screen=new THREE.Mesh(new THREE.PlaneGeometry(3.8,1.7),new THREE.MeshStandardMaterial({color:0x082b3a,emissive:0x0b536a,emissiveIntensity:.55}));screen.position.set(0,3,z+(z<0?.1:-.1));if(z>0)screen.rotation.y=Math.PI;scene.add(screen)}
