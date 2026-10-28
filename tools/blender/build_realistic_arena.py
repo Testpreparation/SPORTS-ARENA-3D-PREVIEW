@@ -31,13 +31,13 @@ def pbr(name, color, rough=0.6, metal=0.0):
     # rather than a noisy or stylized game environment.
     tex = nodes.new("ShaderNodeTexCoord")
     noise = nodes.new("ShaderNodeTexNoise")
-    noise.inputs["Scale"].default_value = 42.0 if ("concrete" in name.lower() or "floor" in name.lower()) else 115.0
+    noise.inputs["Scale"].default_value = 28.0 if ("concrete" in name.lower() or "floor" in name.lower()) else 82.0
     noise.inputs["Detail"].default_value = 3.2
     noise.inputs["Roughness"].default_value = 0.72
     links.new(tex.outputs["Generated"], noise.inputs["Vector"])
 
     bump = nodes.new("ShaderNodeBump")
-    bump.inputs["Strength"].default_value = 0.12 if ("concrete" in name.lower() or "floor" in name.lower()) else 0.055
+    bump.inputs["Strength"].default_value = 0.085 if ("concrete" in name.lower() or "floor" in name.lower()) else 0.04
     bump.inputs["Distance"].default_value = 0.035 if ("concrete" in name.lower() or "floor" in name.lower()) else 0.012
     links.new(noise.outputs["Fac"], bump.inputs["Height"])
     links.new(bump.outputs["Normal"], bs.inputs["Normal"])
@@ -53,19 +53,19 @@ def pbr(name, color, rough=0.6, metal=0.0):
     return m
 
 M = {
- "concrete": pbr("Warm architectural concrete", (.32,.36,.37), .82),
- "concrete_light": pbr("Light precast concrete", (.49,.52,.52), .78),
- "steel": pbr("Graphite structural steel", (.055,.075,.085), .29, .78),
- "steel_light": pbr("Brushed aluminium", (.34,.39,.4), .24, .82),
- "glass": pbr("Smoked arena glass", (.12,.25,.29), .18, .35),
- "seat_blue": pbr("Deep blue seat polymer", (.018,.11,.17), .35, .04),
- "seat_teal": pbr("Teal seat polymer", (.025,.23,.26), .34, .03),
- "seat_navy": pbr("Navy seat polymer", (.012,.045,.085), .36, .02),
- "rubber": pbr("Dark rubber flooring", (.035,.055,.06), .86),
- "white": pbr("Warm white paint", (.88,.89,.84), .44),
- "screen": pbr("Scoreboard black glass", (.008,.02,.026), .2, .18),
- "light": pbr("LED diffuser", (.84,.94,1.0), .22),
- "accent": pbr("Arena cyan accent", (.01,.36,.43), .3, .35),
+ "concrete": pbr("Warm architectural concrete", (.235,.265,.27), .88),
+ "concrete_light": pbr("Light precast concrete", (.39,.415,.41), .84),
+ "steel": pbr("Graphite structural steel", (.028,.039,.045), .34, .72),
+ "steel_light": pbr("Brushed aluminium", (.23,.27,.28), .3, .76),
+ "glass": pbr("Smoked arena glass", (.055,.115,.14), .24, .42),
+ "seat_blue": pbr("Deep blue seat polymer", (.012,.065,.12), .42, .02),
+ "seat_teal": pbr("Teal seat polymer", (.018,.14,.16), .4, .02),
+ "seat_navy": pbr("Navy seat polymer", (.008,.025,.05), .43, .01),
+ "rubber": pbr("Dark rubber flooring", (.022,.032,.035), .92),
+ "white": pbr("Warm white paint", (.72,.75,.72), .52),
+ "screen": pbr("Scoreboard black glass", (.003,.008,.012), .24, .22),
+ "light": pbr("LED diffuser", (.95,.97,1.0), .28),
+ "accent": pbr("Arena cyan accent", (.008,.19,.23), .38, .3),
 }
 builders = {}
 def builder(key):
