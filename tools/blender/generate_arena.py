@@ -26,10 +26,16 @@ def pbr(name, color, metallic=0.0, roughness=0.5, alpha=1.0, emission=None):
     bs.inputs["Roughness"].default_value = roughness
     if alpha < 1:
         bs.inputs["Alpha"].default_value = alpha
-        if hasattr(m, "surface_render_method"):\n            m.surface_render_method = "DITHERED"\n        else:\n            m.blend_method = "BLEND"
+        if hasattr(m, "surface_render_method"):
+            m.surface_render_method = "DITHERED"
+        else:
+            m.blend_method = "BLEND"
     if emission:
-        bs.inputs["Emission Color"].default_value = (*emission, 1)
-        bs.inputs["Emission Strength"].default_value = 2.0
+        emission_socket = bs.inputs.get("Emission Color") or bs.inputs.get("Emission")
+        if emission_socket:
+            emission_socket.default_value = (*emission, 1)
+        if bs.inputs.get("Emission Strength"):
+            bs.inputs["Emission Strength"].default_value = 2.0
     return m
 
 concrete = pbr("PBR | architectural concrete", (0.31,0.36,0.38), 0.12, 0.84)
