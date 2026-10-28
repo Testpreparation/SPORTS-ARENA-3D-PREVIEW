@@ -124,32 +124,28 @@ for z in (-42.2,42.2):
     box("concrete_light",(0,7.4,z),(68,.48,.8))
 for x in (-33.2,33.2):
     box("steel",(x,6.1,0),(.28,.28,86))
-# Continuous oval seating bowl: four stepped arcs arranged as one rounded rectangle/ellipse.
-# Court long axis is Z; seating wraps around all four sides with rounded corner transitions.
+# Full-scale oval seating bowl inspired by real 8,000+ capacity indoor arenas.
+# Court long axis is Z; 26 stepped tiers wrap continuously around the playing area.
 seat_mats=["seat_blue","seat_teal","seat_navy"]
-# Use an elliptical stadium bowl with long axis Z. Side and end segments share the
-# same ellipse so the stands read as one continuous oval rather than four detached blocks.
+# Use a continuous elliptical stadium bowl with long axis Z. Dense seat sampling and
+# realistic row rise create a broad, multi-tier grandstand rather than a small display stand.
 outer_a=31.5  # half-width in X
 outer_b=43.0  # half-length in Z
 inner_a=7.1
 inner_b=14.8
-rows=13
-segments=112
+rows=26
+segments=288
 for row in range(rows):
     # Each tier expands outward and rises gradually from the playing surface.
-    a=inner_a + row*1.85
-    b=inner_b + row*2.15
-    y=.30 + row*.43
+    a=inner_a + row*.95
+    b=inner_b + row*1.10
+    y=.30 + row*.32
     # Seat benches and risers are sampled around an ellipse. Keep a modest gap at
     # the four service corners to avoid collisions with the courtside access zone.
     for i in range(segments):
         t=(2*math.pi*i)/segments
         x=a*math.sin(t)
         z=b*math.cos(t)
-        # Skip short corner/service openings near the long-axis ends.
-        angle=min(t%(math.pi/2),(math.pi/2)-(t%(math.pi/2)))
-        if angle < .035:
-            continue
         # Ellipse tangent gives each seat row a naturally curved orientation.
         rot=math.atan2(a*math.cos(t),-b*math.sin(t))
         tangent_len=2*math.pi*math.sqrt((a*a+b*b)/2)/segments
