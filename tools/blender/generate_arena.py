@@ -26,7 +26,7 @@ def pbr(name, color, metallic=0.0, roughness=0.5, alpha=1.0, emission=None):
     bs.inputs["Roughness"].default_value = roughness
     if alpha < 1:
         bs.inputs["Alpha"].default_value = alpha
-        m.surface_render_method = "DITHERED"
+        if hasattr(m, "surface_render_method"):\n            m.surface_render_method = "DITHERED"\n        else:\n            m.blend_method = "BLEND"
     if emission:
         bs.inputs["Emission Color"].default_value = (*emission, 1)
         bs.inputs["Emission Strength"].default_value = 2.0
