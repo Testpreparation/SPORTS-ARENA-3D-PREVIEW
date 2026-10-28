@@ -377,6 +377,92 @@ for(let x=-15;x<=15;x+=5){
  fixture.position.set(x,9.42,0);indoorRoofGroup.add(fixture);
 }
 
+// Photorealism pass: layered façade construction, service infrastructure and stadium-grade fixtures.
+function addVenueRealismPass(group, profile){
+ const metal=new THREE.MeshStandardMaterial({color:0x263943,roughness:.31,metalness:.82,envMapIntensity:1.4});
+ const aluminum=new THREE.MeshStandardMaterial({color:0x91a2a8,roughness:.24,metalness:.88,envMapIntensity:1.45});
+ const rubber=new THREE.MeshStandardMaterial({color:0x101b21,roughness:.86,metalness:.02});
+ const glassPanel=new THREE.MeshPhysicalMaterial({color:0x9bc7d5,roughness:.16,metalness:.18,transparent:true,opacity:.28,transmission:.08,thickness:.18,ior:1.46,side:THREE.DoubleSide,envMapIntensity:1.25});
+ const signMat=new THREE.MeshStandardMaterial({color:0x0a202b,roughness:.4,metalness:.25,emissive:0x062b3c,emissiveIntensity:.5});
+ const exitMat=new THREE.MeshStandardMaterial({color:0xd8f3e8,roughness:.3,emissive:0x4aff9a,emissiveIntensity:.65});
+ const panels=[],mullions=[],doorFrames=[],vents=[],fasteners=[],truss=[];
+ const indoor=profile==='indoor',stadium=profile==='stadium',standard=profile==='standard';
+ const width=standard?15:stadium?18:17;
+ const depth=standard?17:indoor?27:stadium?31:29;
+ const wallY=standard?3.1:indoor?7.2:stadium?6.3:6.1;
+ const faceZ=depth;
+ // Repeated architectural bays with inset glazing, frame members, door headers and kick plates.
+ for(const side of [-1,1]){
+  for(let x=-width;x<=width;x+=4){
+   panels.push([x,wallY,side*(faceZ-.16),0,0,0,3.45,1.65,.035]);
+   mullions.push([x-1.72,wallY,side*(faceZ-.11),0,0,0,.045,1.8,.07]);
+   mullions.push([x+1.72,wallY,side*(faceZ-.11),0,0,0,.045,1.8,.07]);
+   mullions.push([x,wallY-.88,side*(faceZ-.1),0,0,0,3.5,.035,.06]);
+   // Door frame and kick plate at alternating service bays.
+   if(Math.round((x+width)/4)%2===0){
+    doorFrames.push([x+1.0,wallY-.18,side*(faceZ-.07),0,0,0,.78,1.75,.07]);
+    doorFrames.push([x+1.0,wallY-.98,side*(faceZ-.02),0,0,0,.7,.045,.025]);
+    fasteners.push([x+.65,wallY-.15,side*(faceZ-.005),0,0,0,.035,.035,.02]);
+   }
+   // Rectangular ventilation grilles below the upper concourse.
+   vents.push([x,wallY-1.35,side*(faceZ-.08),0,0,0,1.15,.12,.06]);
+   for(let k=0;k<7;k++)vents.push([x-.48+k*.16,wallY-1.35,side*(faceZ-.035),0,0,0,.018,.085,.018]);
+  }
+ }
+ const inst=(geo,mat,arr)=>{if(!arr.length)return;const mesh=new THREE.InstancedMesh(geo,mat,arr.length),o=new THREE.Object3D();for(let i=0;i<arr.length;i++){const p=arr[i];o.position.set(p[0],p[1],p[2]);o.rotation.set(p[3]||0,p[4]||0,p[5]||0);o.scale.set(p[6]||1,p[7]||1,p[8]||1);o.updateMatrix();mesh.setMatrixAt(i,o.matrix)}mesh.castShadow=true;mesh.receiveShadow=true;mesh.instanceMatrix.needsUpdate=true;group.add(mesh)};
+ inst(new THREE.BoxGeometry(1,1,1),glassPanel,panels);
+ inst(new THREE.BoxGeometry(1,1,1),aluminum,mullions);
+ inst(new THREE.BoxGeometry(1,1,1),metal,doorFrames);
+ inst(new THREE.BoxGeometry(1,1,1),rubber,vents);
+ inst(new THREE.CylinderGeometry(1,1,1,8),aluminum,fasteners);
+ // Exit signs and emergency fixtures, deliberately restrained in brightness.
+ const signs=[];
+ for(const side of [-1,1])for(let x=-width+2;x<=width;x+=8){
+  signs.push([x,wallY+.95,side*(faceZ-.05),0,0,0,.55,.18,.035]);
+  const sign=new THREE.Mesh(new THREE.BoxGeometry(.5,.14,.025),exitMat);
+  sign.position.set(x,wallY+.95,side*(faceZ-.015));group.add(sign);
+ }
+ inst(new THREE.BoxGeometry(1,1,1),signMat,signs);
+ // Roof maintenance rails, service walkways and triangular truss braces.
+ if(!standard){
+  const y=indoor?11.05:stadium?9.85:7.25;
+  const span=indoor?18:stadium?18:16;
+  for(let x=-span;x<span;x+=2){
+   truss.push([x+1,y,0,0,0,0,1.95,.045,.045]);
+   truss.push([x+1,y-.55,0,0,0,0,1.95,.04,.04]);
+   truss.push([x+.5,y-.27,0,0,0,-.28,1.15,.035,.035]);
+   truss.push([x+1.5,y-.27,0,0,0,.28,1.15,.035,.035]);
+  }
+  inst(new THREE.BoxGeometry(1,1,1),metal,truss);
+  // Narrow catwalk and its safety rails below the roof.
+  const walk=new THREE.Mesh(new THREE.BoxGeometry(span*2,.08,1.05),rubber);
+  walk.position.set(0,y-.85,0);group.add(walk);
+  for(const z of [-.48,.48]){
+   const rail=new THREE.Mesh(new THREE.BoxGeometry(span*2,.035,.035),aluminum);
+   rail.position.set(0,y-.47,z);group.add(rail);
+   for(let x=-span;x<=span;x+=1.5){const post=new THREE.Mesh(new THREE.BoxGeometry(.025,.4,.025),metal);post.position.set(x,y-.66,z);group.add(post)}
+  }
+ }
+ // Fine LED strips sit in recessed housings instead of floating as isolated bright bars.
+ for(const side of [-1,1]){
+  const housing=new THREE.Mesh(new THREE.BoxGeometry(width*2,.09,.12),metal);
+  housing.position.set(0,wallY+1.18,side*(faceZ-.03));group.add(housing);
+  const led=new THREE.Mesh(new THREE.BoxGeometry(width*2-.1,.025,.035),new THREE.MeshStandardMaterial({color:0xd7f5ff,emissive:0x8ddfff,emissiveIntensity:profile==='night'?1.6:.48,roughness:.24}));
+  led.position.set(0,wallY+1.23,side*(faceZ-.005));group.add(led);
+ }
+}
+addVenueRealismPass(seatGroup,'standard');
+addVenueRealismPass(venueGroup,'grand');
+addVenueRealismPass(stadiumGroup,'stadium');
+addVenueRealismPass(championshipGroup,'grand');
+addVenueRealismPass(indoorRoofGroup,'indoor');
+
+// Improve highlight response and shadow softness while retaining mobile-friendly rendering.
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.toneMappingExposure=1.02;
+sun.shadow.normalBias=.025;
+sun.shadow.radius=3;
+
 venueGroup.visible=false;
 const spotlights=[];for(const x of [-15,15])for(const z of [-16,16]){const pole=new THREE.Mesh(new THREE.CylinderGeometry(.11,.16,8.5,12),material(0x526875,.4,.5));pole.position.set(x,4.25,z);pole.castShadow=true;scene.add(pole);cube(2.2,.18,.4,material(0x283b48,.4,.4),x,8.55,z);for(let i=0;i<5;i++){const lamp=new THREE.Mesh(new THREE.BoxGeometry(.27,.07,.22),new THREE.MeshStandardMaterial({color:0xf0fbff,emissive:0x7bdcff,emissiveIntensity:.6}));lamp.position.set(x-.75+i*.375,8.42,z);scene.add(lamp)}const spot=new THREE.SpotLight(0xeaf8ff,2,35,Math.PI/5,.5,1.4);spot.position.set(x,8.3,z);spot.target.position.set(0,0,0);scene.add(spot,spot.target);spotlights.push(spot)}
 for(const z of [-17,17]){cube(4.1,2,.18,material(0x101d26,.3,.4),0,3,z);const screen=new THREE.Mesh(new THREE.PlaneGeometry(3.8,1.7),new THREE.MeshStandardMaterial({color:0x082b3a,emissive:0x0b536a,emissiveIntensity:.55}));screen.position.set(0,3,z+(z<0?.1:-.1));if(z>0)screen.rotation.y=Math.PI;scene.add(screen)}
