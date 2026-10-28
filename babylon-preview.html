@@ -45,8 +45,8 @@ button.active,button:hover{background:#0b8195;border-color:#58cfe0}
  scene.imageProcessingConfiguration.contrast=1.12;
  scene.environmentTexture=BABYLON.CubeTexture.CreateFromPrefilteredData("https://assets.babylonjs.com/environments/environmentSpecular.env",scene);
  scene.environmentIntensity=.48;
- const camera=new BABYLON.ArcRotateCamera("camera",-Math.PI/2,1.14,54,new BABYLON.Vector3(0,5.5,0),scene);
- camera.attachControl(canvas,true);camera.lowerRadiusLimit=18;camera.upperRadiusLimit=82;camera.wheelPrecision=38;camera.panningSensibility=55;camera.inertia=.78;
+ const camera=new BABYLON.ArcRotateCamera("camera",-Math.PI/2,1.14,54,new BABYLON.Vector3(0,5.0,0),scene);
+ camera.attachControl(canvas,true);camera.lowerRadiusLimit=10;camera.upperRadiusLimit=48;camera.wheelPrecision=38;camera.panningSensibility=55;camera.inertia=.78;
  scene.activeCamera=camera;
  const hemi=new BABYLON.HemisphericLight("ambient",new BABYLON.Vector3(0,1,0),scene);hemi.intensity=.8;hemi.groundColor=new BABYLON.Color3(.12,.15,.18);
  const key=new BABYLON.DirectionalLight("arena-key",new BABYLON.Vector3(-.45,-1,.35),scene);key.position=new BABYLON.Vector3(-18,28,20);key.intensity=2.1;
@@ -87,9 +87,9 @@ button.active,button:hover{background:#0b8195;border-color:#58cfe0}
    status.textContent="会場モデルの生成待ちです。コート表示は確認できます。";
  }
  const presets={
-  broadcast:{alpha:-Math.PI/2,beta:1.30,radius:48,target:new BABYLON.Vector3(0,5.2,0)},
-  wide:{alpha:-Math.PI/2,beta:1.18,radius:66,target:new BABYLON.Vector3(0,7.0,0)},
-  court:{alpha:-Math.PI/2,beta:1.42,radius:32,target:new BABYLON.Vector3(0,1.8,0)}
+  broadcast:{alpha:-Math.PI/2,beta:1.26,radius:24,target:new BABYLON.Vector3(0,5.0,0)},
+  wide:{alpha:-Math.PI/2,beta:1.12,radius:27,target:new BABYLON.Vector3(0,6.0,0)},
+  court:{alpha:-Math.PI/2,beta:1.42,radius:20,target:new BABYLON.Vector3(0,1.8,0)}
  };
  function setView(name){const v=presets[name];camera.setTarget(v.target);camera.alpha=v.alpha;camera.beta=v.beta;camera.radius=v.radius;document.querySelectorAll("button[id=broadcast],button[id=wide],button[id=court]").forEach(b=>b.classList.toggle("active",b.id===name))}
  document.getElementById("broadcast").onclick=()=>setView("broadcast");
