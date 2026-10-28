@@ -123,8 +123,8 @@ for row in range(8):
             z=-16.5+i*.75
             x=side*xoff
             sm=seat_cyan if (i+row)%7==0 else (seat_light if (i+row)%17==0 else seat_blue)
-            box("Moulded seat cushion", (x,y,z), (.43,.12,.36), sm, .035)
-            back=box("Moulded seat back", (x,y+.18,z-.145*side), (.43,.30,.075), sm, .025)
+            box("Moulded seat cushion", (x,y,z), (.43,.12,.36), sm)
+            back=box("Moulded seat back", (x,y+.18,z-.145*side), (.43,.30,.075), sm)
             back.rotation_euler[0]=math.radians(-7)
             box("Seat pedestal", (x,y-.11,z), (.075,.18,.075), steel_dark)
     for i in range(29):
@@ -132,8 +132,8 @@ for row in range(8):
         for side in (-1,1):
             z=side*(13.1+row*.67)
             sm=seat_cyan if (i+row)%8==0 else seat_blue
-            box("End stand seat cushion", (x,y,z), (.36,.12,.43), sm, .03)
-            box("End stand seat back", (x,y+.18,z-side*.15), (.36,.30,.075), sm, .025)
+            box("End stand seat cushion", (x,y,z), (.36,.12,.43), sm)
+            box("End stand seat back", (x,y+.18,z-side*.15), (.36,.30,.075), sm)
 
 # Concourse glazing, mullions, door frames and service panels
 for side in (-1,1):
