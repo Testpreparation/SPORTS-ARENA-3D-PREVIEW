@@ -181,6 +181,13 @@ for key,(verts,faces) in builders.items():
     bpy.ops.object.mode_set(mode="OBJECT")
     obj.select_set(False)
 # Export optimized GLB.
+# Geometry is authored Y-up (Y is height) to match the Babylon.js court.
+# Blender is Z-up; rotate the generated meshes +90 degrees around X before
+# glTF export so the exporter’s Z-up conversion preserves intended world axes.
 bpy.ops.object.select_all(action="SELECT")
+for obj in bpy.context.selected_objects:
+    obj.rotation_euler.x = math.radians(90)
+    bpy.context.view_layer.objects.active = obj
+    bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
 bpy.ops.export_scene.gltf(filepath=OUT, export_format="GLB", use_selection=True, export_apply=True)
 print("ARENA_EXPORT_OK", OUT, os.path.getsize(OUT))
