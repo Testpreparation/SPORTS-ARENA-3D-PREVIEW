@@ -196,30 +196,36 @@ for side in (-1,1):
         for i in range(7):
             box("Individual LED optic",(x-.78+i*.26,10.7,z-.59),(.16,.15,.025),led)
 
-# Join meshes into one optimized render mesh while preserving PBR material slots.
-bpy.ops.object.select_all(action="DESELECT")
-for o in created:
-    if o and o.name in bpy.data.objects and o.type == "MESH":
+# Join architecture and seats into separate optimized GLB assets.
+# Keeping the seat bowl separate allows Babylon.js to toggle seating on/off.
+def export_group(objects, name, filepath):
+    bpy.ops.object.select_all(action="DESELECT")
+    valid=[o for o in objects if o and o.name in bpy.data.objects and o.type=="MESH"]
+    if not valid:
+        raise RuntimeError("No mesh objects for export group: "+name)
+    for o in valid:
         o.select_set(True)
-if bpy.context.selected_objects:
-    bpy.context.view_layer.objects.active=bpy.context.selected_objects[0]
+    bpy.context.view_layer.objects.active=valid[0]
     bpy.ops.object.join()
     merged=bpy.context.object
-    merged.name="Blender Crafted Arena | PBR Optimized"
-    # Apply any bevel and weighted normal modifiers before export.
+    merged.name=name
+    merged.data.name=name+" Mesh"
     for mod in list(merged.modifiers):
         try:
             bpy.context.view_layer.objects.active=merged
             bpy.ops.object.modifier_apply(modifier=mod.name)
         except Exception:
             pass
-    merged.data.name="Arena Architecture and Empty Seating"
     for poly in merged.data.polygons:
-        poly.use_smooth = False
+        poly.use_smooth=False
+    bpy.ops.object.select_all(action="DESELECT")
+    merged.select_set(True)
+    bpy.context.view_layer.objects.active=merged
+    bpy.ops.export_scene.gltf(filepath=filepath, export_format="GLB", use_selection=True, export_apply=True, export_yup=True, export_materials="EXPORT", export_cameras=False, export_lights=False)
+    print("EXPORTED_"+name.upper().replace(" ","_")+"="+filepath)
 
-# Export selected arena mesh. Babylon.js renders this asset over the interactive court.
-bpy.ops.object.select_all(action="DESELECT")
-merged.select_set(True)
-bpy.context.view_layer.objects.active=merged
-bpy.ops.export_scene.gltf(filepath=output, export_format="GLB", use_selection=True, export_apply=True, export_yup=True, export_materials="EXPORT", export_cameras=False, export_lights=False)
-print("EXPORTED_ARENA_GLB=" + output)
+seat_objects=[o for o in created if "seat" in o.name.lower()]
+architecture_objects=[o for o in created if "seat" not in o.name.lower()]
+folder=os.path.dirname(output)
+export_group(architecture_objects,"Blender Crafted Arena Architecture",os.path.join(folder,"arena-architecture.glb"))
+export_group(seat_objects,"Blender Crafted Empty Stadium Seating",os.path.join(folder,"arena-seats.glb"))
