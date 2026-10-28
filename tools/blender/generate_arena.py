@@ -225,7 +225,7 @@ def export_group(objects, name, filepath):
     print("EXPORTED_"+name.upper().replace(" ","_")+"="+filepath)
 
 seat_objects=[o for o in created if "seat" in o.name.lower()]
-architecture_objects=[o for o in created if "seat" not in o.name.lower()]
+architecture_objects=[o for o in created if "seat" not in o.name.lower() and "floodlight" not in o.name.lower() and "individual led optic" not in o.name.lower()]
 folder=os.path.dirname(output)
 export_group(architecture_objects,"Blender Crafted Arena Architecture",os.path.join(folder,"arena-architecture.glb"))
 export_group(seat_objects,"Blender Crafted Empty Stadium Seating",os.path.join(folder,"arena-seats.glb"))
