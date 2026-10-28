@@ -304,6 +304,79 @@ function addEmptyVenueFinish(group,{endRows,sideRows,stadium=false}){
 }
 addEmptyVenueFinish(venueGroup,{endRows:9,sideRows:6});
 addEmptyVenueFinish(stadiumGroup,{endRows:12,sideRows:7,stadium:true});
+// Ultra-detail pass for EVERY venue: expansion joints, structural bolts, cable trays,
+// acoustic ceiling panels, light housings, glass mullions and service access details.
+// Repeated micro-geometry is instanced to keep draw calls manageable on mobile.
+function addArchitecturalMicrodetail(group, kind){
+ const steel=new THREE.MeshStandardMaterial({color:0x354b56,roughness:.32,metalness:.78,envMapIntensity:1.25});
+ const brushed=new THREE.MeshStandardMaterial({color:0x82949a,roughness:.27,metalness:.84,envMapIntensity:1.35});
+ const dark=new THREE.MeshStandardMaterial({color:0x142832,roughness:.72,metalness:.18});
+ const concreteJoint=new THREE.MeshStandardMaterial({color:0x465a63,roughness:.92});
+ const luminous=new THREE.MeshStandardMaterial({color:0xe7f8ff,emissive:0x91dcff,emissiveIntensity:1.4,roughness:.22});
+ const inst=(geo,mat,arr)=>{if(!arr.length)return;const mesh=new THREE.InstancedMesh(geo,mat,arr.length),o=new THREE.Object3D();for(let i=0;i<arr.length;i++){const p=arr[i];o.position.set(p[0],p[1],p[2]);o.rotation.set(p[3]||0,p[4]||0,p[5]||0);o.scale.set(p[6]||1,p[7]||1,p[8]||1);o.updateMatrix();mesh.setMatrixAt(i,o.matrix)}mesh.castShadow=true;mesh.receiveShadow=true;mesh.instanceMatrix.needsUpdate=true;group.add(mesh)};
+ const bolts=[],facadeSeams=[],cables=[],lightBars=[],roofCross=[];
+ const isStadium=kind==='stadium',isGrand=kind==='grand',isIndoor=kind==='indoor',isStandard=kind==='standard';
+ const halfZ=isStandard?15.8:isIndoor?28:isStadium?32:30;
+ const facadeX=isStandard?7.9:isIndoor?19:isStadium?18:16;
+ // Individual visible bolts at structural connection plates.
+ for(const side of [-1,1]){
+  for(let x=-facadeX;x<=facadeX;x+=isStandard?1.3:1.6){
+   for(const y of (isIndoor?[4.2,6.2,8.2,10.2]:[3.8,5.4,7])){
+    bolts.push([x,y,side*(halfZ-.08),0,0,0,.07,.07,.035]);
+   }
+   if(!isIndoor){facadeSeams.push([x,4.7,side*(halfZ-.13),0,0,0,.018,2.8,.025])}
+  }
+  // Surface drainage and cable-protection channels at the perimeter.
+  for(let x=-facadeX;x<facadeX;x+=.42)cables.push([x,.03,side*(isStandard?15.95:16.35),0,0,0,.018,.045,.14]);
+ }
+ // Roof service catwalks and repeated cross-bracing: actual members, not a flat roof silhouette.
+ if(isIndoor||isGrand||isStadium){
+  const roofY=isIndoor?11.15:isStadium?9.95:7.45;
+  const span=isIndoor?18:isStadium?18:16;
+  for(let x=-span;x<=span;x+=2){
+   roofCross.push([x,roofY,0,0,0,0,.055,.055,isIndoor?25:22]);
+   roofCross.push([x,roofY-.24,0,0,0,0,.035,.035,isIndoor?24:21]);
+   for(const z of (isIndoor?[-22,-11,0,11,22]:[-25,-12,0,12,25])){
+    bolts.push([x,roofY+.08,z,0,0,0,.055,.055,.055]);
+   }
+  }
+  for(let x=-span;x<=span;x+=4){
+   lightBars.push([x,isIndoor?12.72:isStadium?9.55:7.05,0,0,0,0,isIndoor?2.6:2.2,.045,.22]);
+  }
+ }
+ inst(new THREE.SphereGeometry(1,8,6),brushed,bolts);
+ inst(new THREE.BoxGeometry(1,1,1),concreteJoint,facadeSeams);
+ inst(new THREE.BoxGeometry(1,1,1),dark,cables);
+ inst(new THREE.BoxGeometry(1,1,1),steel,roofCross);
+ inst(new THREE.BoxGeometry(1,1,1),luminous,lightBars);
+ // Secondary mullions and door hardware behind the stands, with consistent spacing.
+ if(!isStandard){
+  const mullions=[];
+  for(const side of [-1,1])for(let x=-facadeX;x<=facadeX;x+=.8){
+   mullions.push([x,5.75,side*(halfZ-.18),0,0,0,.025,1.35,.025]);
+  }
+  inst(new THREE.BoxGeometry(1,1,1),brushed,mullions);
+ }
+}
+addArchitecturalMicrodetail(seatGroup,'standard');
+addArchitecturalMicrodetail(venueGroup,'grand');
+addArchitecturalMicrodetail(stadiumGroup,'stadium');
+addArchitecturalMicrodetail(championshipGroup,'grand');
+addArchitecturalMicrodetail(indoorRoofGroup,'indoor');
+// More convincing layered venue lighting: low-intensity architectural strips and night-session pools.
+const architecturalLights=[];
+for(const side of [-1,1]){
+ for(let x=-15;x<=15;x+=5){
+  const strip=new THREE.Mesh(new THREE.BoxGeometry(3.8,.035,.055),new THREE.MeshStandardMaterial({color:0xe7f7ff,emissive:0x70dfff,emissiveIntensity:.85,roughness:.25}));
+  strip.position.set(x,5.02,side*29.12);venueGroup.add(strip);
+  const point=new THREE.PointLight(0x8bdcff,.28,7,2);point.position.set(x,5.1,side*28.5);venueGroup.add(point);architecturalLights.push(point);
+ }
+}
+for(let x=-15;x<=15;x+=5){
+ const fixture=new THREE.Mesh(new THREE.BoxGeometry(2.4,.09,.35),new THREE.MeshStandardMaterial({color:0xf3fbff,emissive:0xb8eaff,emissiveIntensity:1.15,roughness:.2}));
+ fixture.position.set(x,9.42,0);indoorRoofGroup.add(fixture);
+}
+
 venueGroup.visible=false;
 const spotlights=[];for(const x of [-15,15])for(const z of [-16,16]){const pole=new THREE.Mesh(new THREE.CylinderGeometry(.11,.16,8.5,12),material(0x526875,.4,.5));pole.position.set(x,4.25,z);pole.castShadow=true;scene.add(pole);cube(2.2,.18,.4,material(0x283b48,.4,.4),x,8.55,z);for(let i=0;i<5;i++){const lamp=new THREE.Mesh(new THREE.BoxGeometry(.27,.07,.22),new THREE.MeshStandardMaterial({color:0xf0fbff,emissive:0x7bdcff,emissiveIntensity:.6}));lamp.position.set(x-.75+i*.375,8.42,z);scene.add(lamp)}const spot=new THREE.SpotLight(0xeaf8ff,2,35,Math.PI/5,.5,1.4);spot.position.set(x,8.3,z);spot.target.position.set(0,0,0);scene.add(spot,spot.target);spotlights.push(spot)}
 for(const z of [-17,17]){cube(4.1,2,.18,material(0x101d26,.3,.4),0,3,z);const screen=new THREE.Mesh(new THREE.PlaneGeometry(3.8,1.7),new THREE.MeshStandardMaterial({color:0x082b3a,emissive:0x0b536a,emissiveIntensity:.55}));screen.position.set(0,3,z+(z<0?.1:-.1));if(z>0)screen.rotation.y=Math.PI;scene.add(screen)}
