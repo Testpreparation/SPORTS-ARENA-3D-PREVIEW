@@ -139,7 +139,8 @@ for row in range(rows):
     # Each tier expands outward and rises gradually from the playing surface.
     a=inner_a + row*.55
     b=inner_b + row*.65
-    y=.30 + row*.32
+    # Raise the first seating tier above the courtside service zone, as in a typical arena bowl.
+    y=1.05 + row*.32
     # Seat benches and risers are sampled around an ellipse. Keep a modest gap at
     # the four service corners to avoid collisions with the courtside access zone.
     for i in range(segments):
