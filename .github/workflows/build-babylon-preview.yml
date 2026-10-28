@@ -41,5 +41,8 @@ jobs:
             echo "Model unchanged; no commit required."
           else
             git commit -m "Build Blender realistic arena GLB"
-            git push
+            # Another workflow may update the preview page at the same time.
+            git fetch origin main
+            git rebase origin/main
+            git push origin HEAD:main
           fi
