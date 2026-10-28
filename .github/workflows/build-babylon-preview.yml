@@ -1,0 +1,45 @@
+name: Build Blender Arena GLB
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "tools/blender/build_realistic_arena.py"
+      - ".github/workflows/build-babylon-preview.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: blender-arena-glb
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout preview
+        uses: actions/checkout@v4
+      - name: Install Blender
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y blender
+      - name: Generate optimized arena GLB
+        run: |
+          blender --background --factory-startup --python tools/blender/build_realistic_arena.py
+      - name: Verify generated model
+        run: |
+          test -s assets/realistic-arena.glb
+          ls -lh assets/realistic-arena.glb
+      - name: Commit generated model
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/realistic-arena.glb
+          if git diff --cached --quiet; then
+            echo "Model unchanged; no commit required."
+          else
+            git commit -m "Build Blender realistic arena GLB"
+            git push
+          fi
