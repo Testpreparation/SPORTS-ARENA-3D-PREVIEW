@@ -129,14 +129,14 @@ for x in (-33.2,33.2):
 # with each tier stepping outward along X. End stands run across X.
 seat_mats=["seat_blue","seat_teal","seat_navy"]
 for side in (-1,1):
-    # Long-side stands: 9 rows parallel to the court sidelines.
+    # Long-side stands: stepped banks parallel to the court sidelines, with clear corner gaps.
     for row in range(13):
         x=side*(7.25+row*1.35)
         y=.25+row*.48
-        box("concrete_light",(x,y-.21,0),(1.22,.38,37.0))
-        box("steel",(x-side*.50,y-.39,0),(.07,.08,37.0))
-        z=-18.0
-        while z<=18.1:
+        box("concrete_light",(x,y-.21,0),(1.22,.38,30.8))
+        box("steel",(x-side*.50,y-.39,0),(.07,.08,30.8))
+        z=-14.5
+        while z<=14.51:
             key=seat_mats[(int((z+14.5)*3)+row*2+(1 if side>0 else 0))%len(seat_mats)]
             box(key,(x,y+.05,z),(.38,.12,.43))
             box(key,(x+side*.15,y+.22,z),(.075,.29,.43))
@@ -144,24 +144,24 @@ for side in (-1,1):
             box("steel",(x-side*.04,y-.04,z+.15),(.18,.035,.035))
             z+=.66
     # Aisle rails/stair breaks are aligned with the long stands, not across the court.
-    for z in (-18.2,-12.0,-6.0,0,6.0,12.0,18.2):
+    for z in (-14.8,-10.0,-5.0,0,5.0,10.0,14.8):
         for row in range(13):
             x=side*(7.0+row*1.35)
             y=.42+row*.48
             box("steel",(x,y+.31,z),(.07,.56,.06))
             box("steel",(x,y+.58,z),(.92,.05,.06))
-# End stands: shorter banks across the court width at each baseline.
+# End stands: wider banks behind the baselines, with a deliberate gap from the long-side seating corners.
 for side in (-1,1):
     for row in range(7):
         z=side*(17.0+row*1.35)
         y=.22+row*.43
-        box("concrete_light",(0,y-.20,z),(34,.38,1.2))
-        x=-16.5
-        while x<=16.6:
+        box("concrete_light",(0,y-.20,z),(53.5,.38,1.2))
+        x=-26.0
+        while x<=26.01:
             key=seat_mats[(int((x+12.4)*2)+row)%len(seat_mats)]
             box(key,(x,y+.05,z),(.48,.12,.42))
             box(key,(x,y+.24,z+side*.17),(.48,.32,.08))
-            x+=.68
+            x+=.72
 # Roof ring, perimeter beams and dense exposed trusses.
 box("steel",(0,17.0,-39),(70,.7,4.0))
 box("steel",(0,17.0,39),(70,.7,4.0))
