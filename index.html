@@ -20,9 +20,12 @@
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js';
 import {OrbitControls} from 'https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/controls/OrbitControls.js';
+import {RoomEnvironment} from 'https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/environments/RoomEnvironment.js';
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x9fb8c5);scene.fog=new THREE.Fog(0x9fb8c5,42,100);
 const camera=new THREE.PerspectiveCamera(43,innerWidth/innerHeight,.1,180);camera.position.set(4.5,7,21);
 const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.1;document.body.appendChild(renderer.domElement);
+// A prefiltered studio environment adds physically based highlights/reflections to non-metal and metal materials.
+const pmrem=new THREE.PMREMGenerator(renderer);const environment=new RoomEnvironment();scene.environment=pmrem.fromScene(environment,0.04).texture;environment.dispose();pmrem.dispose();
 const orbit=new OrbitControls(camera,renderer.domElement);orbit.target.set(0,.6,0);orbit.enableDamping=true;orbit.dampingFactor=.06;orbit.minDistance=8;orbit.maxDistance=55;orbit.maxPolarAngle=Math.PI*.49;
 scene.add(new THREE.HemisphereLight(0xe8f7ff,0x36444b,2));
 const sun=new THREE.DirectionalLight(0xfff1d8,3.2);sun.position.set(-12,20,9);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-24;sun.shadow.camera.right=24;sun.shadow.camera.top=25;sun.shadow.camera.bottom=-25;sun.shadow.bias=-.00025;scene.add(sun);
@@ -30,7 +33,7 @@ const fill=new THREE.DirectionalLight(0x8bdcff,1.15);fill.position.set(14,10,-12
 const material=(color,roughness=.75,metalness=0)=>new THREE.MeshStandardMaterial({color,roughness,metalness});
 function cube(w,h,d,mat,x,y,z,shadow=true){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);m.castShadow=shadow;m.receiveShadow=true;scene.add(m);return m}
 cube(70,.5,70,material(0x526b77),0,-.45,0,false);const floor=new THREE.Mesh(new THREE.PlaneGeometry(180,180),material(0x7b8e90));floor.rotation.x=-Math.PI/2;floor.position.y=-.72;floor.receiveShadow=true;scene.add(floor);
-const apronMat=material(0x244454,.92);cube(15.5,.12,28.3,apronMat,0,-.18,0,false);
+const apronMat=new THREE.MeshPhysicalMaterial({color:0x244454,roughness:.68,metalness:0,clearcoat:.16,clearcoatRoughness:.45,envMapIntensity:.65});cube(15.5,.12,28.3,apronMat,0,-.18,0,false);
 function makeSurfacePBR(type){
  const size=1024,cv=document.createElement('canvas'),roughCv=document.createElement('canvas'),heightCv=document.createElement('canvas');
  cv.width=cv.height=roughCv.width=roughCv.height=heightCv.width=heightCv.height=size;
@@ -71,7 +74,7 @@ function makeSurfacePBR(type){
  return {map:color,roughnessMap:roughness,bumpMap:height,normalMap:normal};
 }
 const surfaceTextures={hard:makeSurfacePBR('hard'),clay:makeSurfacePBR('clay'),grass:makeSurfacePBR('grass'),indoor:makeSurfacePBR('indoor')};
-const courtMaterial=new THREE.MeshStandardMaterial({map:surfaceTextures.hard.map,roughnessMap:surfaceTextures.hard.roughnessMap,bumpMap:surfaceTextures.hard.bumpMap,normalMap:surfaceTextures.hard.normalMap,bumpScale:.018,normalScale:new THREE.Vector2(.42,.42),roughness:.88,metalness:0});
+const courtMaterial=new THREE.MeshPhysicalMaterial({map:surfaceTextures.hard.map,roughnessMap:surfaceTextures.hard.roughnessMap,bumpMap:surfaceTextures.hard.bumpMap,normalMap:surfaceTextures.hard.normalMap,bumpScale:.018,normalScale:new THREE.Vector2(.42,.42),roughness:.72,metalness:0,clearcoat:.22,clearcoatRoughness:.38,envMapIntensity:.72});
 const white=material(0xf6f7f2,.7);function line(x1,z1,x2,z2,width=.05){const dx=x2-x1,dz=z2-z1,length=Math.hypot(dx,dz),m=new THREE.Mesh(new THREE.BoxGeometry(width,.02,length),white);m.position.set((x1+x2)/2,.035,(z1+z2)/2);m.rotation.y=Math.atan2(dx,dz);m.receiveShadow=true;scene.add(m)}
 const w=10.97/2,l=23.77/2,s=8.23/2;line(-w,-l,w,-l);line(-w,l,w,l);line(-w,-l,-w,l);line(w,-l,w,l);line(-s,-l,-s,l,.045);line(s,-l,s,l,.045);line(-w,-6.4,w,-6.4);line(-w,6.4,w,6.4);line(-s,0,s,0,.045);line(0,-6.4,0,6.4,.045);
 for(const x of [-5.55,5.55]){const post=new THREE.Mesh(new THREE.CylinderGeometry(.07,.09,1.15,16),material(0x20343f,.35,.5));post.position.set(x,.49,0);post.castShadow=true;scene.add(post)}
@@ -84,7 +87,7 @@ for(const side of [-1,1])for(let row=0;row<5;row++){const z=side*(17+row*1.02),y
 for(const side of [-1,1]){const roof=new THREE.Mesh(new THREE.BoxGeometry(28,.3,4.5),material(0x2b414c,.5,.35));roof.position.set(0,3.3,side*22);seatGroup.add(roof)}
 // Venue architecture: separate from gameplay; toggled by the venue selector.
 const venueGroup=new THREE.Group();scene.add(venueGroup);
-const concrete=material(0x64757d,.78),darkMetal=material(0x172a35,.42,.62),glass=new THREE.MeshPhysicalMaterial({color:0x8cc6d8,roughness:.18,metalness:.25,transparent:true,opacity:.24,side:THREE.DoubleSide}),ledMat=new THREE.MeshStandardMaterial({color:0x092532,emissive:0x00a9c9,emissiveIntensity:.8,roughness:.35});
+const concrete=new THREE.MeshPhysicalMaterial({color:0x64757d,roughness:.68,metalness:.05,envMapIntensity:.7}),darkMetal=new THREE.MeshStandardMaterial({color:0x172a35,roughness:.3,metalness:.72,envMapIntensity:1.25}),glass=new THREE.MeshPhysicalMaterial({color:0x8cc6d8,roughness:.12,metalness:.12,transparent:true,opacity:.2,transmission:.12,thickness:.4,ior:1.45,side:THREE.DoubleSide,envMapIntensity:1.4}),ledMat=new THREE.MeshStandardMaterial({color:0x092532,emissive:0x00a9c9,emissiveIntensity:.8,roughness:.35});
 function venueBox(w,h,d,mat,x,y,z){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;venueGroup.add(m);return m}
 function beamBetween(a,b,r,mat){const va=new THREE.Vector3(...a),vb=new THREE.Vector3(...b),dir=new THREE.Vector3().subVectors(vb,va);const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,dir.length(),8),mat);m.position.copy(va).add(vb).multiplyScalar(.5);m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir.normalize());m.castShadow=true;venueGroup.add(m)}
 // Tall, tiered grandstands on both baselines and sides.
@@ -139,7 +142,7 @@ const crown=new THREE.Mesh(new THREE.TorusGeometry(18,.14,8,80),darkMetal);crown
 championshipGroup.visible=false;
 // Dedicated stadium option: a clearly separate, large-scale bowl and roof.
 const stadiumGroup=new THREE.Group();scene.add(stadiumGroup);
-const stadiumConcrete=material(0x73818a,.72),stadiumSteel=material(0x1b2b36,.38,.72);
+const stadiumConcrete=new THREE.MeshStandardMaterial({color:0x73818a,roughness:.62,metalness:.04,envMapIntensity:.72}),stadiumSteel=new THREE.MeshStandardMaterial({color:0x1b2b36,roughness:.27,metalness:.78,envMapIntensity:1.35});
 for(const side of [-1,1]){
  for(let row=0;row<12;row++){
   const z=side*(17.5+row*1.13),y=.35+row*.48;
@@ -189,7 +192,7 @@ document.querySelectorAll('[data-venue]').forEach(b=>b.classList.toggle('active'
 }
 document.querySelectorAll('[data-venue]').forEach(b=>b.addEventListener('click',()=>setVenue(b.dataset.venue)));
 const courtStyles={hard:{apron:0x244454,title:'ハードコート'},clay:{apron:0x7d3827,title:'クレーコート'},grass:{apron:0x254d35,title:'芝コート'},indoor:{apron:0x6e5134,title:'インドアコート'}};
-function setCourtType(type){if(!surfaceTextures[type])return;courtMaterial.map=surfaceTextures[type].map;courtMaterial.roughnessMap=surfaceTextures[type].roughnessMap;courtMaterial.bumpMap=surfaceTextures[type].bumpMap;courtMaterial.normalMap=surfaceTextures[type].normalMap;courtMaterial.roughness=type==='indoor'?.68:.88;courtMaterial.bumpScale=type==='grass'?.032:type==='clay'?.024:.012;courtMaterial.normalScale.set(type==='grass'?.65:.42,type==='grass'?.65:.42);courtMaterial.needsUpdate=true;apronMat.color.setHex(courtStyles[type].apron);document.querySelectorAll('[data-court]').forEach(b=>b.classList.toggle('active',b.dataset.court===type));document.querySelector('.panel h1').textContent=courtStyles[type].title;document.querySelector('.panel .eyebrow').textContent='ENVIRONMENT / '+({hard:'01',clay:'02',grass:'03',indoor:'04'}[type]);}
+function setCourtType(type){if(!surfaceTextures[type])return;courtMaterial.map=surfaceTextures[type].map;courtMaterial.roughnessMap=surfaceTextures[type].roughnessMap;courtMaterial.bumpMap=surfaceTextures[type].bumpMap;courtMaterial.normalMap=surfaceTextures[type].normalMap;courtMaterial.roughness=type==='indoor'?.48:type==='hard'?.64:type==='clay'?.9:.82;courtMaterial.clearcoat=type==='indoor'?.34:type==='hard'?.24:type==='clay'?.04:.08;courtMaterial.clearcoatRoughness=type==='indoor'?.24:type==='hard'?.34:.7;courtMaterial.envMapIntensity=type==='indoor'?1.05:type==='hard'?.82:.45;courtMaterial.bumpScale=type==='grass'?.032:type==='clay'?.024:.012;courtMaterial.normalScale.set(type==='grass'?.65:.42,type==='grass'?.65:.42);courtMaterial.needsUpdate=true;apronMat.color.setHex(courtStyles[type].apron);document.querySelectorAll('[data-court]').forEach(b=>b.classList.toggle('active',b.dataset.court===type));document.querySelector('.panel h1').textContent=courtStyles[type].title;document.querySelector('.panel .eyebrow').textContent='ENVIRONMENT / '+({hard:'01',clay:'02',grass:'03',indoor:'04'}[type]);}
 document.querySelectorAll('[data-court]').forEach(b=>b.addEventListener('click',()=>setCourtType(b.dataset.court)));
 let seatsOn=true,lightsOn=true;document.getElementById('seats').onclick=e=>{seatsOn=!seatsOn;seatGroup.visible=seatsOn&&currentVenue==='standard';e.currentTarget.classList.toggle('active',seatsOn);e.currentTarget.textContent='観客席 '+(seatsOn?'ON':'OFF')};document.getElementById('lights').onclick=e=>{lightsOn=!lightsOn;spotlights.forEach(s=>s.intensity=lightsOn?2:0);e.currentTarget.classList.toggle('active',lightsOn);e.currentTarget.textContent='照明 '+(lightsOn?'ON':'OFF')};document.getElementById('reset').onclick=()=>{view('play');orbit.reset();setVenue('standard');setCourtType('hard')};
 function animate(){requestAnimationFrame(animate);orbit.update();renderer.render(scene,camera)}animate();addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;if(innerWidth<innerHeight&&innerWidth<=800){camera.fov=55;camera.position.set(0,12,27);orbit.target.set(0,.6,0)}else{camera.fov=43}camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));orbit.update()});if(innerWidth<innerHeight&&innerWidth<=800){camera.fov=55;camera.position.set(0,12,27);camera.updateProjectionMatrix();orbit.target.set(0,.6,0);orbit.update()}
