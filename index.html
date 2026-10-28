@@ -100,6 +100,42 @@ const championshipGroup=new THREE.Group();scene.add(championshipGroup);
 for(const side of [-1,1]){const upper=new THREE.Mesh(new THREE.BoxGeometry(34,.35,1.5),material(0x283e49,.55,.35));upper.position.set(0,7.4,side*25);championshipGroup.add(upper);for(let x=-16;x<=16;x+=2){const rail=new THREE.Mesh(new THREE.BoxGeometry(.07,.7,.07),darkMetal);rail.position.set(x,7.8,side*24.25);championshipGroup.add(rail)}}
 const crown=new THREE.Mesh(new THREE.TorusGeometry(18,.14,8,80),darkMetal);crown.rotation.x=Math.PI/2;crown.position.y=8.7;championshipGroup.add(crown);
 championshipGroup.visible=false;
+// Dedicated stadium option: a clearly separate, large-scale bowl and roof.
+const stadiumGroup=new THREE.Group();scene.add(stadiumGroup);
+const stadiumConcrete=material(0x73818a,.72),stadiumSteel=material(0x1b2b36,.38,.72);
+for(const side of [-1,1]){
+ for(let row=0;row<12;row++){
+  const z=side*(17.5+row*1.13),y=.35+row*.48;
+  const tier=new THREE.Mesh(new THREE.BoxGeometry(34,.42,1.02),stadiumConcrete);
+  tier.position.set(0,y,z);tier.castShadow=true;tier.receiveShadow=true;stadiumGroup.add(tier);
+  for(let x=-16.1;x<=16.1;x+=.48){
+   const seat=new THREE.Mesh(new THREE.BoxGeometry(.36,.19,.3),seatMats[(Math.floor((x+16.1)*3)+row)%seatMats.length]);
+   seat.position.set(x,y+.28,z-side*.08);stadiumGroup.add(seat);
+   if((Math.floor((x+16.1)*7)+row)%4!==0){const person=new THREE.Mesh(new THREE.CapsuleGeometry(.065,.17,3,5),crowdMat[(Math.floor(x*4)+row+16)%crowdMat.length]);person.position.set(x,y+.47,z-side*.16);stadiumGroup.add(person)}
+  }
+ }
+}
+// Side stands make the court feel enclosed by a true stadium bowl.
+for(const side of [-1,1]){
+ for(let row=0;row<7;row++){
+  const x=side*(7.4+row*1.05),y=.28+row*.53;
+  const tier=new THREE.Mesh(new THREE.BoxGeometry(1, .42, 34),stadiumConcrete);tier.position.set(x,y,0);stadiumGroup.add(tier);
+  for(let z=-16.1;z<=16.1;z+=.55){const seat=new THREE.Mesh(new THREE.BoxGeometry(.29,.19,.35),seatMats[(Math.floor((z+16.1)*2)+row)%seatMats.length]);seat.position.set(x-side*.12,y+.27,z);stadiumGroup.add(seat)}
+ }
+}
+// High cantilever roof ring and exposed trusswork.
+for(const side of [-1,1]){
+ const roof=new THREE.Mesh(new THREE.BoxGeometry(39,.34,7.2),new THREE.MeshStandardMaterial({color:0x253b48,roughness:.55,metalness:.42,side:THREE.DoubleSide}));
+ roof.position.set(0,10.4,side*27.8);roof.castShadow=true;stadiumGroup.add(roof);
+ for(let x=-18;x<=18;x+=3){
+  const beam=new THREE.Mesh(new THREE.CylinderGeometry(.075,.075,Math.hypot(2.4,7.8),8),stadiumSteel);
+  beam.position.set(x,7.9,side*24);beam.rotation.x=side*.3;beam.rotation.z=.28;stadiumGroup.add(beam);
+ }
+ const fascia=new THREE.Mesh(new THREE.BoxGeometry(39,.62,.28),ledMat);fascia.position.set(0,9.95,side*31.3);stadiumGroup.add(fascia);
+}
+const stadiumScore=new THREE.Mesh(new THREE.BoxGeometry(6.8,3.2,.4),stadiumSteel);stadiumScore.position.set(0,8.1,-22.7);stadiumGroup.add(stadiumScore);
+for(const side of [-1,1]){const panel=new THREE.Mesh(new THREE.PlaneGeometry(6.2,2.6),new THREE.MeshBasicMaterial({color:0x063044}));panel.position.set(0,8.1,-22.48);if(side>0)panel.rotation.y=Math.PI;stadiumGroup.add(panel)}
+stadiumGroup.visible=false;
 venueGroup.visible=false;
 const spotlights=[];for(const x of [-15,15])for(const z of [-16,16]){const pole=new THREE.Mesh(new THREE.CylinderGeometry(.11,.16,8.5,12),material(0x526875,.4,.5));pole.position.set(x,4.25,z);pole.castShadow=true;scene.add(pole);cube(2.2,.18,.4,material(0x283b48,.4,.4),x,8.55,z);for(let i=0;i<5;i++){const lamp=new THREE.Mesh(new THREE.BoxGeometry(.27,.07,.22),new THREE.MeshStandardMaterial({color:0xf0fbff,emissive:0x7bdcff,emissiveIntensity:.6}));lamp.position.set(x-.75+i*.375,8.42,z);scene.add(lamp)}const spot=new THREE.SpotLight(0xeaf8ff,2,35,Math.PI/5,.5,1.4);spot.position.set(x,8.3,z);spot.target.position.set(0,0,0);scene.add(spot,spot.target);spotlights.push(spot)}
 for(const z of [-17,17]){cube(4.1,2,.18,material(0x101d26,.3,.4),0,3,z);const screen=new THREE.Mesh(new THREE.PlaneGeometry(3.8,1.7),new THREE.MeshStandardMaterial({color:0x082b3a,emissive:0x0b536a,emissiveIntensity:.55}));screen.position.set(0,3,z+(z<0?.1:-.1));if(z>0)screen.rotation.y=Math.PI;scene.add(screen)}
@@ -109,7 +145,7 @@ function view(v){orbit.target.set(0,.6,0);if(v==='play'){camera.position.set(4.5
 [['play','play'],['topview','top'],['low','low']].forEach(([id,v])=>{document.getElementById(id).dataset.view=v;document.getElementById(id).onclick=()=>view(v)});
 const venueStyles={standard:{title:'スタンダードコート',eyebrow:'ENVIRONMENT / 01'},stadium:{title:'テニススタジアム',eyebrow:'VENUE / STADIUM'},grand:{title:'大会スタジアム',eyebrow:'VENUE / CHAMPIONSHIP'},indoor:{title:'インドアアリーナ',eyebrow:'VENUE / INDOOR ARENA'},night:{title:'ナイトスタジアム',eyebrow:'VENUE / NIGHT SESSION'}};
 let currentVenue='standard';
-function setVenue(type){if(!venueStyles[type])return;currentVenue=type;venueGroup.visible=type!=='standard';seatGroup.visible=seatsOn&&type==='standard';indoorRoofGroup.visible=type==='indoor';championshipGroup.visible=type==='grand';if(type==='standard'){camera.position.set(4.5,7,21);orbit.target.set(0,.6,-1.2)}else if(type==='indoor'){camera.position.set(0,17,39);orbit.target.set(0,3,0)}else{camera.position.set(0,17,39);orbit.target.set(0,3,0)}orbit.update();venueGroup.traverse(o=>{if(o.material&&o.material.emissive&&o.material===ledMat)o.material.emissiveIntensity=type==='night'?2.4:.8});
+function setVenue(type){if(!venueStyles[type])return;currentVenue=type;venueGroup.visible=type!=='standard'&&type!=='stadium';stadiumGroup.visible=type==='stadium';seatGroup.visible=seatsOn&&type==='standard';indoorRoofGroup.visible=type==='indoor';championshipGroup.visible=type==='grand';if(type==='standard'){camera.position.set(4.5,7,21);orbit.target.set(0,.6,-1.2)}else if(type==='indoor'){camera.position.set(0,17,39);orbit.target.set(0,3,0)}else if(type==='stadium'){camera.position.set(0,21,43);orbit.target.set(0,4.5,0)}else{camera.position.set(0,17,39);orbit.target.set(0,3,0)}orbit.update();venueGroup.traverse(o=>{if(o.material&&o.material.emissive&&o.material===ledMat)o.material.emissiveIntensity=type==='night'?2.4:.8});
 scene.background.set(type==='night'?0x071522:type==='indoor'?0x526b7b:0x9fb8c5);scene.fog.color.set(type==='night'?0x071522:type==='indoor'?0x526b7b:0x9fb8c5);
 sun.intensity=type==='night'?.35:type==='indoor'?1.5:3.2;fill.intensity=type==='night'?.35:1.15;spotlights.forEach(s=>{s.intensity=lightsOn?(type==='night'?3.5:type==='indoor'?1.3:2):0});
 document.querySelectorAll('[data-venue]').forEach(b=>b.classList.toggle('active',b.dataset.venue===type));document.querySelector('.panel h1').textContent=venueStyles[type].title;document.querySelector('.panel .eyebrow').textContent=venueStyles[type].eyebrow;
