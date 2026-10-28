@@ -129,16 +129,16 @@ for x in (-33.2,33.2):
 seat_mats=["seat_blue","seat_teal","seat_navy"]
 # Use a continuous elliptical stadium bowl with long axis Z. Dense seat sampling and
 # realistic row rise create a broad, multi-tier grandstand rather than a small display stand.
-outer_a=31.5  # half-width in X
-outer_b=43.0  # half-length in Z
-inner_a=7.1
-inner_b=14.8
+outer_a=31.0  # half-width in X
+outer_b=42.5  # half-length in Z
+inner_a=12.0
+inner_b=20.0
 rows=26
 segments=288
 for row in range(rows):
     # Each tier expands outward and rises gradually from the playing surface.
-    a=inner_a + row*.95
-    b=inner_b + row*1.10
+    a=inner_a + row*.72
+    b=inner_b + row*.86
     y=.30 + row*.32
     # Seat benches and risers are sampled around an ellipse. Keep a modest gap at
     # the four service corners to avoid collisions with the courtside access zone.
@@ -170,6 +170,11 @@ for row in range(rows):
         tangent_len=2*math.pi*math.sqrt((rail_a*rail_a+rail_b*rail_b)/2)/segments*4
         box("steel_light",(x,y+.66,z),(tangent_len,.055,.07),rot)
 # End/side service access gaps are kept open at the four cardinal axes.
+# Roof-mounted high-bay LED fixtures and support rails, arranged around the court.
+for x in (-27,-18,-9,0,9,18,27):
+    for z in (-32,-20,-8,8,20,32):
+        box("steel",(x,18.85,z),(2.0,.22,.72))
+        box("light",(x,18.70,z),(1.72,.055,.48))
 # Low perimeter accent markers follow the oval rather than a rectangular grid.
 for i in range(segments):
     t=2*math.pi*i/segments
