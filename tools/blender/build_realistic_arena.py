@@ -1,280 +1,152 @@
 import bpy, math, os, sys
-# Ubuntu's Blender package uses the system Python module directory for NumPy.
 if os.path.isdir('/usr/lib/python3/dist-packages'):
     sys.path.append('/usr/lib/python3/dist-packages')
-from mathutils import Vector, Quaternion
+from mathutils import Vector
 
-# Fast, batched Blender arena generator. Geometry is accumulated by material,
-# avoiding thousands of separate objects and modifiers.
+# Clean-room arena rebuild: remove all previous scene geometry and generate a new venue.
 OUT = os.path.abspath("assets/realistic-arena.glb")
 os.makedirs(os.path.dirname(OUT), exist_ok=True)
 bpy.ops.object.select_all(action="SELECT")
 bpy.ops.object.delete(use_global=False)
 for datablocks in (bpy.data.meshes, bpy.data.materials, bpy.data.curves):
     for block in list(datablocks):
-        if block.users == 0:
-            datablocks.remove(block)
+        if block.users == 0: datablocks.remove(block)
 
-def pbr(name, color, rough=0.6, metal=0.0):
-    m = bpy.data.materials.new(name)
-    m.diffuse_color = (*color, 1)
-    m.use_nodes = True
-    nodes = m.node_tree.nodes
-    links = m.node_tree.links
-    bs = nodes.get("Principled BSDF")
-    bs.inputs["Base Color"].default_value = (*color, 1)
-    bs.inputs["Roughness"].default_value = rough
-    bs.inputs["Metallic"].default_value = metal
-
-    # Procedural micro-surface detail: no external image assets required.
-    # Keep the color variation subtle so the arena reads as real materials,
-    # rather than a noisy or stylized game environment.
-    tex = nodes.new("ShaderNodeTexCoord")
-    noise = nodes.new("ShaderNodeTexNoise")
-    noise.inputs["Scale"].default_value = 28.0 if ("concrete" in name.lower() or "floor" in name.lower()) else 82.0
-    noise.inputs["Detail"].default_value = 3.2
-    noise.inputs["Roughness"].default_value = 0.72
-    links.new(tex.outputs["Generated"], noise.inputs["Vector"])
-
-    bump = nodes.new("ShaderNodeBump")
-    bump.inputs["Strength"].default_value = 0.085 if ("concrete" in name.lower() or "floor" in name.lower()) else 0.04
-    bump.inputs["Distance"].default_value = 0.035 if ("concrete" in name.lower() or "floor" in name.lower()) else 0.012
-    links.new(noise.outputs["Fac"], bump.inputs["Height"])
-    links.new(bump.outputs["Normal"], bs.inputs["Normal"])
-
-    # A restrained roughness breakup prevents large surfaces looking synthetic.
-    ramp = nodes.new("ShaderNodeMapRange")
-    ramp.inputs["From Min"].default_value = 0.0
-    ramp.inputs["From Max"].default_value = 1.0
-    ramp.inputs["To Min"].default_value = max(0.08, rough - 0.09)
-    ramp.inputs["To Max"].default_value = min(1.0, rough + 0.1)
-    links.new(noise.outputs["Fac"], ramp.inputs["Value"])
-    links.new(ramp.outputs["Result"], bs.inputs["Roughness"])
+def mat(name, color, rough=.65, metal=0):
+    m=bpy.data.materials.new(name); m.diffuse_color=(*color,1); m.use_nodes=True
+    bs=m.node_tree.nodes.get("Principled BSDF")
+    bs.inputs["Base Color"].default_value=(*color,1)
+    bs.inputs["Roughness"].default_value=rough
+    bs.inputs["Metallic"].default_value=metal
+    if "concrete" in name.lower() or "floor" in name.lower():
+        n=m.node_tree.nodes.new("ShaderNodeTexNoise"); n.inputs["Scale"].default_value=34; n.inputs["Detail"].default_value=3
+        b=m.node_tree.nodes.new("ShaderNodeBump"); b.inputs["Strength"].default_value=.11; b.inputs["Distance"].default_value=.035
+        m.node_tree.links.new(n.outputs["Fac"],b.inputs["Height"]); m.node_tree.links.new(b.outputs["Normal"],bs.inputs["Normal"])
     return m
 
-M = {
- "concrete": pbr("Warm architectural concrete", (.235,.265,.27), .88),
- "concrete_light": pbr("Light precast concrete", (.39,.415,.41), .84),
- "steel": pbr("Graphite structural steel", (.028,.039,.045), .34, .72),
- "steel_light": pbr("Brushed aluminium", (.23,.27,.28), .3, .76),
- "glass": pbr("Smoked arena glass", (.055,.115,.14), .24, .42),
- "seat_blue": pbr("Deep blue seat polymer", (.012,.065,.12), .42, .02),
- "seat_teal": pbr("Teal seat polymer", (.018,.14,.16), .4, .02),
- "seat_navy": pbr("Navy seat polymer", (.008,.025,.05), .43, .01),
- "rubber": pbr("Dark rubber flooring", (.022,.032,.035), .92),
- "white": pbr("Warm white paint", (.72,.75,.72), .52),
- "screen": pbr("Scoreboard black glass", (.003,.008,.012), .24, .22),
- "light": pbr("LED diffuser", (.95,.97,1.0), .28),
- "accent": pbr("Arena cyan accent", (.008,.19,.23), .38, .3),
+M={
+ "floor":mat("Arena floor concrete",(.16,.19,.20),.9),
+ "concrete":mat("Structural concrete",(.31,.34,.34),.88),
+ "concrete_dark":mat("Dark concrete joints",(.10,.13,.14),.9),
+ "steel":mat("Dark structural steel",(.025,.04,.05),.32,.72),
+ "metal":mat("Brushed metal",(.34,.40,.42),.3,.75),
+ "blue":mat("Arena blue seats",(.012,.07,.16),.4,.02),
+ "cyan":mat("Arena cyan seats",(.015,.20,.23),.4,.02),
+ "navy":mat("Arena navy seats",(.006,.022,.05),.43,.02),
+ "glass":mat("Concourse glass",(.035,.10,.13),.22,.35),
+ "screen":mat("LED display",(.002,.009,.014),.22,.15),
+ "light":mat("LED diffuser",(.88,.95,1),.25),
+ "accent":mat("Cyan architectural accent",(.015,.28,.34),.3,.25),
 }
-builders = {}
-def builder(key):
-    if key not in builders: builders[key] = [[], []]
-    return builders[key]
-
-def box(key, center, size, rot_y=0):
-    vs, fs = builder(key)
-    x,y,z = center; sx,sy,sz = [v/2 for v in size]
-    base = len(vs)
-    local = [(-sx,-sy,-sz),(sx,-sy,-sz),(sx,sy,-sz),(-sx,sy,-sz),
-             (-sx,-sy,sz),(sx,-sy,sz),(sx,sy,sz),(-sx,sy,sz)]
-    c,s = math.cos(rot_y), math.sin(rot_y)
-    for a,b,d in local:
-        vs.append((x+a*c+d*s, y+b, z-a*s+d*c))
-    fs.extend([(base+0,base+3,base+2,base+1),(base+4,base+5,base+6,base+7),
-               (base+0,base+1,base+5,base+4),(base+1,base+2,base+6,base+5),
-               (base+2,base+3,base+7,base+6),(base+3,base+0,base+4,base+7)])
-
-def beam(key, a, b, thickness, depth=None):
+builders={}
+def add_box(k,c,s,ry=0):
+    vs,fs=builders.setdefault(k,([],[])); x,y,z=c; sx,sy,sz=[v/2 for v in s]; base=len(vs)
+    co,si=math.cos(ry),math.sin(ry)
+    for a,b,d in [(-sx,-sy,-sz),(sx,-sy,-sz),(sx,sy,-sz),(-sx,sy,-sz),(-sx,-sy,sz),(sx,-sy,sz),(sx,sy,sz),(-sx,sy,sz)]:
+        vs.append((x+a*co+d*si,y+b,z-a*si+d*co))
+    fs.extend([(base,base+3,base+2,base+1),(base+4,base+5,base+6,base+7),(base,base+1,base+5,base+4),(base+1,base+2,base+6,base+5),(base+2,base+3,base+7,base+6),(base+3,base,base+4,base+7)])
+def beam(k,a,b,t,depth=None):
     a,b=Vector(a),Vector(b); d=b-a
-    mid=(a+b)/2
-    # Rectangular member aligned to the segment in X/Y/Z, suitable for trusses.
-    obj_len=d.length
-    if obj_len < 0.001: return
-    # local box length is Z; rotate its Z axis onto the beam direction.
-    q=Vector((0,0,1)).rotation_difference(d.normalized())
-    vs,fs=builder(key); base=len(vs)
-    t=thickness/2; dep=(depth if depth is not None else thickness)/2; l=obj_len/2
-    for x,y,z in [(-t,-dep,-l),(t,-dep,-l),(t,dep,-l),(-t,dep,-l),
-                  (-t,-dep,l),(t,-dep,l),(t,dep,l),(-t,dep,l)]:
-        p=q @ Vector((x,y,z)) + mid
-        vs.append(tuple(p))
-    fs.extend([(base,base+3,base+2,base+1),(base+4,base+5,base+6,base+7),
-               (base,base+1,base+5,base+4),(base+1,base+2,base+6,base+5),
-               (base+2,base+3,base+7,base+6),(base+3,base,base+4,base+7)])
+    if d.length<.001:return
+    q=Vector((0,0,1)).rotation_difference(d.normalized()); mid=(a+b)/2
+    vs,fs=builders.setdefault(k,([],[])); base=len(vs); h=t/2; dep=(depth or t)/2; l=d.length/2
+    for x,y,z in [(-h,-dep,-l),(h,-dep,-l),(h,dep,-l),(-h,dep,-l),(-h,-dep,l),(h,-dep,l),(h,dep,l),(-h,dep,l)]:
+        vs.append(tuple(q@Vector((x,y,z))+mid))
+    fs.extend([(base,base+3,base+2,base+1),(base+4,base+5,base+6,base+7),(base,base+1,base+5,base+4),(base+1,base+2,base+6,base+5),(base+2,base+3,base+7,base+6),(base+3,base,base+4,base+7)])
 
-# Building shell and floor apron. Gameplay court is intentionally separate in Babylon.
-box("rubber",(0,-.35,0),(76,.45,94))
-box("concrete",(0,3.4,-44),(68,7,1.4))
-box("concrete",(0,3.4,44),(68,7,1.4))
-box("concrete",(-34,3.4,0),(1.4,7,87))
-box("concrete",(34,3.4,0),(1.4,7,87))
-# Glazed concourse bands and vertical mullions.
-for z in (-43.1,43.1):
-    box("glass",(0,4.1,z),(62,3.8,.09))
-    for x in range(-30,31,2):
-        box("steel",(x,3.4,z),(0.055,3.15,.08))
-for x in (-33.5,33.5):
-    box("glass",(x,4.1,0),(.08,3.8,82))
-    for z in range(-41,42,2):
-        box("steel",(x,3.4,z),(.08,3.15,.055))
-# Concourse floor beams and repeated facade bays.
-for z in (-42.2,42.2):
-    box("steel",(0,6.1,z),(67,.28,.28))
-    box("concrete_light",(0,7.4,z),(68,.48,.8))
-for x in (-33.2,33.2):
-    box("steel",(x,6.1,0),(.28,.28,86))
-# Full-scale oval seating bowl inspired by real 8,000+ capacity indoor arenas.
-# Court long axis is Z; 26 stepped tiers wrap continuously around the playing area.
-seat_mats=["seat_blue","seat_teal","seat_navy"]
-# Use a continuous elliptical stadium bowl with long axis Z. Dense seat sampling and
-# realistic row rise create a broad, multi-tier grandstand rather than a small display stand.
-outer_a=31.0  # half-width in X
-outer_b=42.5  # half-length in Z
-inner_a=16.0
-inner_b=25.0
-rows=26
-segments=288
-for row in range(rows):
-    # Each tier expands outward and rises gradually from the playing surface.
-    a=inner_a + row*.55
-    b=inner_b + row*.65
-    # Raise the first seating tier above the courtside service zone, as in a typical arena bowl.
-    y=1.05 + row*.32
-    # Seat benches and risers are sampled around an ellipse. Keep a modest gap at
-    # the four service corners to avoid collisions with the courtside access zone.
-    for i in range(segments):
-        t=(2*math.pi*i)/segments
-        x=a*math.sin(t)
-        z=b*math.cos(t)
-        # Ellipse tangent gives each seat row a naturally curved orientation.
+# Ground slab and structural outer shell.
+add_box("floor",(0,-.45,0),(78,.7,96))
+for z in (-45,45): add_box("concrete",(0,4,z),(72,8,1.6))
+for x in (-36,36): add_box("concrete",(x,4,0),(1.6,8,90))
+# Concourse glass ribbon and mullions.
+for z in (-44.05,44.05):
+    add_box("glass",(0,5.0,z),(65,4.2,.12))
+    for x in range(-32,33,2): add_box("steel",(x,4.8,z),( .07,3.8,.1))
+for x in (-35.05,35.05):
+    add_box("glass",(x,5,0),(.12,4.2,84))
+    for z in range(-42,43,2): add_box("steel",(x,4.8,z),(.1,3.8,.07))
+# A single continuous oval bowl is generated from a consistent parametric cross-section.
+# No post-hoc fascia patch: the lower support wall is part of the initial design.
+N=320; ROWS=24
+inner_a,inner_b=15.8,24.6
+for i in range(N):
+    t=2*math.pi*i/N
+    # Inner retaining wall follows the exact same ellipse as the first tier.
+    x=(inner_a-.35)*math.sin(t); z=(inner_b-.35)*math.cos(t)
+    tangent=2*math.pi*math.sqrt((inner_a*inner_a+inner_b*inner_b)/2)/N
+    rot=math.atan2(inner_a*math.cos(t),-inner_b*math.sin(t))
+    add_box("concrete",(x,.68,z),(tangent*1.18,1.45,.95),rot)
+    add_box("concrete_dark",(x,1.43,z),(tangent*1.12,.10,.98),rot)
+for row in range(ROWS):
+    a=inner_a+row*.62; b=inner_b+row*.72
+    y=1.55+row*.43
+    for i in range(N):
+        t=2*math.pi*i/N; x=a*math.sin(t); z=b*math.cos(t)
         rot=math.atan2(a*math.cos(t),-b*math.sin(t))
-        tangent_len=2*math.pi*math.sqrt((a*a+b*b)/2)/segments
-        seat_w=max(.42,min(.72,tangent_len*.78))
-        # Continuous curved riser / structural plinth beneath each seat segment.
-        box("concrete_light",(x,y-.22,z),(seat_w*1.12,.38,.78),rot)
-        # Seat pan and back are rotated to follow the bowl tangent.
-        box(seat_mats[(i//3+row*2)%len(seat_mats)],(x,y+.035,z),(seat_w,.12,.43),rot)
-        # Backrest offset radially outward from the seating center.
-        nx=x/max(.001,math.sqrt((x/a)**2+(z/b)**2))
-        nz=z/max(.001,math.sqrt((x/a)**2+(z/b)**2))
-        box(seat_mats[(i//3+row*2)%len(seat_mats)],(x+nx*.17,y+.21,z+nz*.17),(.075,.29,.43),rot)
-    # Outer aisle guardrail follows the oval in small repeated segments.
-    rail_a=a+.38
-    rail_b=b+.38
-    for i in range(0,segments,4):
-        t=(2*math.pi*i)/segments
-        x=rail_a*math.sin(t); z=rail_b*math.cos(t)
-        rot=math.atan2(rail_a*math.cos(t),-rail_b*math.sin(t))
-        box("steel",(x,y+.34,z),(.07,.62,.07),rot)
-        # handrail pieces aligned with the local tangent
-        tangent_len=2*math.pi*math.sqrt((rail_a*rail_a+rail_b*rail_b)/2)/segments*4
-        box("steel_light",(x,y+.66,z),(tangent_len,.055,.07),rot)
-# A continuous lower-bowl fascia closes the exposed void beneath the raised first row.
-# It follows the same oval footprint and reads as a real concrete seating-bowl structure.
-fascia_a=inner_a-.12
-fascia_b=inner_b-.12
-fascia_segments=288
-for i in range(fascia_segments):
-    t=(2*math.pi*i)/fascia_segments
-    x=fascia_a*math.sin(t)
-    z=fascia_b*math.cos(t)
-    rot=math.atan2(fascia_a*math.cos(t),-fascia_b*math.sin(t))
-    tangent_len=2*math.pi*math.sqrt((fascia_a*fascia_a+fascia_b*fascia_b)/2)/fascia_segments
-    # Tall solid plinth rises from the arena floor to just beneath the first seating tier.
-    box("concrete",(x,.16,z),(tangent_len*1.16,1.05,.92),rot)
-# A dark recessed shadow line and a slim concrete coping finish the bowl edge.
-for i in range(fascia_segments):
-    t=(2*math.pi*i)/fascia_segments
-    x=(fascia_a+.04)*math.sin(t)
-    z=(fascia_b+.04)*math.cos(t)
-    rot=math.atan2((fascia_a+.04)*math.cos(t),-(fascia_b+.04)*math.sin(t))
-    tangent_len=2*math.pi*math.sqrt((fascia_a*fascia_a+fascia_b*fascia_b)/2)/fascia_segments
-    box("steel",(x,.69,z),(tangent_len*1.12,.055,.96),rot)
-# End/side service access gaps are kept open at the four cardinal axes.
-# Roof-mounted high-bay LED fixtures and support rails, arranged around the court.
-for x in (-27,-18,-9,0,9,18,27):
-    for z in (-32,-20,-8,8,20,32):
-        box("steel",(x,18.85,z),(2.0,.22,.72))
-        box("light",(x,18.70,z),(1.72,.055,.48))
-# Low perimeter accent markers follow the oval rather than a rectangular grid.
-for i in range(segments):
-    t=2*math.pi*i/segments
-    x=32.2*math.sin(t); z=43.8*math.cos(t)
-    box("accent",(x,1.15,z),(.09,.12,.42),math.atan2(32.2*math.cos(t),-43.8*math.sin(t)))
-# Roof ring, perimeter beams and dense exposed trusses.
-box("steel",(0,17.0,-39),(70,.7,4.0))
-box("steel",(0,17.0,39),(70,.7,4.0))
-box("steel",(-33.5,17.0,0),(4.0,.7,78))
-box("steel",(33.5,17.0,0),(4.0,.7,78))
-for z in range(-36,37,4):
-    beam("steel",(-32,16.3,z),(32,16.3,z),.2,.25)
-    beam("steel",(-32,16.3,z),(0,20.2,z),.15,.2)
-    beam("steel",(0,20.2,z),(32,16.3,z),.15,.2)
-    beam("steel",(-32,16.3,z),(32,16.3,z+2),.09,.13)
+        tangent=2*math.pi*math.sqrt((a*a+b*b)/2)/N
+        sw=max(.43,min(.72,tangent*.82))
+        # Solid riser, seat pan, and backrest: all generated together as one seating system.
+        add_box("concrete",(x,y-.27,z),(sw*1.18,.48,.92),rot)
+        color=("blue","cyan","navy")[(i//4+row*2)%3]
+        add_box(color,(x,y+.025,z),(sw,.13,.48),rot)
+        norm=math.sqrt((x/a)**2+(z/b)**2)
+        nx=x/max(norm,.001); nz=z/max(norm,.001)
+        add_box(color,(x+nx*.18,y+.24,z+nz*.18),(.075,.32,.48),rot)
+    # Aisle rail at every fourth seat segment; avoids dense, noisy railing geometry.
+    ra,rb=a+.48,b+.48
+    for i in range(0,N,4):
+        t=2*math.pi*i/N; x=ra*math.sin(t); z=rb*math.cos(t)
+        rot=math.atan2(ra*math.cos(t),-rb*math.sin(t))
+        tl=2*math.pi*math.sqrt((ra*ra+rb*rb)/2)/N*4
+        add_box("steel",(x,y+.40,z),(.055,.72,.055),rot)
+        add_box("metal",(x,y+.77,z),(tl,.055,.055),rot)
+# Recessed concourse ring behind the upper seating bowl.
+for y,a,b in [(7.2,29.2,40.0),(7.45,30.4,41.2)]:
+    for i in range(N):
+        t=2*math.pi*i/N; x=a*math.sin(t); z=b*math.cos(t)
+        rot=math.atan2(a*math.cos(t),-b*math.sin(t))
+        tl=2*math.pi*math.sqrt((a*a+b*b)/2)/N
+        add_box("concrete_dark" if y<7.3 else "concrete",(x,y,z),(tl*1.12,.24,.85),rot)
+# Roof perimeter ring and cross-braced steel trusses.
+for z in (-40,40): add_box("steel",(0,17.4,z),(72,.8,3.2))
+for x in (-34,34): add_box("steel",(x,17.4,0),(3.2,.8,80))
+for z in range(-38,39,4):
+    beam("steel",(-33,17,z),(33,17,z),.22,.28)
+    beam("steel",(-33,17,z),(0,21,z),.16,.2)
+    beam("steel",(0,21,z),(33,17,z),.16,.2)
+    beam("metal",(-33,17,z),(33,17,z+2),.075,.12)
 for x in range(-30,31,5):
-    beam("steel_light",(x,16.5,-38),(x,16.5,38),.14,.18)
-    beam("steel",(x,16.5,-38),(x,20.0,0),.11,.15)
-    beam("steel",(x,20.0,0),(x,16.5,38),.11,.15)
-# Acoustic roof panels, separated into long strips to preserve a believable structure.
-for x in range(-30,31,6):
-    box("concrete",(x,20.5,0),(5.7,.2,74))
-# Broadcast-grade arena details: service catwalks, guard rails, aisle lighting,
-# and a continuous inner fascia make the seating bowl feel like a real venue.
+    beam("metal",(x,17,-39),(x,17,39),.13,.18)
+    beam("steel",(x,17,-39),(x,20,0),.11,.15)
+    beam("steel",(x,20,0),(x,17,39),.11,.15)
+# Acoustic roof panels leave the steel truss grid visible.
+for x in range(-30,31,6): add_box("concrete_dark",(x,20.5,0),(5.4,.18,75))
+# High-bay light housings and suspended luminous diffusers.
+for x in (-25,-15,-5,5,15,25):
+    for z in (-30,-15,0,15,30):
+        add_box("steel",(x,19.15,z),(2.6,.20,.75))
+        add_box("light",(x,19.02,z),(2.25,.06,.52))
+# Scoreboard, suspended fascia and perimeter LED ribbon.
+add_box("steel",(0,11.6,-36.2),(13,5.5,.8)); add_box("screen",(0,11.6,-35.72),(12.1,4.6,.10))
+for z in (-38.7,38.7):
+    add_box("steel",(0,12.5,z),(62,1.0,.45)); add_box("accent",(0,12.5,z-.24),(60,.12,.06))
+# Lower-level aisle lights and portals; gaps remain at four cardinal access points.
 for side in (-1,1):
-    # Upper concourse handrails and structural stringers along both long sides.
-    for row in (0,1):
-        x=side*(28.0+row*.85)
-        beam("steel_light",(x,7.1,-37.5),(x,7.1,37.5),.08,.08)
-    for z in range(-36,37,4):
-        box("accent",(side*27.0,1.4,z),(.06,.14,.8))
-        box("steel",(side*27.0,1.05,z),(.1,.09,.84))
-# Fine roof seams and acoustic-panel joints.
-for x in range(-30,31,3):
-    box("steel_light",(x,20.65,0),(.03,.03,73.5))
-# Additional scoreboard fascia trim and corner wayfinding light bands.
-for side in (-1,1):
-    for x in (-31.0,31.0):
-        box("accent",(x,12.0,side*38.1),(.15,.18,.15))
-# Subtle perimeter LED ribbon under the upper seating edge.
-for side in (-1,1):
-    box("accent",(side*26.5,7.0,0),(.1,.08,74.0))
-# LED lighting bars and high-bay fixtures.
-for z in (-30,-15,0,15,30):
-    for x in (-25,-12.5,0,12.5,25):
-        box("light",(x,19.8,z),(2.8,.1,.3))
-        box("steel",(x,19.5,z),(3.0,.08,.36))
-# Large scoreboard and fascia panels.
-box("steel",(0,11.2,-36.5),(12.0,5.5,.7))
-box("screen",(0,11.2,-36.05),(11.0,4.7,.1))
-box("accent",(0,8.25,-36.0),(11.2,.16,.1))
-for side in (-1,1):
-    box("steel",(0,12.2,side*38.5),(62,.95,.4))
-    box("accent",(0,12.2,side*38.25),(61,.15,.06))
-# Create one mesh object per material, with smooth normals where appropriate.
+    for z in range(-34,35,4):
+        add_box("accent",(side*26.5,2.0,z),(.07,.12,.75))
+    for z in (-21,21):
+        add_box("concrete_dark",(side*18,2.0,z),(3.2,2.6,.45))
+# Batch geometry into one mesh per material for web performance.
 for key,(verts,faces) in builders.items():
     if not verts: continue
-    mesh=bpy.data.meshes.new("Arena_"+key)
-    mesh.from_pydata(verts,[],faces); mesh.update()
-    obj=bpy.data.objects.new("Arena_"+key,mesh)
-    bpy.context.collection.objects.link(obj)
-    obj.data.materials.append(M[key])
-    # Recalculate normals in edit mode for watertight boxes/beam faces.
-    bpy.context.view_layer.objects.active=obj
-    obj.select_set(True)
-    bpy.ops.object.mode_set(mode="EDIT")
-    bpy.ops.mesh.select_all(action="SELECT")
-    bpy.ops.mesh.normals_make_consistent(inside=False)
-    bpy.ops.object.mode_set(mode="OBJECT")
-    obj.select_set(False)
-# Export optimized GLB.
-# Geometry is authored Y-up (Y is height) to match the Babylon.js court.
-# Blender is Z-up; rotate the generated meshes +90 degrees around X before
-# glTF export so the exporter’s Z-up conversion preserves intended world axes.
+    mesh=bpy.data.meshes.new("Arena_"+key); mesh.from_pydata(verts,[],faces); mesh.update()
+    obj=bpy.data.objects.new("Arena_"+key,mesh); bpy.context.collection.objects.link(obj); obj.data.materials.append(M[key])
+    bpy.context.view_layer.objects.active=obj; obj.select_set(True)
+    bpy.ops.object.mode_set(mode="EDIT"); bpy.ops.mesh.select_all(action="SELECT"); bpy.ops.mesh.normals_make_consistent(inside=False); bpy.ops.object.mode_set(mode="OBJECT"); obj.select_set(False)
+# Convert authored Y-up coordinates to glTF/Babylon-compatible orientation.
 bpy.ops.object.select_all(action="SELECT")
 for obj in bpy.context.selected_objects:
-    obj.rotation_euler.x = math.radians(90)
-    bpy.context.view_layer.objects.active = obj
-    bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
-bpy.ops.export_scene.gltf(filepath=OUT, export_format="GLB", use_selection=True, export_apply=True)
-print("ARENA_EXPORT_OK", OUT, os.path.getsize(OUT))
+    obj.rotation_euler.x=math.radians(90); bpy.context.view_layer.objects.active=obj
+    bpy.ops.object.transform_apply(location=False,rotation=True,scale=False)
+bpy.ops.export_scene.gltf(filepath=OUT,export_format="GLB",use_selection=True,export_apply=True)
+print("ARENA_REBUILD_OK",OUT,os.path.getsize(OUT))
