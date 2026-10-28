@@ -42,6 +42,8 @@ const courtRoot=new BABYLON.TransformNode('courtRoot',scene);courtRoot.parent=ro
 const architecture=new BABYLON.TransformNode('architecture',scene);architecture.parent=root;
 const seatRoot=new BABYLON.TransformNode('seatRoot',scene);seatRoot.parent=root;
 const lightRoot=new BABYLON.TransformNode('lightRoot',scene);lightRoot.parent=root;
+const modelArchitectureRoot=new BABYLON.TransformNode('blenderArchitecture',scene);modelArchitectureRoot.parent=root;
+const modelSeatRoot=new BABYLON.TransformNode('blenderSeating',scene);modelSeatRoot.parent=root;
 const mats={};
 function mat(name,color,rough=.7,metal=0){const m=new BABYLON.PBRMaterial(name,scene);m.albedoColor=BABYLON.Color3.FromHexString(color);m.roughness=rough;m.metallic=metal;return m;}
 mats.concrete=mat('Architectural concrete','#858e91',.88);mats.darkConcrete=mat('Deep concrete','#343f45',.8);mats.metal=mat('Brushed structural steel','#667982',.28,.78);mats.darkMetal=mat('Dark steel','#202d35',.32,.72);mats.glass=mat('Blue tinted architectural glass','#83b7c6',.16,.35);mats.glass.alpha=.3;mats.glass.transparencyMode=BABYLON.Material.MATERIAL_ALPHABLEND;mats.seat=mat('Moulded stadium seats','#177b9b',.32,.12);mats.seatAlt=mat('Alternate stadium seats','#d3e2e6',.35,.05);mats.white=mat('Court marking paint','#f5f7f2',.55);mats.trim=mat('Arena fascia','#172c3a',.4,.45);mats.gold=mat('Warm metal trim','#b6a16f',.28,.7);mats.rubber=mat('Rubber base','#17242a',.9);mats.emergency=mat('Exit sign','#b8ffca',.32);mats.emergency.emissiveColor=new BABYLON.Color3(.05,.7,.18);
@@ -170,6 +172,36 @@ function buildLights(){
 }
 const glowMat=mat('LED lamp glow','#eaf9ff',.25);glowMat.emissiveColor=new BABYLON.Color3(.8,.92,1);
 buildArchitecture();buildSeats();buildLights();makeCourtSurface('hard');
+async function loadBlenderModel(file,targetRoot){
+ const result=await BABYLON.SceneLoader.ImportMeshAsync("", "./assets/", file, scene);
+ for(const mesh of result.meshes){
+  if(!mesh.parent)mesh.parent=targetRoot;
+  if(typeof mesh.getTotalVertices==="function"&&mesh.getTotalVertices()>0){
+   mesh.receiveShadows=true;
+   try{shadows.addShadowCaster(mesh);}catch(_){}
+  }
+ }
+ return result;
+}
+const blenderModelPromise=(async()=>{
+ const status=document.getElementById('venueDesc');
+ try{
+  status.textContent='Blenderで制作した高品質3D会場モデルを読み込んでいます…';
+  await loadBlenderModel('arena-architecture.glb',modelArchitectureRoot);
+  architecture.setEnabled(false);
+  status.textContent=venueInfo[activeVenue][1];
+ }catch(err){
+  console.warn('Blender architecture model unavailable; using Babylon.js fallback scene.',err);
+ }
+ try{
+  await loadBlenderModel('arena-seats.glb',modelSeatRoot);
+  seatRoot.setEnabled(false);
+  modelSeatRoot.setEnabled(seatsVisible);
+ }catch(err){
+  console.warn('Blender seating model unavailable; using procedural seating.',err);
+ }
+ if(document.getElementById('loading'))document.getElementById('loading').classList.add('hide');
+})();
 const venueInfo={standard:['標準','コートを中心に、すっきりした屋外スポーツ施設の構成。'],stadium:['スタジアム','大型スタンドと構造フレームを備えた開放感のある会場。'],grand:['大会会場','大規模な屋根構造、観客席、ガラス外壁、照明設備を備えたスポーツアリーナ。'],indoor:['屋内アリーナ','屋根と外壁に包まれた屋内競技施設の雰囲気。'],night:['ナイト','夜間照明と発光ディスプレイを強調したナイトイベント仕様。']};
 let activeVenue='grand',activeSurface='hard',seatsVisible=true,lightsVisible=true;
 function setVenue(v){
@@ -182,10 +214,10 @@ function setVenue(v){
 function setSurface(s){activeSurface=s;makeCourtSurface(s);document.querySelectorAll('[data-surface]').forEach(b=>b.classList.toggle('active',b.dataset.surface===s));}
 document.querySelectorAll('[data-venue]').forEach(b=>b.addEventListener('click',()=>setVenue(b.dataset.venue)));
 document.querySelectorAll('[data-surface]').forEach(b=>b.addEventListener('click',()=>setSurface(b.dataset.surface)));
-document.getElementById('toggleSeats').addEventListener('click',e=>{seatsVisible=!seatsVisible;seatRoot.setEnabled(seatsVisible);e.currentTarget.classList.toggle('active',seatsVisible);e.currentTarget.textContent='座席 '+(seatsVisible?'ON':'OFF');});
+document.getElementById('toggleSeats').addEventListener('click',e=>{seatsVisible=!seatsVisible;seatRoot.setEnabled(seatsVisible);modelSeatRoot.setEnabled(seatsVisible);e.currentTarget.classList.toggle('active',seatsVisible);e.currentTarget.textContent='座席 '+(seatsVisible?'ON':'OFF');});
 document.getElementById('toggleLights').addEventListener('click',e=>{lightsVisible=!lightsVisible;lightRoot.setEnabled(lightsVisible);e.currentTarget.classList.toggle('active',lightsVisible);e.currentTarget.textContent='照明 '+(lightsVisible?'ON':'OFF');});
 document.getElementById('resetView').addEventListener('click',()=>{camera.setTarget(new BABYLON.Vector3(0,2,0));camera.alpha=-Math.PI/2.18;camera.beta=1.05;camera.radius=43;});
-scene.onReadyObservable.addOnce(()=>document.getElementById('loading').classList.add('hide'));
+
 engine.runRenderLoop(()=>{if(scene.activeCamera)scene.render();});
 window.addEventListener('resize',()=>engine.resize());
 setTimeout(()=>document.getElementById('loading').classList.add('hide'),7000);
