@@ -24,7 +24,7 @@ jobs:
       - name: Install Blender
         run: |
           sudo apt-get update
-          sudo apt-get install -y blender
+          sudo apt-get install -y blender python3-numpy
       - name: Generate optimized arena GLB
         run: |
           blender --background --factory-startup --python tools/blender/build_realistic_arena.py
