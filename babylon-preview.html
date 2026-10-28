@@ -98,8 +98,8 @@ button.active,button:hover{background:#0b8195;border-color:#58cfe0}
  }
  ledBoard("north-courtside-display",0,-14.55,13.8,.22);
  ledBoard("south-courtside-display",0,14.55,13.8,.22);
- ledBoard("west-courtside-display",-6.95,0,.22,24,Math.PI/2);
- ledBoard("east-courtside-display",6.95,0,.22,24,Math.PI/2);
+ ledBoard("west-courtside-display",-7.95,0,.22,24,0);
+ ledBoard("east-courtside-display",7.95,0,.22,24,0);
  // Team benches and equipment boxes on the service lanes.
  function bench(name,x,z,rot=0){
    const root=new BABYLON.TransformNode(name,scene);root.position.set(x,-.02,z);root.rotation.y=rot;
@@ -120,9 +120,9 @@ button.active,button:hover{background:#0b8195;border-color:#58cfe0}
  // Small access gates and queue rails beyond the run-off zone.
  for(const side of [-1,1]) {
    for(const z of [-20.8,-19.6,-18.4]) {
-     trimBox("access-rail-post",side*9.4,.48,z,.07,.96,.07,matMetal);
+     trimBox("access-rail-post",side*10.15,.48,z,.07,.96,.07,matMetal);
    }
-   trimBox("access-rail-top",side*9.4,.91,-19.6,.07,.06,2.5,matMetal);
+   trimBox("access-rail-top",side*10.15,.91,-19.6,.07,.06,2.5,matMetal);
  }
  const lineMat=new BABYLON.StandardMaterial("court-lines",scene);lineMat.diffuseColor=new BABYLON.Color3(.84,.87,.83);lineMat.emissiveColor=new BABYLON.Color3(.035,.04,.035);
  function line(name,x,z,w,d){const m=BABYLON.MeshBuilder.CreateBox(name,{width:w,height:.018,depth:d},scene);m.position.set(x,.032,z);m.material=lineMat;return m}
