@@ -53,12 +53,12 @@ button.active,button:hover{background:#0b8195;border-color:#58cfe0}
  const fill=new BABYLON.DirectionalLight("arena-fill",new BABYLON.Vector3(.6,-.65,-.4),scene);fill.position=new BABYLON.Vector3(18,22,-20);fill.intensity=.58;
  // Real venue-style high-bay lighting: multiple ceiling spots overlap over the playing zone.
  const arenaSpots=[];
- for(const x of [-26,-16,0,16,26]){
-   for(const z of [-28,-14,0,14,28]){
-     const spot=new BABYLON.SpotLight("high-bay-"+x+"-"+z,new BABYLON.Vector3(x,18.3,z),new BABYLON.Vector3(-x*.12,-1,-z*.12).normalize(),Math.PI/3.0,2.2,scene);
-     spot.intensity=0.72;spot.diffuse=new BABYLON.Color3(.83,.91,1);spot.specular=new BABYLON.Color3(.75,.84,1);
-     arenaSpots.push(spot);
-   }
+ for(const [i,x,z] of [[-1,-24,-26],[-2,24,-26],[-3,-24,0],[-4,24,0],[-5,-24,26],[-6,24,26],[0,0,-28],[1,0,28]]){
+   const direction=new BABYLON.Vector3(-x*.10,-1,-z*.10);
+   direction.normalize();
+   const spot=new BABYLON.SpotLight("high-bay-"+i,new BABYLON.Vector3(x,18.3,z),direction,Math.PI/3.2,2.0,scene);
+   spot.intensity=0.48;spot.diffuse=new BABYLON.Color3(.83,.91,1);spot.specular=new BABYLON.Color3(.75,.84,1);
+   arenaSpots.push(spot);
  }
  const shadow=new BABYLON.ShadowGenerator(2048,key);shadow.useBlurExponentialShadowMap=true;shadow.blurKernel=24;shadow.bias=.0005;shadow.normalBias=.025;
  function pbr(name,color,rough=.7,metal=0){const m=new BABYLON.PBRMaterial(name,scene);m.albedoColor=BABYLON.Color3.FromHexString(color);m.roughness=rough;m.metallic=metal;return m}
