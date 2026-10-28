@@ -101,7 +101,7 @@ for x in (-20.7,20.7):
 seat_mats=["seat_blue","seat_teal","seat_navy"]
 for side in (-1,1):
     for row in range(9):
-        z=side*(15.0+row*1.18)
+        z=side*(15.5+row*1.12)
         y=.25+row*.43
         box("concrete_light",(0,y-.19,z),(35,.34,1.02))
         box("steel",(0,y-.36,z-side*.42),(35,.075,.06))
@@ -124,7 +124,7 @@ for side in (-1,1):
 # End seating banks.
 for side in (-1,1):
     for row in range(6):
-        x=side*(7.0+row*1.18)
+        x=side*(8.2+row*1.15)
         y=.22+row*.43
         box("concrete_light",(x,y-.18,0),(1.0,.34,26))
         z=-12.2
