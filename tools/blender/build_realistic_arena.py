@@ -124,44 +124,61 @@ for z in (-42.2,42.2):
     box("concrete_light",(0,7.4,z),(68,.48,.8))
 for x in (-33.2,33.2):
     box("steel",(x,6.1,0),(.28,.28,86))
-# Raised seating bowls arranged along the LONG SIDES of the court.
-# Court long axis is Z (23.77 m); side stands therefore run parallel to Z,
-# with each tier stepping outward along X. End stands run across X.
+# Continuous oval seating bowl: four stepped arcs arranged as one rounded rectangle/ellipse.
+# Court long axis is Z; seating wraps around all four sides with rounded corner transitions.
 seat_mats=["seat_blue","seat_teal","seat_navy"]
-for side in (-1,1):
-    # Long-side stands: stepped banks parallel to the court sidelines, with clear corner gaps.
-    for row in range(13):
-        x=side*(7.25+row*1.35)
-        y=.25+row*.48
-        box("concrete_light",(x,y-.21,0),(1.22,.38,30.8))
-        box("steel",(x-side*.50,y-.39,0),(.07,.08,30.8))
-        z=-14.5
-        while z<=14.51:
-            key=seat_mats[(int((z+14.5)*3)+row*2+(1 if side>0 else 0))%len(seat_mats)]
-            box(key,(x,y+.05,z),(.38,.12,.43))
-            box(key,(x+side*.15,y+.22,z),(.075,.29,.43))
-            box("steel",(x-side*.04,y-.04,z-.15),(.18,.035,.035))
-            box("steel",(x-side*.04,y-.04,z+.15),(.18,.035,.035))
-            z+=.66
-    # Aisle rails/stair breaks are aligned with the long stands, not across the court.
-    for z in (-14.8,-10.0,-5.0,0,5.0,10.0,14.8):
-        for row in range(13):
-            x=side*(7.0+row*1.35)
-            y=.42+row*.48
-            box("steel",(x,y+.31,z),(.07,.56,.06))
-            box("steel",(x,y+.58,z),(.92,.05,.06))
-# End stands: wider banks behind the baselines, with a deliberate gap from the long-side seating corners.
-for side in (-1,1):
-    for row in range(7):
-        z=side*(17.0+row*1.35)
-        y=.22+row*.43
-        box("concrete_light",(0,y-.20,z),(53.5,.38,1.2))
-        x=-26.0
-        while x<=26.01:
-            key=seat_mats[(int((x+12.4)*2)+row)%len(seat_mats)]
-            box(key,(x,y+.05,z),(.48,.12,.42))
-            box(key,(x,y+.24,z+side*.17),(.48,.32,.08))
-            x+=.72
+# Use an elliptical stadium bowl with long axis Z. Side and end segments share the
+# same ellipse so the stands read as one continuous oval rather than four detached blocks.
+outer_a=31.5  # half-width in X
+outer_b=43.0  # half-length in Z
+inner_a=7.1
+inner_b=14.8
+rows=13
+segments=112
+for row in range(rows):
+    # Each tier expands outward and rises gradually from the playing surface.
+    a=inner_a + row*1.85
+    b=inner_b + row*2.15
+    y=.30 + row*.43
+    # Seat benches and risers are sampled around an ellipse. Keep a modest gap at
+    # the four service corners to avoid collisions with the courtside access zone.
+    for i in range(segments):
+        t=(2*math.pi*i)/segments
+        x=a*math.sin(t)
+        z=b*math.cos(t)
+        # Skip short corner/service openings near the long-axis ends.
+        angle=min(t%(math.pi/2),(math.pi/2)-(t%(math.pi/2)))
+        if angle < .035:
+            continue
+        # Ellipse tangent gives each seat row a naturally curved orientation.
+        rot=math.atan2(a*math.cos(t),-b*math.sin(t))
+        tangent_len=2*math.pi*math.sqrt((a*a+b*b)/2)/segments
+        seat_w=max(.42,min(.72,tangent_len*.78))
+        # Continuous curved riser / structural plinth beneath each seat segment.
+        box("concrete_light",(x,y-.22,z),(seat_w*1.12,.38,.78),rot)
+        # Seat pan and back are rotated to follow the bowl tangent.
+        box(seat_mats[(i//3+row*2)%len(seat_mats)],(x,y+.035,z),(seat_w,.12,.43),rot)
+        # Backrest offset radially outward from the seating center.
+        nx=x/max(.001,math.sqrt((x/a)**2+(z/b)**2))
+        nz=z/max(.001,math.sqrt((x/a)**2+(z/b)**2))
+        box(seat_mats[(i//3+row*2)%len(seat_mats)],(x+nx*.17,y+.21,z+nz*.17),(.075,.29,.43),rot)
+    # Outer aisle guardrail follows the oval in small repeated segments.
+    rail_a=a+.38
+    rail_b=b+.38
+    for i in range(0,segments,4):
+        t=(2*math.pi*i)/segments
+        x=rail_a*math.sin(t); z=rail_b*math.cos(t)
+        rot=math.atan2(rail_a*math.cos(t),-rail_b*math.sin(t))
+        box("steel",(x,y+.34,z),(.07,.62,.07),rot)
+        # handrail pieces aligned with the local tangent
+        tangent_len=2*math.pi*math.sqrt((rail_a*rail_a+rail_b*rail_b)/2)/segments*4
+        box("steel_light",(x,y+.66,z),(tangent_len,.055,.07),rot)
+# End/side service access gaps are kept open at the four cardinal axes.
+# Low perimeter accent markers follow the oval rather than a rectangular grid.
+for i in range(segments):
+    t=2*math.pi*i/segments
+    x=32.2*math.sin(t); z=43.8*math.cos(t)
+    box("accent",(x,1.15,z),(.09,.12,.42),math.atan2(32.2*math.cos(t),-43.8*math.sin(t)))
 # Roof ring, perimeter beams and dense exposed trusses.
 box("steel",(0,17.0,-39),(70,.7,4.0))
 box("steel",(0,17.0,39),(70,.7,4.0))
