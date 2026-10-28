@@ -59,6 +59,71 @@ button.active,button:hover{background:#0b8195;border-color:#58cfe0}
  const courtMat=pbr("Competition court","#0d4654",.5,.01);
  courtMat.clearCoat.isEnabled=true;courtMat.clearCoat.intensity=.22;courtMat.clearCoat.roughness=.38;
  const court=BABYLON.MeshBuilder.CreateGround("interactive-court",{width:10.97,height:23.77,subdivisions:1},scene);court.position.y=.015;court.material=courtMat;court.receiveShadows=true;
+ // Premium competition-zone dressing: layered court apron, access lanes, LED boards and team areas.
+ const matRubber=pbr("Competition apron rubber","#202a30",.84,.02);
+ const matEdge=pbr("Apron edge graphite","#11191f",.58,.18);
+ const matLane=pbr("Walkway resin","#303a40",.76,.04);
+ const matMetal=pbr("Brushed arena trim","#68777b",.32,.68);
+ const matBoard=pbr("LED advertising glass","#061016",.24,.22);
+ const matSeat=pbr("Players bench upholstery","#172c35",.62,.01);
+ const matWood=pbr("Bench timber trim","#6a5540",.48,.12);
+ const matWhite=pbr("Warm white markings","#c8d0cb",.68,.02);
+ // Layered floor creates a deliberate transition from playing surface to venue floor.
+ const apronBase=BABYLON.MeshBuilder.CreateGround("competition-zone-base",{width:18.8,height:32.2},scene);
+ apronBase.position.y=-.105;apronBase.material=matEdge;apronBase.receiveShadows=true;
+ const apronTop=BABYLON.MeshBuilder.CreateGround("competition-zone-surface",{width:18.1,height:31.5},scene);
+ apronTop.position.y=-.082;apronTop.material=matRubber;apronTop.receiveShadows=true;
+ const walkNorth=BABYLON.MeshBuilder.CreateGround("north-service-walkway",{width:26,height:5.2},scene);
+ walkNorth.position.set(0,-.075,-18.7);walkNorth.material=matLane;walkNorth.receiveShadows=true;
+ const walkSouth=BABYLON.MeshBuilder.CreateGround("south-service-walkway",{width:26,height:5.2},scene);
+ walkSouth.position.set(0,-.075,18.7);walkSouth.material=matLane;walkSouth.receiveShadows=true;
+ function trimBox(name,x,y,z,w,h,d,mat){const m=BABYLON.MeshBuilder.CreateBox(name,{width:w,height:h,depth:d},scene);m.position.set(x,y,z);m.material=mat;m.receiveShadows=true;return m}
+ // Flush inset perimeter strips and corner markers, not oversized bright outlines.
+ for(const x of [-7.35,7.35]) trimBox("apron-perimeter-inlay",x,-.062,0,.035,.012,27.9,matMetal);
+ for(const z of [-14.05,14.05]) trimBox("apron-perimeter-inlay",0,-.062,z,14.75,.012,.035,matMetal);
+ for(const x of [-7.25,7.25]) for(const z of [-13.95,13.95]) {
+   const marker=trimBox("corner-floor-marker",x,-.055,z,.28,.014,.28,matWhite);
+ }
+ // Low courtside LED boards, with dark bezels and subtle cyan/white content bands.
+ function ledBoard(name,x,z,w,d,rot=0){
+   const root=new BABYLON.TransformNode(name+"-root",scene);root.position.set(x,.36,z);root.rotation.y=rot;
+   const bezel=trimBox(name+"-bezel",0,0,0,w,.72,d,matEdge);bezel.parent=root;bezel.position.set(0,0,0);
+   const face=trimBox(name+"-screen",0,.015,0,w-.12,.49,d+.018,matBoard);face.parent=root;face.position.set(0,.035,0);
+   const stripe=trimBox(name+"-brand-stripe",0,-.19,0,w-.18,.035,d+.03,matMetal);stripe.parent=root;stripe.position.set(0,-.19,0);
+   for(let i=0;i<Math.floor(w/1.25);i++){
+     const pixel=trimBox(name+"-screen-segment",-(w/2)+.45+i*1.25,.05,0,.42,.018,d+.04,(i%4===0?matMetal:matWhite));
+     pixel.parent=root;pixel.position.set(-(w/2)+.45+i*1.25,.05,0);
+   }
+   return root;
+ }
+ ledBoard("north-courtside-display",0,-14.55,13.8,.22);
+ ledBoard("south-courtside-display",0,14.55,13.8,.22);
+ ledBoard("west-courtside-display",-6.95,0,.22,24,Math.PI/2);
+ ledBoard("east-courtside-display",6.95,0,.22,24,Math.PI/2);
+ // Team benches and equipment boxes on the service lanes.
+ function bench(name,x,z,rot=0){
+   const root=new BABYLON.TransformNode(name,scene);root.position.set(x,-.02,z);root.rotation.y=rot;
+   const seat=trimBox(name+"-seat",0,.48,0,2.6,.16,.55,matSeat);seat.parent=root;seat.position.set(0,.48,0);
+   const back=trimBox(name+"-back",0,.88,-.22,2.6,.62,.12,matSeat);back.parent=root;back.position.set(0,.88,-.22);
+   for(const px of [-1.08,1.08]) for(const pz of [-.18,.18]){const leg=trimBox(name+"-leg",px,.21,pz,.07,.42,.07,matMetal);leg.parent=root;leg.position.set(px,.21,pz)}
+   const trim=trimBox(name+"-front-trim",0,.39,.285,2.45,.045,.025,matWood);trim.parent=root;trim.position.set(0,.39,.285);
+ }
+ bench("home-team-bench",-4.3,-18.8);
+ bench("away-team-bench",4.3,-18.8);
+ // Compact officials' desk and camera platforms, kept low so the court remains visible.
+ trimBox("officials-desk",0,.42,-21.0,3.2,.82,.78,matEdge);
+ trimBox("officials-desk-top",0,.86,-21.0,3.28,.08,.84,matMetal);
+ for(const x of [-1.25,1.25]) {
+   trimBox("camera-platform",x,.12,21.1,1.35,.24,1.15,matEdge);
+   trimBox("camera-platform-top",x,.255,21.1,1.28,.05,1.08,matMetal);
+ }
+ // Small access gates and queue rails beyond the run-off zone.
+ for(const side of [-1,1]) {
+   for(const z of [-20.8,-19.6,-18.4]) {
+     trimBox("access-rail-post",side*9.4,.48,z,.07,.96,.07,matMetal);
+   }
+   trimBox("access-rail-top",side*9.4,.91,-19.6,.07,.06,2.5,matMetal);
+ }
  const lineMat=new BABYLON.StandardMaterial("court-lines",scene);lineMat.diffuseColor=new BABYLON.Color3(.84,.87,.83);lineMat.emissiveColor=new BABYLON.Color3(.035,.04,.035);
  function line(name,x,z,w,d){const m=BABYLON.MeshBuilder.CreateBox(name,{width:w,height:.018,depth:d},scene);m.position.set(x,.032,z);m.material=lineMat;return m}
  line("baseline north",0,-11.885,10.97,.05);line("baseline south",0,11.885,10.97,.05);
