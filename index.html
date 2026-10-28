@@ -31,10 +31,47 @@ const material=(color,roughness=.75,metalness=0)=>new THREE.MeshStandardMaterial
 function cube(w,h,d,mat,x,y,z,shadow=true){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);m.castShadow=shadow;m.receiveShadow=true;scene.add(m);return m}
 cube(70,.5,70,material(0x526b77),0,-.45,0,false);const floor=new THREE.Mesh(new THREE.PlaneGeometry(180,180),material(0x7b8e90));floor.rotation.x=-Math.PI/2;floor.position.y=-.72;floor.receiveShadow=true;scene.add(floor);
 const apronMat=material(0x244454,.92);cube(15.5,.12,28.3,apronMat,0,-.18,0,false);
-function makeSurfaceTexture(type){const cv=document.createElement('canvas');cv.width=cv.height=1024;const g=cv.getContext('2d');const palette={hard:['#147da8','#0e739e'],clay:['#bd5a35','#a94a2c'],grass:['#36784a','#2e6b40'],indoor:['#b98b54','#a97b45']}[type];g.fillStyle=palette[0];g.fillRect(0,0,1024,1024);if(type==='grass'){for(let i=0;i<8;i++){g.fillStyle=i%2?'rgba(8,45,17,.09)':'rgba(220,255,190,.055)';g.fillRect(i*128,0,128,1024)}}if(type==='indoor'){for(let y=0;y<1024;y+=34){g.fillStyle='rgba(65,36,15,.16)';g.fillRect(0,y,1024,2);for(let x=(y%68?0:100);x<1024;x+=210){g.fillStyle='rgba(255,220,160,.07)';g.fillRect(x,y,1,34)}}}for(let i=0;i<36000;i++){const alpha=Math.random()*(type==='clay'?.12:.085);g.fillStyle=Math.random()>.5?'rgba(255,255,255,'+alpha+')':'rgba(0,0,0,'+alpha+')';const x=Math.random()*1024,y=Math.random()*1024;g.fillRect(x,y,type==='grass'?1:2,type==='grass'?4:1)}const t=new THREE.CanvasTexture(cv);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;return t}
-const surfaceTextures={hard:makeSurfaceTexture('hard'),clay:makeSurfaceTexture('clay'),grass:makeSurfaceTexture('grass'),indoor:makeSurfaceTexture('indoor')};
-const courtMaterial=new THREE.MeshStandardMaterial({map:surfaceTextures.hard,bumpMap:surfaceTextures.hard,bumpScale:.035,roughness:.92});
-const court=new THREE.Mesh(new THREE.BoxGeometry(10.97,.16,23.77),courtMaterial);court.position.y=-.06;court.receiveShadow=true;scene.add(court);
+function makeSurfacePBR(type){
+ const size=1024,cv=document.createElement('canvas'),roughCv=document.createElement('canvas'),heightCv=document.createElement('canvas');
+ cv.width=cv.height=roughCv.width=roughCv.height=heightCv.width=heightCv.height=size;
+ const g=cv.getContext('2d'),rg=roughCv.getContext('2d'),hg=heightCv.getContext('2d');
+ const palettes={hard:['#167ba3','#0d6c94'],clay:['#b95735','#a4482b'],grass:['#36764a','#2b673d'],indoor:['#b98b54','#a57943']}[type];
+ g.fillStyle=palettes[0];g.fillRect(0,0,size,size);
+ rg.fillStyle=type==='indoor'?'#bcbcbc':type==='hard'?'#d0d0d0':'#dedede';rg.fillRect(0,0,size,size);
+ hg.fillStyle=type==='grass'?'#858585':type==='clay'?'#858585':'#808080';hg.fillRect(0,0,size,size);
+ // Material-specific base details, kept subtle so court markings remain crisp.
+ if(type==='grass'){
+  for(let i=0;i<16;i++){g.fillStyle=i%2?'rgba(5,36,13,.12)':'rgba(190,235,153,.055)';g.fillRect(i*64,0,64,size)}
+  for(let i=0;i<22000;i++){const x=Math.random()*size,y=Math.random()*size;g.strokeStyle=Math.random()>.5?'rgba(208,238,164,.19)':'rgba(9,43,18,.22)';g.lineWidth=.5+Math.random()*1.1;g.beginPath();g.moveTo(x,y);g.lineTo(x+(Math.random()-.5)*2,y-2-Math.random()*7);g.stroke();const v=90+Math.random()*90;hg.fillStyle='rgb('+v+','+v+','+v+')';hg.fillRect(x,y,1,2+Math.random()*3)}
+ }else if(type==='clay'){
+  for(let i=0;i<90000;i++){const x=Math.random()*size,y=Math.random()*size,r=.35+Math.random()*1.5;g.fillStyle=Math.random()>.48?'rgba(255,205,157,'+(Math.random()*.28)+')':'rgba(78,29,17,'+(Math.random()*.22)+')';g.beginPath();g.arc(x,y,r,0,Math.PI*2);g.fill();const v=90+Math.random()*95;hg.fillStyle='rgb('+v+','+v+','+v+')';hg.fillRect(x,y,1+r,1+r)}
+ }else if(type==='indoor'){
+  for(let y=0;y<size;y+=42){
+   g.fillStyle='rgba(65,35,14,.2)';g.fillRect(0,y,size,2);
+   g.fillStyle='rgba(255,225,174,.12)';g.fillRect(0,y+3,size,1);
+   for(let x=(y%84?35:135);x<size;x+=210){g.fillStyle='rgba(64,35,15,.16)';g.fillRect(x,y,1,42);g.fillStyle='rgba(255,222,166,.07)';g.fillRect(x+2,y,1,42)}
+  }
+  for(let i=0;i<3800;i++){const x=Math.random()*size,y=Math.random()*size;g.strokeStyle=Math.random()>.5?'rgba(255,225,170,.1)':'rgba(73,43,20,.09)';g.lineWidth=.5+Math.random();g.beginPath();g.moveTo(x,y);g.lineTo(x+8+Math.random()*45,y+(Math.random()-.5)*1.5);g.stroke()}
+ }else{
+  // Fine acrylic-resin aggregate and faint roller/paint variation for hard courts.
+  for(let i=0;i<65000;i++){const x=Math.random()*size,y=Math.random()*size,r=.35+Math.random()*1.1;g.fillStyle=Math.random()>.5?'rgba(205,242,255,'+(Math.random()*.2)+')':'rgba(0,25,45,'+(Math.random()*.18)+')';g.beginPath();g.arc(x,y,r,0,Math.PI*2);g.fill();const v=100+Math.random()*100;hg.fillStyle='rgb('+v+','+v+','+v+')';hg.fillRect(x,y,1,1)}
+  for(let i=0;i<300;i++){const y=Math.random()*size;g.fillStyle='rgba(220,248,255,.018)';g.fillRect(0,y,size,1)}
+ }
+ // Separate roughness and height maps: avoid using the colour image as a fake bump map.
+ for(let i=0;i<26000;i++){const x=Math.random()*size,y=Math.random()*size,shade=type==='indoor'?145+Math.random()*90:155+Math.random()*85;rg.fillStyle='rgb('+shade+','+shade+','+shade+')';rg.fillRect(x,y,1+Math.random()*2,1+Math.random()*2)}
+ // Add low-amplitude height grain for the hard and grass surfaces.
+ if(type==='hard'||type==='grass'){for(let i=0;i<30000;i++){const x=Math.random()*size,y=Math.random()*size,v=100+Math.random()*120;hg.fillStyle='rgb('+v+','+v+','+v+')';hg.fillRect(x,y,1,1)}}
+ const color=new THREE.CanvasTexture(cv),roughness=new THREE.CanvasTexture(roughCv),height=new THREE.CanvasTexture(heightCv);
+ for(const t of [color,roughness,height]){t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(1,2.16);t.anisotropy=renderer.capabilities.getMaxAnisotropy()}
+ color.colorSpace=THREE.SRGBColorSpace;
+ // Derive a tangent-space normal map from the height map for more believable raking light.
+ const normalCv=document.createElement('canvas');normalCv.width=normalCv.height=size;const ng=normalCv.getContext('2d'),src=hg.getImageData(0,0,size,size),out=ng.createImageData(size,size),data=src.data,nd=out.data;
+ for(let y=0;y<size;y++)for(let x=0;x<size;x++){const i=(y*size+x)*4,l=((y*size+((x+size-1)%size))*4),r=((y*size+((x+1)%size))*4),u=(((y+size-1)%size)*size+x)*4,d=(((y+1)%size)*size+x)*4;const dx=(data[r]-data[l])/255,dy=(data[d]-data[u])/255,nx=-dx*2.2,ny=-dy*2.2,nz=1,len=Math.hypot(nx,ny,nz);nd[i]=(nx/len*.5+.5)*255;nd[i+1]=(ny/len*.5+.5)*255;nd[i+2]=(nz/len*.5+.5)*255;nd[i+3]=255}
+ ng.putImageData(out,0,0);const normal=new THREE.CanvasTexture(normalCv);normal.wrapS=normal.wrapT=THREE.RepeatWrapping;normal.repeat.set(1,2.16);normal.anisotropy=renderer.capabilities.getMaxAnisotropy();
+ return {map:color,roughnessMap:roughness,bumpMap:height,normalMap:normal};
+}
+const surfaceTextures={hard:makeSurfacePBR('hard'),clay:makeSurfacePBR('clay'),grass:makeSurfacePBR('grass'),indoor:makeSurfacePBR('indoor')};
+const courtMaterial=new THREE.MeshStandardMaterial({map:surfaceTextures.hard.map,roughnessMap:surfaceTextures.hard.roughnessMap,bumpMap:surfaceTextures.hard.bumpMap,normalMap:surfaceTextures.hard.normalMap,bumpScale:.018,normalScale:new THREE.Vector2(.42,.42),roughness:.88,metalness:0});
 const white=material(0xf6f7f2,.7);function line(x1,z1,x2,z2,width=.05){const dx=x2-x1,dz=z2-z1,length=Math.hypot(dx,dz),m=new THREE.Mesh(new THREE.BoxGeometry(width,.02,length),white);m.position.set((x1+x2)/2,.035,(z1+z2)/2);m.rotation.y=Math.atan2(dx,dz);m.receiveShadow=true;scene.add(m)}
 const w=10.97/2,l=23.77/2,s=8.23/2;line(-w,-l,w,-l);line(-w,l,w,l);line(-w,-l,-w,l);line(w,-l,w,l);line(-s,-l,-s,l,.045);line(s,-l,s,l,.045);line(-w,-6.4,w,-6.4);line(-w,6.4,w,6.4);line(-s,0,s,0,.045);line(0,-6.4,0,6.4,.045);
 for(const x of [-5.55,5.55]){const post=new THREE.Mesh(new THREE.CylinderGeometry(.07,.09,1.15,16),material(0x20343f,.35,.5));post.position.set(x,.49,0);post.castShadow=true;scene.add(post)}
@@ -152,7 +189,7 @@ document.querySelectorAll('[data-venue]').forEach(b=>b.classList.toggle('active'
 }
 document.querySelectorAll('[data-venue]').forEach(b=>b.addEventListener('click',()=>setVenue(b.dataset.venue)));
 const courtStyles={hard:{apron:0x244454,title:'ハードコート'},clay:{apron:0x7d3827,title:'クレーコート'},grass:{apron:0x254d35,title:'芝コート'},indoor:{apron:0x6e5134,title:'インドアコート'}};
-function setCourtType(type){if(!surfaceTextures[type])return;courtMaterial.map=surfaceTextures[type];courtMaterial.bumpMap=surfaceTextures[type];courtMaterial.roughness=type==='indoor'?.72:.92;courtMaterial.bumpScale=type==='grass'?.06:.035;courtMaterial.needsUpdate=true;apronMat.color.setHex(courtStyles[type].apron);document.querySelectorAll('[data-court]').forEach(b=>b.classList.toggle('active',b.dataset.court===type));document.querySelector('.panel h1').textContent=courtStyles[type].title;document.querySelector('.panel .eyebrow').textContent='ENVIRONMENT / '+({hard:'01',clay:'02',grass:'03',indoor:'04'}[type]);}
+function setCourtType(type){if(!surfaceTextures[type])return;courtMaterial.map=surfaceTextures[type].map;courtMaterial.roughnessMap=surfaceTextures[type].roughnessMap;courtMaterial.bumpMap=surfaceTextures[type].bumpMap;courtMaterial.normalMap=surfaceTextures[type].normalMap;courtMaterial.roughness=type==='indoor'?.68:.88;courtMaterial.bumpScale=type==='grass'?.032:type==='clay'?.024:.012;courtMaterial.normalScale.set(type==='grass'?.65:.42,type==='grass'?.65:.42);courtMaterial.needsUpdate=true;apronMat.color.setHex(courtStyles[type].apron);document.querySelectorAll('[data-court]').forEach(b=>b.classList.toggle('active',b.dataset.court===type));document.querySelector('.panel h1').textContent=courtStyles[type].title;document.querySelector('.panel .eyebrow').textContent='ENVIRONMENT / '+({hard:'01',clay:'02',grass:'03',indoor:'04'}[type]);}
 document.querySelectorAll('[data-court]').forEach(b=>b.addEventListener('click',()=>setCourtType(b.dataset.court)));
 let seatsOn=true,lightsOn=true;document.getElementById('seats').onclick=e=>{seatsOn=!seatsOn;seatGroup.visible=seatsOn&&currentVenue==='standard';e.currentTarget.classList.toggle('active',seatsOn);e.currentTarget.textContent='観客席 '+(seatsOn?'ON':'OFF')};document.getElementById('lights').onclick=e=>{lightsOn=!lightsOn;spotlights.forEach(s=>s.intensity=lightsOn?2:0);e.currentTarget.classList.toggle('active',lightsOn);e.currentTarget.textContent='照明 '+(lightsOn?'ON':'OFF')};document.getElementById('reset').onclick=()=>{view('play');orbit.reset();setVenue('standard');setCourtType('hard')};
 function animate(){requestAnimationFrame(animate);orbit.update();renderer.render(scene,camera)}animate();addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;if(innerWidth<innerHeight&&innerWidth<=800){camera.fov=55;camera.position.set(0,12,27);orbit.target.set(0,.6,0)}else{camera.fov=43}camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));orbit.update()});if(innerWidth<innerHeight&&innerWidth<=800){camera.fov=55;camera.position.set(0,12,27);camera.updateProjectionMatrix();orbit.target.set(0,.6,0);orbit.update()}
