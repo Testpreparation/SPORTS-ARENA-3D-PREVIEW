@@ -102,13 +102,15 @@ for side in (-1,1):
         y=.25+row*.43
         box("concrete_light",(0,y-.19,z),(35,.34,1.02))
         box("steel",(0,y-.36,z-side*.42),(35,.075,.06))
-        for x in range(-16.5,16.6,.62):
+        x=-16.5
+        while x<=16.6:
             # Seat base, pan, back and paired supports are batched by material.
             key=seat_mats[(int((x+16.5)*3)+row*2+(1 if side>0 else 0))%len(seat_mats)]
             box(key,(x,y+.05,z),(0.43,.12,.38))
             box(key,(x,y+.22,z-side*.15),(0.43,.29,.075))
             box("steel",(x-.15,y-.04,z),(0.035,.18,.035))
             box("steel",(x+.15,y-.04,z),(0.035,.18,.035))
+            x+=.62
     # Aisle rails and stair divisions.
     for x in (-17.5,-11.8,-6.0,0,6.0,11.8,17.5):
         for row in range(9):
@@ -122,10 +124,12 @@ for side in (-1,1):
         x=side*(7.0+row*1.18)
         y=.22+row*.43
         box("concrete_light",(x,y-.18,0),(1.0,.34,26))
-        for z in range(-12.2,12.3,.62):
+        z=-12.2
+        while z<=12.3:
             key=seat_mats[(int((z+12.2)*2)+row)%len(seat_mats)]
             box(key,(x,y+.05,z),(.38,.12,.43))
             box(key,(x+side*.15,y+.22,z),(.075,.29,.43))
+            z+=.62
 # Roof ring, perimeter beams and dense exposed trusses.
 box("steel",(0,14.0,-26),(45,.52,3.0))
 box("steel",(0,14.0,26),(45,.52,3.0))
