@@ -7,14 +7,14 @@
 <style>
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#9fb8c5;color:#f5fbff;font-family:system-ui,-apple-system,sans-serif}canvas{display:block}
 .top{position:fixed;z-index:2;top:14px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:center;pointer-events:none}.brand{display:flex;align-items:center;gap:10px}.logo{display:grid;place-items:center;width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,#c1f4ff,#2d9cc9);color:#092536;font-weight:900}.title{font-size:11px;letter-spacing:.18em;font-weight:850}.sub{font-size:9px;color:#e0edf2;letter-spacing:.12em;margin-top:3px}.pill,.panel,button{background:#091925ce;border:1px solid #ffffff28;backdrop-filter:blur(12px);box-shadow:0 8px 26px #06111a25}.pill{font-size:9px;letter-spacing:.12em;padding:9px 11px;border-radius:22px}.panel{position:fixed;left:16px;bottom:16px;width:min(300px,calc(100vw - 32px));border-radius:16px;padding:14px}.eyebrow{font-size:9px;color:#7de2ff;letter-spacing:.2em;font-weight:800}h1{font-size:22px;margin:6px 0}.desc{font-size:11px;line-height:1.65;color:#c2d4dd;margin:0}.stats{display:flex;gap:7px;margin-top:12px}.stat{flex:1;padding:8px;border-radius:9px;background:#ffffff0c;border:1px solid #ffffff17}.stat b{display:block;font-size:10px}.stat span{display:block;font-size:8px;color:#9db4c0;margin-top:3px}.controls{position:fixed;right:16px;bottom:16px;display:flex;flex-direction:column;align-items:flex-end;gap:7px}button{color:#effaff;padding:10px 12px;border-radius:10px;font-size:10px;cursor:pointer}button.active{border-color:#83e4ff;color:#8be6ff;background:#124259dd}.row{display:flex;gap:6px}.hint{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);font-size:9px;color:#e0edf2;background:#091925b8;padding:8px 11px;border-radius:22px;white-space:nowrap;pointer-events:none}#portrait{display:none}
-@media(max-width:800px) and (orientation:portrait){.top{top:10px;left:10px;right:10px;align-items:flex-start}.logo{width:30px;height:30px}.title{font-size:9px}.sub{font-size:7px}.pill{font-size:7px;padding:7px 8px;max-width:46vw;text-align:center}.panel{left:10px;right:10px;bottom:104px;width:auto;padding:10px;border-radius:12px}h1{font-size:17px;margin:4px 0}.desc{font-size:9px;line-height:1.45}.stats{margin-top:7px;gap:5px}.stat{padding:6px}.stat b{font-size:8px}.stat span{font-size:7px}.controls{left:10px;right:10px;bottom:10px;align-items:stretch;gap:5px}.controls .row{justify-content:center;flex-wrap:wrap}.court-types{gap:4px}.court-types button{padding:7px 9px}button{font-size:9px;padding:8px 9px}.hint,#portrait{display:none}}
-@media(max-width:760px) and (orientation:landscape){.top{top:8px;left:9px;right:9px}.logo{width:28px;height:28px}.title{font-size:9px}.sub{font-size:7px}.pill{font-size:7px;padding:7px}.panel{left:9px;bottom:9px;width:210px;padding:10px}h1{font-size:16px}.desc{font-size:9px}.stats{margin-top:7px;gap:4px}.stat{padding:5px}.stat b{font-size:8px}.stat span{font-size:7px}.controls{right:9px;bottom:9px;gap:4px}button{font-size:8px;padding:7px}.hint{bottom:9px;font-size:7px;padding:6px}}
+@media(max-width:800px) and (orientation:portrait){.top{top:10px;left:10px;right:10px;align-items:flex-start}.logo{width:30px;height:30px}.title{font-size:9px}.sub{font-size:7px}.pill{font-size:7px;padding:7px 8px;max-width:46vw;text-align:center}.panel{left:10px;right:10px;bottom:104px;width:auto;padding:10px;border-radius:12px}h1{font-size:17px;margin:4px 0}.desc{font-size:9px;line-height:1.45}.stats{margin-top:7px;gap:5px}.stat{padding:6px}.stat b{font-size:8px}.stat span{font-size:7px}.controls{left:10px;right:10px;bottom:10px;align-items:stretch;gap:5px}.venue-types,.court-types{justify-content:flex-start}.controls .row{justify-content:center;flex-wrap:wrap}.court-types,.venue-types{gap:4px;max-width:100%;overflow-x:auto;justify-content:flex-start;scrollbar-width:none}.court-types button,.venue-types button{padding:7px 9px;white-space:nowrap;flex:0 0 auto}button{font-size:9px;padding:8px 9px}.hint,#portrait{display:none}}
+@media(max-width:760px) and (orientation:landscape){.top{top:8px;left:9px;right:9px}.logo{width:28px;height:28px}.title{font-size:9px}.sub{font-size:7px}.pill{font-size:7px;padding:7px}.panel{left:9px;bottom:9px;width:210px;padding:10px}h1{font-size:16px}.desc{font-size:9px}.stats{margin-top:7px;gap:4px}.stat{padding:5px}.stat b{font-size:8px}.stat span{font-size:7px}.controls{right:9px;bottom:9px;gap:4px}.venue-types,.court-types{max-width:46vw}button{font-size:8px;padding:7px}.hint{bottom:9px;font-size:7px;padding:6px}}
 </style>
 </head>
 <body>
 <div class="top"><div class="brand"><div class="logo">S</div><div><div class="title">SPORTS ARENA</div><div class="sub">TENNIS · 3D ENVIRONMENT PREVIEW 01</div></div></div><div class="pill">PREVIEW ONLY · NOT THE MAIN GAME</div></div>
 <section class="panel"><div class="eyebrow">ENVIRONMENT / 01</div><h1>スタンダードコート</h1><p class="desc">リアル寄りの質感・照明・ネット・観客席を確認するための3D試作です。ドラッグで回転、ホイール／ピンチでズームできます。本番ゲームには接続していません。</p><div class="stats"><div class="stat"><b>23.77 m</b><span>COURT LENGTH</span></div><div class="stat"><b>10.97 m</b><span>DOUBLES WIDTH</span></div><div class="stat"><b>REALTIME</b><span>3D VIEW</span></div></div></section>
-<div class="controls"><div class="row court-types"><button class="active" data-court="hard">ハード</button><button data-court="clay">クレー</button><button data-court="grass">芝</button><button data-court="indoor">インドア</button></div><div class="row"><button id="play" class="active">プレイ視点</button><button id="topview">全体俯瞰</button><button id="low">低い視点</button></div><div class="row"><button id="seats" class="active">観客席 ON</button><button id="lights" class="active">照明 ON</button><button id="reset">リセット</button></div></div>
+<div class="controls"><div class="row venue-types"><button class="active" data-venue="standard">標準</button><button data-venue="stadium">スタジアム</button><button data-venue="grand">大会会場</button><button data-venue="indoor">屋内アリーナ</button><button data-venue="night">ナイト</button></div><div class="row court-types"><button class="active" data-court="hard">ハード</button><button data-court="clay">クレー</button><button data-court="grass">芝</button><button data-court="indoor">木目</button></div><div class="row"><button id="play" class="active">プレイ視点</button><button id="topview">全体俯瞰</button><button id="low">低い視点</button></div><div class="row"><button id="seats" class="active">観客席 ON</button><button id="lights" class="active">照明 ON</button><button id="reset">リセット</button></div></div>
 <div class="hint">ドラッグ：視点回転　／　ピンチ・ホイール：ズーム</div>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js"}}</script>
 <script type="module">
@@ -45,16 +45,70 @@ for(const x of [-8,8]){const f=new THREE.Mesh(new THREE.BoxGeometry(.01,4,30),wi
 const seatMats=[0x285166,0x376b7b,0x24475b,0x4a7b86,0x315969].map(c=>material(c,.75));
 for(const side of [-1,1])for(let row=0;row<5;row++){const z=side*(17+row*1.02),y=.1+row*.43,tier=new THREE.Mesh(new THREE.BoxGeometry(27,.4,.9),material(0x435a66));tier.position.set(0,y-.15,z);seatGroup.add(tier);for(let x=-12.8;x<=12.8;x+=.62){const seat=new THREE.Mesh(new THREE.BoxGeometry(.45,.23,.38),seatMats[Math.floor(Math.random()*seatMats.length)]);seat.position.set(x,y+.12,z);seatGroup.add(seat);const back=new THREE.Mesh(new THREE.BoxGeometry(.45,.26,.07),seatMats[Math.floor(Math.random()*seatMats.length)]);back.position.set(x,y+.27,z-side*.14);seatGroup.add(back)}}
 for(const side of [-1,1]){const roof=new THREE.Mesh(new THREE.BoxGeometry(28,.3,4.5),material(0x2b414c,.5,.35));roof.position.set(0,3.3,side*22);seatGroup.add(roof)}
+// Venue architecture: separate from gameplay; toggled by the venue selector.
+const venueGroup=new THREE.Group();scene.add(venueGroup);
+const concrete=material(0x64757d,.78),darkMetal=material(0x172a35,.42,.62),glass=new THREE.MeshPhysicalMaterial({color:0x8cc6d8,roughness:.18,metalness:.25,transparent:true,opacity:.24,side:THREE.DoubleSide}),ledMat=new THREE.MeshStandardMaterial({color:0x092532,emissive:0x00a9c9,emissiveIntensity:.8,roughness:.35});
+function venueBox(w,h,d,mat,x,y,z){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;venueGroup.add(m);return m}
+function beamBetween(a,b,r,mat){const va=new THREE.Vector3(...a),vb=new THREE.Vector3(...b),dir=new THREE.Vector3().subVectors(vb,va);const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,dir.length(),8),mat);m.position.copy(va).add(vb).multiplyScalar(.5);m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir.normalize());m.castShadow=true;venueGroup.add(m)}
+// Tall, tiered grandstands on both baselines and sides.
+const crowdColors=[0x314e61,0x53778b,0x9a735d,0xc8d1d1,0x273c4a,0x9eafb7,0x6b8a83,0xe0c7a1];
+const crowdMat=crowdColors.map(x=>material(x,.88));
+for(const side of [-1,1]){
+ for(let row=0;row<9;row++){
+  const z=side*(17.3+row*1.02),y=.25+row*.48;
+  venueBox(31,.42,.94,concrete,0,y-.16,z);
+  for(let x=-14.6;x<=14.6;x+=.52){
+   const seat=new THREE.Mesh(new THREE.BoxGeometry(.39,.2,.34),seatMats[Math.floor(Math.random()*seatMats.length)]);
+   seat.position.set(x,y+.1,z);seat.castShadow=true;venueGroup.add(seat);
+   if(Math.random()>.24){const person=new THREE.Mesh(new THREE.CapsuleGeometry(.075,.19,3,5),crowdMat[Math.floor(Math.random()*crowdMat.length)]);person.position.set(x,y+.31,z-side*.12);person.castShadow=true;venueGroup.add(person)}
+  }
+ }
+}
+for(const side of [-1,1]){
+ for(let row=0;row<6;row++){
+  const x=side*(8.8+row*1.02),y=.2+row*.5;
+  venueBox(.9,.42,31,concrete,x,y-.16,0);
+  for(let z=-14.7;z<=14.7;z+=.62){
+   const seat=new THREE.Mesh(new THREE.BoxGeometry(.34,.2,.42),seatMats[Math.floor(Math.random()*seatMats.length)]);seat.position.set(x,y+.1,z);venueGroup.add(seat);
+   if(Math.random()>.38){const person=new THREE.Mesh(new THREE.CapsuleGeometry(.07,.18,3,5),crowdMat[Math.floor(Math.random()*crowdMat.length)]);person.position.set(x-side*.12,y+.3,z);venueGroup.add(person)}
+  }
+ }
+}
+// Roof girders and translucent canopy frame for large event venues.
+for(const side of [-1,1]){
+ beamBetween([-17,8,side*31],[17,8,side*31],.2,darkMetal);
+ beamBetween([-17,8,side*31],[-11,11,side*22],.16,darkMetal);
+ beamBetween([17,8,side*31],[11,11,side*22],.16,darkMetal);
+ venueBox(34,.12,8,glass,0,10.9,side*27);
+ for(let x=-16;x<=16;x+=4)beamBetween([x,8.1,side*31],[x,10.9,side*23],.075,darkMetal);
+}
+for(const side of [-1,1]){
+ venueBox(31,.42,1.1,ledMat,0,5.15,side*16.5);
+ const board=new THREE.Mesh(new THREE.PlaneGeometry(28,.27),new THREE.MeshBasicMaterial({color:0x00c6df}));board.position.set(0,5.16,side*15.93);if(side>0)board.rotation.y=Math.PI;venueGroup.add(board);
+}
+// Large suspended centre scoreboard, with dark glass and bright score panels.
+venueBox(5.8,2.7,.28,darkMetal,0,8.1,-21);
+for(const side of [-1,1]){const display=new THREE.Mesh(new THREE.PlaneGeometry(5.2,2.1),new THREE.MeshBasicMaterial({color:0x082b3c}));display.position.set(0,8.1,-21.16);if(side<0)display.rotation.y=Math.PI;venueGroup.add(display)}
+for(let x=-2;x<=2;x+=4)venueBox(.035,1.8,.025,material(0x58e6f7,.25,.2),x,8.1,-21.2);
+venueGroup.visible=false;
 const spotlights=[];for(const x of [-15,15])for(const z of [-16,16]){const pole=new THREE.Mesh(new THREE.CylinderGeometry(.11,.16,8.5,12),material(0x526875,.4,.5));pole.position.set(x,4.25,z);pole.castShadow=true;scene.add(pole);cube(2.2,.18,.4,material(0x283b48,.4,.4),x,8.55,z);for(let i=0;i<5;i++){const lamp=new THREE.Mesh(new THREE.BoxGeometry(.27,.07,.22),new THREE.MeshStandardMaterial({color:0xf0fbff,emissive:0x7bdcff,emissiveIntensity:.6}));lamp.position.set(x-.75+i*.375,8.42,z);scene.add(lamp)}const spot=new THREE.SpotLight(0xeaf8ff,2,35,Math.PI/5,.5,1.4);spot.position.set(x,8.3,z);spot.target.position.set(0,0,0);scene.add(spot,spot.target);spotlights.push(spot)}
 for(const z of [-17,17]){cube(4.1,2,.18,material(0x101d26,.3,.4),0,3,z);const screen=new THREE.Mesh(new THREE.PlaneGeometry(3.8,1.7),new THREE.MeshStandardMaterial({color:0x082b3a,emissive:0x0b536a,emissiveIntensity:.55}));screen.position.set(0,3,z+(z<0?.1:-.1));if(z>0)screen.rotation.y=Math.PI;scene.add(screen)}
 for(const z of [-13.7,13.7]){cube(4,.15,.45,material(0x2a424c,.5,.3),0,.27,z);for(const x of [-1.6,1.6])cube(.12,.45,.12,material(0x263a44,.5,.3),x,.03,z)}
 const ball=new THREE.Mesh(new THREE.SphereGeometry(.17,24,18),material(0xd8ed5c,.55));ball.position.set(-2.5,.28,3.2);ball.castShadow=true;scene.add(ball);for(let i=0;i<2;i++){const seam=new THREE.Mesh(new THREE.TorusGeometry(.12,.006,5,36),new THREE.MeshBasicMaterial({color:0xf7ffbe}));seam.scale.set(1,.68,1);seam.rotation.set(.7+i*.6,.4+i*.7,.3);ball.add(seam)}
 function view(v){orbit.target.set(0,.6,0);if(v==='play'){camera.position.set(4.5,7,21);orbit.target.set(0,.6,-1.2)}else if(v==='top'){camera.position.set(0,25,3.8)}else{camera.position.set(0,2.6,22)}orbit.update();document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===v))}
 [['play','play'],['topview','top'],['low','low']].forEach(([id,v])=>{document.getElementById(id).dataset.view=v;document.getElementById(id).onclick=()=>view(v)});
+const venueStyles={standard:{title:'スタンダードコート',eyebrow:'ENVIRONMENT / 01'},stadium:{title:'テニススタジアム',eyebrow:'VENUE / STADIUM'},grand:{title:'大会スタジアム',eyebrow:'VENUE / CHAMPIONSHIP'},indoor:{title:'インドアアリーナ',eyebrow:'VENUE / INDOOR ARENA'},night:{title:'ナイトスタジアム',eyebrow:'VENUE / NIGHT SESSION'}};
+let currentVenue='standard';
+function setVenue(type){if(!venueStyles[type])return;currentVenue=type;venueGroup.visible=type!=='standard';seatGroup.visible=seatsOn&&(type==='standard'||type==='indoor');venueGroup.traverse(o=>{if(o.material&&o.material.emissive&&o.material===ledMat)o.material.emissiveIntensity=type==='night'?2.4:.8});
+scene.background.set(type==='night'?0x071522:type==='indoor'?0x526b7b:0x9fb8c5);scene.fog.color.set(type==='night'?0x071522:type==='indoor'?0x526b7b:0x9fb8c5);
+sun.intensity=type==='night'?.35:type==='indoor'?1.5:3.2;fill.intensity=type==='night'?.35:1.15;spotlights.forEach(s=>{s.intensity=lightsOn?(type==='night'?3.5:type==='indoor'?1.3:2):0});
+document.querySelectorAll('[data-venue]').forEach(b=>b.classList.toggle('active',b.dataset.venue===type));document.querySelector('.panel h1').textContent=venueStyles[type].title;document.querySelector('.panel .eyebrow').textContent=venueStyles[type].eyebrow;
+}
+document.querySelectorAll('[data-venue]').forEach(b=>b.addEventListener('click',()=>setVenue(b.dataset.venue)));
 const courtStyles={hard:{apron:0x244454,title:'ハードコート'},clay:{apron:0x7d3827,title:'クレーコート'},grass:{apron:0x254d35,title:'芝コート'},indoor:{apron:0x6e5134,title:'インドアコート'}};
 function setCourtType(type){if(!surfaceTextures[type])return;courtMaterial.map=surfaceTextures[type];courtMaterial.bumpMap=surfaceTextures[type];courtMaterial.roughness=type==='indoor'?.72:.92;courtMaterial.bumpScale=type==='grass'?.06:.035;courtMaterial.needsUpdate=true;apronMat.color.setHex(courtStyles[type].apron);document.querySelectorAll('[data-court]').forEach(b=>b.classList.toggle('active',b.dataset.court===type));document.querySelector('.panel h1').textContent=courtStyles[type].title;document.querySelector('.panel .eyebrow').textContent='ENVIRONMENT / '+({hard:'01',clay:'02',grass:'03',indoor:'04'}[type]);}
 document.querySelectorAll('[data-court]').forEach(b=>b.addEventListener('click',()=>setCourtType(b.dataset.court)));
-let seatsOn=true,lightsOn=true;document.getElementById('seats').onclick=e=>{seatsOn=!seatsOn;seatGroup.visible=seatsOn;e.currentTarget.classList.toggle('active',seatsOn);e.currentTarget.textContent='観客席 '+(seatsOn?'ON':'OFF')};document.getElementById('lights').onclick=e=>{lightsOn=!lightsOn;spotlights.forEach(s=>s.intensity=lightsOn?2:0);e.currentTarget.classList.toggle('active',lightsOn);e.currentTarget.textContent='照明 '+(lightsOn?'ON':'OFF')};document.getElementById('reset').onclick=()=>{view('play');orbit.reset()};
+let seatsOn=true,lightsOn=true;document.getElementById('seats').onclick=e=>{seatsOn=!seatsOn;seatGroup.visible=seatsOn&&(currentVenue==='standard'||currentVenue==='indoor');venueGroup.visible=seatsOn&&(currentVenue!=='standard');e.currentTarget.classList.toggle('active',seatsOn);e.currentTarget.textContent='観客席 '+(seatsOn?'ON':'OFF')};document.getElementById('lights').onclick=e=>{lightsOn=!lightsOn;spotlights.forEach(s=>s.intensity=lightsOn?2:0);e.currentTarget.classList.toggle('active',lightsOn);e.currentTarget.textContent='照明 '+(lightsOn?'ON':'OFF')};document.getElementById('reset').onclick=()=>{view('play');orbit.reset();setVenue('standard');setCourtType('hard')};
 function animate(){requestAnimationFrame(animate);orbit.update();renderer.render(scene,camera)}animate();addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;if(innerWidth<innerHeight&&innerWidth<=800){camera.fov=55;camera.position.set(0,12,27);orbit.target.set(0,.6,0)}else{camera.fov=43}camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));orbit.update()});if(innerWidth<innerHeight&&innerWidth<=800){camera.fov=55;camera.position.set(0,12,27);camera.updateProjectionMatrix();orbit.target.set(0,.6,0);orbit.update()}
 </script>
 </body>
