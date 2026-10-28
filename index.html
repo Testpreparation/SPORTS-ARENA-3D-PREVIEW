@@ -3,486 +3,193 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>SPORTS ARENA | 3D Tennis Preview</title>
+<title>SPORTS ARENA | Babylon.js 3D Preview</title>
 <style>
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#9fb8c5;color:#f5fbff;font-family:system-ui,-apple-system,sans-serif}canvas{display:block}
-.top{position:fixed;z-index:2;top:14px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:center;pointer-events:none}.brand{display:flex;align-items:center;gap:10px}.logo{display:grid;place-items:center;width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,#c1f4ff,#2d9cc9);color:#092536;font-weight:900}.title{font-size:11px;letter-spacing:.18em;font-weight:850}.sub{font-size:9px;color:#e0edf2;letter-spacing:.12em;margin-top:3px}.pill,.panel,button{background:#091925ce;border:1px solid #ffffff28;backdrop-filter:blur(12px);box-shadow:0 8px 26px #06111a25}.pill{font-size:9px;letter-spacing:.12em;padding:9px 11px;border-radius:22px}.panel{position:fixed;left:16px;bottom:16px;width:min(300px,calc(100vw - 32px));border-radius:16px;padding:14px}.eyebrow{font-size:9px;color:#7de2ff;letter-spacing:.2em;font-weight:800}h1{font-size:22px;margin:6px 0}.desc{font-size:11px;line-height:1.65;color:#c2d4dd;margin:0}.stats{display:flex;gap:7px;margin-top:12px}.stat{flex:1;padding:8px;border-radius:9px;background:#ffffff0c;border:1px solid #ffffff17}.stat b{display:block;font-size:10px}.stat span{display:block;font-size:8px;color:#9db4c0;margin-top:3px}.controls{position:fixed;right:16px;bottom:16px;display:flex;flex-direction:column;align-items:flex-end;gap:7px}button{color:#effaff;padding:10px 12px;border-radius:10px;font-size:10px;cursor:pointer}button.active{border-color:#83e4ff;color:#8be6ff;background:#124259dd}.row{display:flex;gap:6px}.hint{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);font-size:9px;color:#e0edf2;background:#091925b8;padding:8px 11px;border-radius:22px;white-space:nowrap;pointer-events:none}#portrait{display:none}
-@media(max-width:800px) and (orientation:portrait){.top{top:10px;left:10px;right:10px;align-items:flex-start}.logo{width:30px;height:30px}.title{font-size:9px}.sub{font-size:7px}.pill{font-size:7px;padding:7px 8px;max-width:46vw;text-align:center}.panel{left:10px;right:10px;bottom:164px;width:auto;padding:10px;border-radius:12px}h1{font-size:17px;margin:4px 0}.desc{font-size:9px;line-height:1.45}.stats{margin-top:7px;gap:5px}.stat{padding:6px}.stat b{font-size:8px}.stat span{font-size:7px}.controls{left:10px;right:10px;bottom:10px;align-items:stretch;gap:5px}.venue-types,.court-types{justify-content:flex-start}.controls .row{justify-content:center;flex-wrap:wrap}.court-types,.venue-types{gap:4px;max-width:100%;overflow-x:auto;justify-content:flex-start;scrollbar-width:none}.court-types button,.venue-types button{padding:7px 9px;white-space:nowrap;flex:0 0 auto}button{font-size:9px;padding:8px 9px}.hint,#portrait{display:none}}
-@media(max-width:760px) and (orientation:landscape){.top{top:8px;left:9px;right:9px}.logo{width:28px;height:28px}.title{font-size:9px}.sub{font-size:7px}.pill{font-size:7px;padding:7px}.panel{left:9px;bottom:9px;width:210px;padding:10px}h1{font-size:16px}.desc{font-size:9px}.stats{margin-top:7px;gap:4px}.stat{padding:5px}.stat b{font-size:8px}.stat span{font-size:7px}.controls{right:9px;bottom:9px;gap:4px}.venue-types,.court-types{max-width:46vw}button{font-size:8px;padding:7px}.hint{bottom:9px;font-size:7px;padding:6px}}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#9fb8c5;color:#f5fbff;font-family:system-ui,-apple-system,sans-serif}#renderCanvas{display:block;width:100%;height:100%;touch-action:none;outline:none}.top{position:fixed;z-index:2;top:14px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:center;pointer-events:none}.brand{display:flex;align-items:center;gap:10px}.logo{display:grid;place-items:center;width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,#c1f4ff,#2d9cc9);color:#092536;font-weight:900}.title{font-size:11px;letter-spacing:.18em;font-weight:850}.sub{font-size:9px;color:#e0edf2;letter-spacing:.12em;margin-top:3px}.pill,.panel,button{background:#091925ce;border:1px solid #ffffff28;backdrop-filter:blur(12px);box-shadow:0 8px 26px #06111a25}.pill{font-size:9px;letter-spacing:.12em;padding:9px 11px;border-radius:22px}.panel{position:fixed;left:16px;bottom:16px;width:min(300px,calc(100vw - 32px));border-radius:16px;padding:14px}.eyebrow{font-size:9px;color:#7de2ff;letter-spacing:.2em;font-weight:800}h1{font-size:22px;margin:6px 0}.desc{font-size:11px;line-height:1.65;color:#c2d4dd;margin:0}.stats{display:flex;gap:7px;margin-top:12px}.stat{flex:1;padding:8px;border-radius:9px;background:#ffffff0c;border:1px solid #ffffff17}.stat b{display:block;font-size:10px}.stat span{display:block;font-size:8px;color:#9db4c0;margin-top:3px}.controls{position:fixed;right:16px;bottom:16px;display:flex;flex-direction:column;align-items:flex-end;gap:7px;max-height:calc(100vh - 95px);overflow:auto;scrollbar-width:none}.group{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:min(410px,calc(100vw - 32px))}button{color:#effaff;padding:10px 12px;border-radius:10px;font-size:10px;cursor:pointer;white-space:nowrap}button.active{background:#0e789eeb;border-color:#83e4ff}button:active{transform:scale(.98)}.hint{position:fixed;top:68px;left:50%;transform:translateX(-50%);font-size:9px;letter-spacing:.08em;color:#eaf7fb;background:#09192588;border:1px solid #ffffff20;padding:7px 11px;border-radius:18px;white-space:nowrap;pointer-events:none}.loading{position:fixed;inset:0;display:grid;place-items:center;background:#0a1c2b;color:#eaf7fb;z-index:10;font-size:12px;letter-spacing:.12em;transition:opacity .4s}.loading.hide{opacity:0;pointer-events:none}@media(max-width:650px){.top{top:8px;left:8px;right:8px}.logo{width:30px;height:30px}.title{font-size:9px}.sub{font-size:7px}.pill{font-size:8px;padding:7px 8px}.panel{left:8px;bottom:8px;width:220px;padding:10px}.panel h1{font-size:17px}.desc{font-size:9px}.stats{margin-top:7px}.stat{padding:6px}.controls{right:8px;bottom:8px;gap:5px;max-width:calc(100vw - 16px)}button{padding:8px 9px;font-size:9px}.group{gap:4px;max-width:calc(100vw - 16px)}.hint{top:49px;font-size:8px}}@media(max-height:440px){.panel{width:195px;padding:8px}.panel h1{font-size:15px;margin:3px 0}.desc{font-size:8px;line-height:1.4}.stats{display:none}.controls{bottom:8px}.hint{top:47px}}
 </style>
 </head>
 <body>
-<div class="top"><div class="brand"><div class="logo">S</div><div><div class="title">SPORTS ARENA</div><div class="sub">TENNIS · 3D ENVIRONMENT PREVIEW 01</div></div></div><div class="pill">PREVIEW ONLY · NOT THE MAIN GAME</div></div>
-<section class="panel"><div class="eyebrow">ENVIRONMENT / 01</div><h1>スタンダードコート</h1><p class="desc">リアル寄りの質感・照明・ネット・観客席を確認するための3D試作です。ドラッグで回転、ホイール／ピンチでズームできます。本番ゲームには接続していません。</p><div class="stats"><div class="stat"><b>23.77 m</b><span>COURT LENGTH</span></div><div class="stat"><b>10.97 m</b><span>DOUBLES WIDTH</span></div><div class="stat"><b>REALTIME</b><span>3D VIEW</span></div></div></section>
-<div class="controls"><div class="row venue-types"><button class="active" data-venue="standard">標準</button><button data-venue="stadium">スタジアム</button><button data-venue="grand">大会会場</button><button data-venue="indoor">屋内アリーナ</button><button data-venue="night">ナイト</button></div><div class="row court-types"><button class="active" data-court="hard">ハード</button><button data-court="clay">クレー</button><button data-court="grass">芝</button><button data-court="indoor">木目</button></div><div class="row"><button id="play" class="active">プレイ視点</button><button id="topview">全体俯瞰</button><button id="low">低い視点</button></div><div class="row"><button id="seats" class="active">観客席 ON</button><button id="lights" class="active">照明 ON</button><button id="reset">リセット</button></div></div>
+<canvas id="renderCanvas"></canvas>
+<div class="loading" id="loading">BABYLON.JS 3D ARENA を準備中…</div>
+<div class="top"><div class="brand"><div class="logo">SA</div><div><div class="title">SPORTS ARENA</div><div class="sub">BABYLON.JS · 3D VENUE PREVIEW</div></div></div><div class="pill">INTERACTIVE 3D</div></div>
 <div class="hint">ドラッグ：視点回転　／　ピンチ・ホイール：ズーム</div>
-<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js"}}</script>
-<script type="module">
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js';
-import {OrbitControls} from 'https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/controls/OrbitControls.js';
-import {RoomEnvironment} from 'https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/environments/RoomEnvironment.js';
-const scene=new THREE.Scene();scene.background=new THREE.Color(0x9fb8c5);scene.fog=new THREE.Fog(0x9fb8c5,42,100);
-const camera=new THREE.PerspectiveCamera(43,innerWidth/innerHeight,.1,180);camera.position.set(4.5,7,21);
-const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.1;document.body.appendChild(renderer.domElement);
-// A prefiltered studio environment adds physically based highlights/reflections to non-metal and metal materials.
-const pmrem=new THREE.PMREMGenerator(renderer);const environment=new RoomEnvironment();scene.environment=pmrem.fromScene(environment,0.04).texture;environment.dispose();pmrem.dispose();
-const orbit=new OrbitControls(camera,renderer.domElement);orbit.target.set(0,.6,0);orbit.enableDamping=true;orbit.dampingFactor=.06;orbit.minDistance=8;orbit.maxDistance=55;orbit.maxPolarAngle=Math.PI*.49;
-scene.add(new THREE.HemisphereLight(0xe8f7ff,0x36444b,2));
-const sun=new THREE.DirectionalLight(0xfff1d8,3.2);sun.position.set(-12,20,9);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-24;sun.shadow.camera.right=24;sun.shadow.camera.top=25;sun.shadow.camera.bottom=-25;sun.shadow.bias=-.00025;scene.add(sun);
-const fill=new THREE.DirectionalLight(0x8bdcff,1.15);fill.position.set(14,10,-12);scene.add(fill);
-const material=(color,roughness=.75,metalness=0)=>new THREE.MeshStandardMaterial({color,roughness,metalness});
-function cube(w,h,d,mat,x,y,z,shadow=true){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);m.castShadow=shadow;m.receiveShadow=true;scene.add(m);return m}
-cube(70,.5,70,material(0x526b77),0,-.45,0,false);const floor=new THREE.Mesh(new THREE.PlaneGeometry(180,180),material(0x7b8e90));floor.rotation.x=-Math.PI/2;floor.position.y=-.72;floor.receiveShadow=true;scene.add(floor);
-const apronMat=new THREE.MeshPhysicalMaterial({color:0x244454,roughness:.68,metalness:0,clearcoat:.16,clearcoatRoughness:.45,envMapIntensity:.65});cube(15.5,.12,28.3,apronMat,0,-.18,0,false);
-function makeSurfacePBR(type){
- const size=1024,cv=document.createElement('canvas'),roughCv=document.createElement('canvas'),heightCv=document.createElement('canvas');
- cv.width=cv.height=roughCv.width=roughCv.height=heightCv.width=heightCv.height=size;
- const g=cv.getContext('2d'),rg=roughCv.getContext('2d'),hg=heightCv.getContext('2d');
- const palettes={hard:['#167ba3','#0d6c94'],clay:['#b95735','#a4482b'],grass:['#36764a','#2b673d'],indoor:['#b98b54','#a57943']}[type];
- g.fillStyle=palettes[0];g.fillRect(0,0,size,size);
- rg.fillStyle=type==='indoor'?'#bcbcbc':type==='hard'?'#d0d0d0':'#dedede';rg.fillRect(0,0,size,size);
- hg.fillStyle=type==='grass'?'#858585':type==='clay'?'#858585':'#808080';hg.fillRect(0,0,size,size);
- // Material-specific base details, kept subtle so court markings remain crisp.
- if(type==='grass'){
-  for(let i=0;i<16;i++){g.fillStyle=i%2?'rgba(5,36,13,.12)':'rgba(190,235,153,.055)';g.fillRect(i*64,0,64,size)}
-  for(let i=0;i<22000;i++){const x=Math.random()*size,y=Math.random()*size;g.strokeStyle=Math.random()>.5?'rgba(208,238,164,.19)':'rgba(9,43,18,.22)';g.lineWidth=.5+Math.random()*1.1;g.beginPath();g.moveTo(x,y);g.lineTo(x+(Math.random()-.5)*2,y-2-Math.random()*7);g.stroke();const v=90+Math.random()*90;hg.fillStyle='rgb('+v+','+v+','+v+')';hg.fillRect(x,y,1,2+Math.random()*3)}
- }else if(type==='clay'){
-  for(let i=0;i<90000;i++){const x=Math.random()*size,y=Math.random()*size,r=.35+Math.random()*1.5;g.fillStyle=Math.random()>.48?'rgba(255,205,157,'+(Math.random()*.28)+')':'rgba(78,29,17,'+(Math.random()*.22)+')';g.beginPath();g.arc(x,y,r,0,Math.PI*2);g.fill();const v=90+Math.random()*95;hg.fillStyle='rgb('+v+','+v+','+v+')';hg.fillRect(x,y,1+r,1+r)}
- }else if(type==='indoor'){
-  for(let y=0;y<size;y+=42){
-   g.fillStyle='rgba(65,35,14,.2)';g.fillRect(0,y,size,2);
-   g.fillStyle='rgba(255,225,174,.12)';g.fillRect(0,y+3,size,1);
-   for(let x=(y%84?35:135);x<size;x+=210){g.fillStyle='rgba(64,35,15,.16)';g.fillRect(x,y,1,42);g.fillStyle='rgba(255,222,166,.07)';g.fillRect(x+2,y,1,42)}
-  }
-  for(let i=0;i<3800;i++){const x=Math.random()*size,y=Math.random()*size;g.strokeStyle=Math.random()>.5?'rgba(255,225,170,.1)':'rgba(73,43,20,.09)';g.lineWidth=.5+Math.random();g.beginPath();g.moveTo(x,y);g.lineTo(x+8+Math.random()*45,y+(Math.random()-.5)*1.5);g.stroke()}
- }else{
-  // Fine acrylic-resin aggregate and faint roller/paint variation for hard courts.
-  for(let i=0;i<65000;i++){const x=Math.random()*size,y=Math.random()*size,r=.35+Math.random()*1.1;g.fillStyle=Math.random()>.5?'rgba(205,242,255,'+(Math.random()*.2)+')':'rgba(0,25,45,'+(Math.random()*.18)+')';g.beginPath();g.arc(x,y,r,0,Math.PI*2);g.fill();const v=100+Math.random()*100;hg.fillStyle='rgb('+v+','+v+','+v+')';hg.fillRect(x,y,1,1)}
-  for(let i=0;i<300;i++){const y=Math.random()*size;g.fillStyle='rgba(220,248,255,.018)';g.fillRect(0,y,size,1)}
- }
- // Separate roughness and height maps: avoid using the colour image as a fake bump map.
- for(let i=0;i<26000;i++){const x=Math.random()*size,y=Math.random()*size,shade=type==='indoor'?145+Math.random()*90:155+Math.random()*85;rg.fillStyle='rgb('+shade+','+shade+','+shade+')';rg.fillRect(x,y,1+Math.random()*2,1+Math.random()*2)}
- // Add low-amplitude height grain for the hard and grass surfaces.
- if(type==='hard'||type==='grass'){for(let i=0;i<30000;i++){const x=Math.random()*size,y=Math.random()*size,v=100+Math.random()*120;hg.fillStyle='rgb('+v+','+v+','+v+')';hg.fillRect(x,y,1,1)}}
- const color=new THREE.CanvasTexture(cv),roughness=new THREE.CanvasTexture(roughCv),height=new THREE.CanvasTexture(heightCv);
- for(const t of [color,roughness,height]){t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(1,2.16);t.anisotropy=renderer.capabilities.getMaxAnisotropy()}
- color.colorSpace=THREE.SRGBColorSpace;
- // Derive a tangent-space normal map from the height map for more believable raking light.
- const normalCv=document.createElement('canvas');normalCv.width=normalCv.height=size;const ng=normalCv.getContext('2d'),src=hg.getImageData(0,0,size,size),out=ng.createImageData(size,size),data=src.data,nd=out.data;
- for(let y=0;y<size;y++)for(let x=0;x<size;x++){const i=(y*size+x)*4,l=((y*size+((x+size-1)%size))*4),r=((y*size+((x+1)%size))*4),u=(((y+size-1)%size)*size+x)*4,d=(((y+1)%size)*size+x)*4;const dx=(data[r]-data[l])/255,dy=(data[d]-data[u])/255,nx=-dx*2.2,ny=-dy*2.2,nz=1,len=Math.hypot(nx,ny,nz);nd[i]=(nx/len*.5+.5)*255;nd[i+1]=(ny/len*.5+.5)*255;nd[i+2]=(nz/len*.5+.5)*255;nd[i+3]=255}
- ng.putImageData(out,0,0);const normal=new THREE.CanvasTexture(normalCv);normal.wrapS=normal.wrapT=THREE.RepeatWrapping;normal.repeat.set(1,2.16);normal.anisotropy=renderer.capabilities.getMaxAnisotropy();
- return {map:color,roughnessMap:roughness,bumpMap:height,normalMap:normal};
+<section class="panel"><div class="eyebrow">VENUE VISUAL LAB</div><h1 id="venueTitle">大会会場</h1><p class="desc" id="venueDesc">大規模な屋根構造、観客席、ガラス外壁、照明設備を備えたスポーツアリーナ。</p><div class="stats"><div class="stat"><b>3D PBR</b><span>素材表現</span></div><div class="stat"><b>REALTIME</b><span>リアルタイム描画</span></div><div class="stat"><b>WEB</b><span>スマホ・PC</span></div></div></section>
+<div class="controls">
+ <div class="group" id="venueButtons"><button data-venue="standard">標準</button><button data-venue="stadium">スタジアム</button><button data-venue="grand" class="active">大会会場</button><button data-venue="indoor">屋内アリーナ</button><button data-venue="night">ナイト</button></div>
+ <div class="group" id="surfaceButtons"><button data-surface="hard" class="active">ハード</button><button data-surface="clay">クレー</button><button data-surface="grass">芝</button><button data-surface="wood">屋内床</button></div>
+ <div class="group"><button id="toggleSeats" class="active">座席 ON</button><button id="toggleLights" class="active">照明 ON</button><button id="resetView">視点リセット</button></div>
+</div>
+<script src="https://cdn.babylonjs.com/babylon.js"></script>
+<script>
+(() => {
+'use strict';
+const canvas=document.getElementById('renderCanvas');
+const engine=new BABYLON.Engine(canvas,true,{preserveDrawingBuffer:false,stencil:true,antialias:true,powerPreference:'high-performance'},true);
+engine.setHardwareScalingLevel(Math.min(1.35,Math.max(1,window.devicePixelRatio/1.5)));
+const scene=new BABYLON.Scene(engine);
+scene.clearColor=new BABYLON.Color4(.48,.62,.69,1);
+scene.imageProcessingConfiguration.toneMappingEnabled=true;
+scene.imageProcessingConfiguration.toneMappingType=BABYLON.ImageProcessingConfiguration.TONEMAPPING_ACES;
+scene.imageProcessingConfiguration.exposure=1.12;
+scene.imageProcessingConfiguration.contrast=1.12;
+const camera=new BABYLON.ArcRotateCamera('camera',-Math.PI/2.18,1.05,43,new BABYLON.Vector3(0,2,0),scene);
+camera.lowerRadiusLimit=19;camera.upperRadiusLimit=76;camera.lowerBetaLimit=.22;camera.upperBetaLimit=1.48;camera.wheelPrecision=36;camera.panningSensibility=0;camera.attachControl(canvas,true);
+const hemi=new BABYLON.HemisphericLight('ambient',new BABYLON.Vector3(0,1,0),scene);hemi.intensity=.68;hemi.groundColor=new BABYLON.Color3(.22,.25,.28);
+const sun=new BABYLON.DirectionalLight('sun',new BABYLON.Vector3(-.45,-1,-.38),scene);sun.position=new BABYLON.Vector3(20,35,18);sun.intensity=2.05;
+const shadows=new BABYLON.ShadowGenerator(2048,sun);shadows.useBlurExponentialShadowMap=true;shadows.blurKernel=24;shadows.setDarkness(.28);
+const root=new BABYLON.TransformNode('arenaRoot',scene);
+const courtRoot=new BABYLON.TransformNode('courtRoot',scene);courtRoot.parent=root;
+const architecture=new BABYLON.TransformNode('architecture',scene);architecture.parent=root;
+const seatRoot=new BABYLON.TransformNode('seatRoot',scene);seatRoot.parent=root;
+const lightRoot=new BABYLON.TransformNode('lightRoot',scene);lightRoot.parent=root;
+const mats={};
+function mat(name,color,rough=.7,metal=0){const m=new BABYLON.PBRMaterial(name,scene);m.albedoColor=BABYLON.Color3.FromHexString(color);m.roughness=rough;m.metallic=metal;return m;}
+mats.concrete=mat('Architectural concrete','#858e91',.88);mats.darkConcrete=mat('Deep concrete','#343f45',.8);mats.metal=mat('Brushed structural steel','#667982',.28,.78);mats.darkMetal=mat('Dark steel','#202d35',.32,.72);mats.glass=mat('Blue tinted architectural glass','#83b7c6',.16,.35);mats.glass.alpha=.3;mats.glass.transparencyMode=BABYLON.Material.MATERIAL_ALPHABLEND;mats.seat=mat('Moulded stadium seats','#177b9b',.32,.12);mats.seatAlt=mat('Alternate stadium seats','#d3e2e6',.35,.05);mats.white=mat('Court marking paint','#f5f7f2',.55);mats.trim=mat('Arena fascia','#172c3a',.4,.45);mats.gold=mat('Warm metal trim','#b6a16f',.28,.7);mats.rubber=mat('Rubber base','#17242a',.9);mats.emergency=mat('Exit sign','#b8ffca',.32);mats.emergency.emissiveColor=new BABYLON.Color3(.05,.7,.18);
+function addBox(name,parent,pos,scale,material,opts={}){const m=BABYLON.MeshBuilder.CreateBox(name,{width:scale[0],height:scale[1],depth:scale[2]},scene);m.position.set(pos[0],pos[1],pos[2]);m.parent=parent;m.material=material;if(opts.cast!==false)shadows.addShadowCaster(m);if(opts.receive!==false)m.receiveShadows=true;return m;}
+function addCylinder(name,parent,pos,diam,height,material,segments=12){const m=BABYLON.MeshBuilder.CreateCylinder(name,{diameter:diam,height,tessellation:segments},scene);m.position.set(pos[0],pos[1],pos[2]);m.parent=parent;m.material=material;shadows.addShadowCaster(m);return m;}
+function addLine(name,parent,a,b,r,material){const A=new BABYLON.Vector3(...a),B=new BABYLON.Vector3(...b),d=B.subtract(A);const m=BABYLON.MeshBuilder.CreateCylinder(name,{height:d.length(),diameter:r,tessellation:8},scene);m.position=A.add(B).scale(.5);m.rotationQuaternion=BABYLON.Quaternion.FromUnitVectorsToRef?BABYLON.Quaternion.FromUnitVectorsToRef(BABYLON.Axis.Y,d.normalize(),new BABYLON.Quaternion()):BABYLON.Quaternion.FromEulerAngles(0,0,0);m.parent=parent;m.material=material;shadows.addShadowCaster(m);return m;}
+function makeCourtSurface(type){
+ while(courtRoot.getChildren().length) courtRoot.getChildren()[0].dispose();
+ let color='#287b9d',rough=.46,metal=.03;
+ if(type==='clay'){color='#b65e3f';rough=.96;}if(type==='grass'){color='#39764b';rough=.88;}if(type==='wood'){color='#b58a59';rough=.32;}
+ const floorMat=mat('Court surface '+type,color,rough,metal);
+ floorMat.clearCoat.isEnabled=true;floorMat.clearCoat.intensity=type==='wood'?.36:.12;floorMat.clearCoat.roughness=.48;
+ const base=addBox('Court foundation',courtRoot,[0,-.28,0],[12,.55,24],mats.rubber);
+ const floor=addBox('Playing surface',courtRoot,[0,.01,0],[11.7,.12,23.7],floorMat);floor.receiveShadows=true;
+ const apronMat=mat('Court apron '+type,type==='clay'?'#8f4a35':type==='grass'?'#285b3b':type==='wood'?'#76563b':'#1d5874',.76);
+ addBox('Outer apron',courtRoot,[0,-.015,0],[14.7,.13,27.2],apronMat);
+ // inset playable surface, boundary lines and service lines
+ addBox('Inner playing surface',courtRoot,[0,.075,0],[10.97,.025,23.05],floorMat,{cast:false});
+ const lineY=.096;
+ function stripe(name,x,z,w,d){addBox(name,courtRoot,[x,lineY,z],[w,.018,d],mats.white,{cast:false,receive:false});}
+ const half=11.43,side=4.12,service=6.4;
+ stripe('North baseline',0,-half,10.95,.075);stripe('South baseline',0,half,10.95,.075);
+ stripe('West sideline',-side,0,.07,22.86);stripe('East sideline',side,0,.07,22.86);
+ stripe('Singles west',-3.16,0,.055,22.86);stripe('Singles east',3.16,0,.055,22.86);
+ stripe('North service',0,-service,6.32,.055);stripe('South service',0,service,6.32,.055);
+ stripe('Center service',0,0,.055,12.8);
+ // tennis net, posts and mesh-like horizontal threads
+ addCylinder('Net post west',courtRoot,[-4.18,.67,0],.13,1.3,mats.darkMetal);
+ addCylinder('Net post east',courtRoot,[4.18,.67,0],.13,1.3,mats.darkMetal);
+ const netMat=mat('Net dark braided material','#17272c',.96);
+ addBox('Net tape',courtRoot,[0,1.28,0],[8.45,.09,.09],mats.white);
+ const net=BABYLON.MeshBuilder.CreatePlane('Fine tennis net',{width:8.3,height:1.22},scene);net.position.set(0,.68,0);net.rotation.y=Math.PI/2;net.parent=courtRoot;net.material=netMat;net.material.backFaceCulling=false;
+ for(let z=-.59;z<=.59;z+=.09)addBox('Net vertical weave',courtRoot,[0,.68+z,0],[8.25,.009,.012],mats.darkMetal,{cast:false,receive:false});
+ for(let x=-4.1;x<=4.1;x+=.11)addBox('Net horizontal weave',courtRoot,[x,.68,0],[.008,1.18,.012],mats.darkMetal,{cast:false,receive:false});
 }
-const surfaceTextures={hard:makeSurfacePBR('hard'),clay:makeSurfacePBR('clay'),grass:makeSurfacePBR('grass'),indoor:makeSurfacePBR('indoor')};
-const courtMaterial=new THREE.MeshPhysicalMaterial({map:surfaceTextures.hard.map,roughnessMap:surfaceTextures.hard.roughnessMap,bumpMap:surfaceTextures.hard.bumpMap,normalMap:surfaceTextures.hard.normalMap,bumpScale:.018,normalScale:new THREE.Vector2(.42,.42),roughness:.72,metalness:0,clearcoat:.22,clearcoatRoughness:.38,envMapIntensity:.72});
-const white=material(0xf6f7f2,.7);function line(x1,z1,x2,z2,width=.05){const dx=x2-x1,dz=z2-z1,length=Math.hypot(dx,dz),m=new THREE.Mesh(new THREE.BoxGeometry(width,.02,length),white);m.position.set((x1+x2)/2,.035,(z1+z2)/2);m.rotation.y=Math.atan2(dx,dz);m.receiveShadow=true;scene.add(m)}
-const w=10.97/2,l=23.77/2,s=8.23/2;line(-w,-l,w,-l);line(-w,l,w,l);line(-w,-l,-w,l);line(w,-l,w,l);line(-s,-l,-s,l,.045);line(s,-l,s,l,.045);line(-w,-6.4,w,-6.4);line(-w,6.4,w,6.4);line(-s,0,s,0,.045);line(0,-6.4,0,6.4,.045);
-for(const x of [-5.55,5.55]){const post=new THREE.Mesh(new THREE.CylinderGeometry(.07,.09,1.15,16),material(0x20343f,.35,.5));post.position.set(x,.49,0);post.castShadow=true;scene.add(post)}
-const netMaterial=new THREE.LineBasicMaterial({color:0xe2e9e9,transparent:true,opacity:.72});for(let i=0;i<=100;i++){const x=-5.5+i*.11,sag=(x/5.5)**2*.12;scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x,.91-sag,0),new THREE.Vector3(x,.06,0)]),netMaterial))}for(let j=0;j<=14;j++){const y=.06+j*.06,pts=[];for(let i=0;i<=100;i++){const x=-5.5+i*.11;pts.push(new THREE.Vector3(x,y-(x/5.5)**2*.12*(y/.92),0))}scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),netMaterial))}cube(11.1,.08,.06,material(0xf5f5ef),0,.94,0,false);
-const wire=new THREE.MeshStandardMaterial({color:0x2a414c,wireframe:true,transparent:true,opacity:.22});const seatGroup=new THREE.Group();scene.add(seatGroup);
-for(const z of [-15.2,15.2]){const f=new THREE.Mesh(new THREE.BoxGeometry(16,.01,4.7),wire);f.position.set(0,2,z);scene.add(f);for(const x of [-8,0,8])cube(.07,4,.07,material(0x506874,.6,.3),x,2,z,false)}
-for(const x of [-8,8]){const f=new THREE.Mesh(new THREE.BoxGeometry(.01,4,30),wire);f.position.set(x,2,0);scene.add(f)}
-const seatMats=[0x285166,0x376b7b,0x24475b,0x4a7b86,0x315969].map(c=>material(c,.75));
-for(const side of [-1,1])for(let row=0;row<5;row++){const z=side*(17+row*1.02),y=.1+row*.43,tier=new THREE.Mesh(new THREE.BoxGeometry(27,.4,.9),material(0x435a66));tier.position.set(0,y-.15,z);seatGroup.add(tier);for(let x=-12.8;x<=12.8;x+=.62){const seat=new THREE.Mesh(new THREE.BoxGeometry(.45,.23,.38),seatMats[Math.floor(Math.random()*seatMats.length)]);seat.position.set(x,y+.12,z);seatGroup.add(seat);const back=new THREE.Mesh(new THREE.BoxGeometry(.45,.26,.07),seatMats[Math.floor(Math.random()*seatMats.length)]);back.position.set(x,y+.27,z-side*.14);seatGroup.add(back)}}
-for(const side of [-1,1]){const roof=new THREE.Mesh(new THREE.BoxGeometry(28,.3,4.5),material(0x2b414c,.5,.35));roof.position.set(0,3.3,side*22);seatGroup.add(roof)}
-// Venue architecture: separate from gameplay; toggled by the venue selector.
-const venueGroup=new THREE.Group();scene.add(venueGroup);
-const concrete=new THREE.MeshPhysicalMaterial({color:0x64757d,roughness:.68,metalness:.05,envMapIntensity:.7}),darkMetal=new THREE.MeshStandardMaterial({color:0x172a35,roughness:.3,metalness:.72,envMapIntensity:1.25}),glass=new THREE.MeshPhysicalMaterial({color:0x8cc6d8,roughness:.12,metalness:.12,transparent:true,opacity:.2,transmission:.12,thickness:.4,ior:1.45,side:THREE.DoubleSide,envMapIntensity:1.4}),ledMat=new THREE.MeshStandardMaterial({color:0x092532,emissive:0x00a9c9,emissiveIntensity:.8,roughness:.35});
-function venueBox(w,h,d,mat,x,y,z){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;venueGroup.add(m);return m}
-function beamBetween(a,b,r,mat){const va=new THREE.Vector3(...a),vb=new THREE.Vector3(...b),dir=new THREE.Vector3().subVectors(vb,va);const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,dir.length(),8),mat);m.position.copy(va).add(vb).multiplyScalar(.5);m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir.normalize());m.castShadow=true;venueGroup.add(m)}
-// Tall, tiered grandstands on both baselines and sides.
-for(const side of [-1,1]){
- for(let row=0;row<9;row++){
-  const z=side*(17.3+row*1.02),y=.25+row*.48;
-  venueBox(31,.42,.94,concrete,0,y-.16,z);
-  for(let x=-14.6;x<=14.6;x+=.52){
-   const seat=new THREE.Mesh(new THREE.BoxGeometry(.39,.2,.34),seatMats[Math.floor(Math.random()*seatMats.length)]);
-   seat.position.set(x,y+.1,z);seat.castShadow=true;venueGroup.add(seat);
+function buildArchitecture(){
+ addBox('Arena base plinth',architecture,[0,-.65,0],[31,.75,43],mats.darkConcrete);
+ addBox('Main concourse mass',architecture,[0,1.0,0],[28,.9,38],mats.concrete);
+ // layered seating bowl around court, open center
+ for(let tier=0;tier<5;tier++){
+  const y=.55+tier*.56,innerX=7.5+tier*.95,outerX=12.6+tier*.95,innerZ=12.1+tier*1.35,outerZ=17.2+tier*1.35;
+  for(const side of [-1,1]){
+   addBox('Tier riser '+tier,architecture,[side*(innerX+outerX)/2,y,(innerZ+outerZ)/2],[outerX-innerX,.22,outerZ-innerZ],mats.darkConcrete);
+   addBox('Tier front fascia '+tier,architecture,[side*(innerX+.1),y+.12,(innerZ+outerZ)/2],[.12,.2,outerZ-innerZ],mats.metal);
+  }
+  for(const side of [-1,1]){
+   addBox('End stand riser '+tier,architecture,[0,y,side*(innerZ+outerZ)/2],[outerX-innerX,.22,outerZ-innerZ],mats.darkConcrete);
   }
  }
-}
-for(const side of [-1,1]){
- for(let row=0;row<6;row++){
-  const x=side*(8.8+row*1.02),y=.2+row*.5;
-  venueBox(.9,.42,31,concrete,x,y-.16,0);
-  for(let z=-14.7;z<=14.7;z+=.62){
-   const seat=new THREE.Mesh(new THREE.BoxGeometry(.34,.2,.42),seatMats[Math.floor(Math.random()*seatMats.length)]);seat.position.set(x,y+.1,z);venueGroup.add(seat);
+ // structural pillars, beams and roof trusses
+ for(const x of [-14,-10,-6,6,10,14])for(const z of [-19,-14,14,19]){
+  addBox('Steel column',architecture,[x,5.7,z],[.28,10.5,.32],mats.metal);
+  addBox('Column base plate',architecture,[x,.65,z],[.62,.12,.66],mats.darkMetal);
+ }
+ for(let z=-20;z<=20;z+=4){
+  addBox('Roof cross beam',architecture,[0,11.1,z],[30,.22,.3],mats.darkMetal);
+  addLine('Roof diagonal A',architecture,[-14,10.9,z],[0,12.7,z+2],.13,mats.metal);
+  addLine('Roof diagonal B',architecture,[0,12.7,z+2],[14,10.9,z],.13,mats.metal);
+  addBox('Roof rib cap',architecture,[0,12.83,z+1],[.28,.12,3.9],mats.gold);
+ }
+ addBox('Roof canopy',architecture,[0,13.25,0],[31,.5,43],mats.trim);
+ // segmented glazed facade with mullions and entry doors
+ for(const side of [-1,1]){
+  for(let z=-18;z<=18;z+=2.4){
+   addBox('Facade glass bay',architecture,[side*14.15,2.6,z],[.06,3.3,2.22],mats.glass,{cast:false});
+   addBox('Facade mullion',architecture,[side*14.21,2.6,z-1.14],[.12,3.5,.09],mats.metal);
+   addBox('Facade transom',architecture,[side*14.21,3.9,z],[.12,.09,2.3],mats.metal);
+  }
+  for(let z of [-12,0,12]){
+   addBox('Double entrance door',architecture,[side*14.24,1.9,z],[.08,2.45,1.6],mats.darkMetal);
+   addBox('Door glazing',architecture,[side*14.29,2.1,z],[.035,1.85,1.35],mats.glass,{cast:false});
+   addBox('Door push plate',architecture,[side*14.32,1.5,z+.48],[.025,.35,.06],mats.gold,{cast:false});
+  }
+  for(let z=-16;z<=16;z+=4){
+   addBox('Ventilation grille',architecture,[side*14.25,4.55,z],[.07,.42,1.25],mats.darkMetal);
+   for(let j=0;j<6;j++)addBox('Vent slat',architecture,[side*14.3,4.4+j*.055,z],[.035,.018,1.12],mats.metal,{cast:false});
   }
  }
-}
-// Roof girders and translucent canopy frame for large event venues.
-for(const side of [-1,1]){
- beamBetween([-17,8,side*31],[17,8,side*31],.2,darkMetal);
- beamBetween([-17,8,side*31],[-11,11,side*22],.16,darkMetal);
- beamBetween([17,8,side*31],[11,11,side*22],.16,darkMetal);
- venueBox(34,.12,8,glass,0,10.9,side*27);
- for(let x=-16;x<=16;x+=4)beamBetween([x,8.1,side*31],[x,10.9,side*23],.075,darkMetal);
-}
-for(const side of [-1,1]){
- venueBox(31,.42,1.1,ledMat,0,5.15,side*16.5);
- const board=new THREE.Mesh(new THREE.PlaneGeometry(28,.27),new THREE.MeshBasicMaterial({color:0x00c6df}));board.position.set(0,5.16,side*15.93);if(side>0)board.rotation.y=Math.PI;venueGroup.add(board);
-}
-// Large suspended centre scoreboard, with dark glass and bright score panels.
-venueBox(5.8,2.7,.28,darkMetal,0,8.1,-21);
-for(const side of [-1,1]){const display=new THREE.Mesh(new THREE.PlaneGeometry(5.2,2.1),new THREE.MeshBasicMaterial({color:0x082b3c}));display.position.set(0,8.1,-21.16);if(side<0)display.rotation.y=Math.PI;venueGroup.add(display)}
-for(let x=-2;x<=2;x+=4)venueBox(.035,1.8,.025,material(0x58e6f7,.25,.2),x,8.1,-21.2);
-const indoorRoofGroup=new THREE.Group();scene.add(indoorRoofGroup);
-const roofPanel=new THREE.Mesh(new THREE.BoxGeometry(38,.22,54),new THREE.MeshStandardMaterial({color:0x263d4a,roughness:.65,metalness:.25,side:THREE.DoubleSide}));roofPanel.position.set(0,13,0);roofPanel.castShadow=true;roofPanel.receiveShadow=true;indoorRoofGroup.add(roofPanel);
-for(let x=-18;x<=18;x+=6){beamBetween([x,11.2,-25],[x,11.2,25],.12,darkMetal);beamBetween([x,11.2,-25],[x+3,13,-25],.08,darkMetal);beamBetween([x,11.2,25],[x+3,13,25],.08,darkMetal)}
-const roofLampMat=new THREE.MeshStandardMaterial({color:0xffffff,emissive:0x9feaff,emissiveIntensity:1.25});
-for(let x=-15;x<=15;x+=5){const lamp=new THREE.Mesh(new THREE.BoxGeometry(2.8,.07,.22),roofLampMat);lamp.position.set(x,12.82,0);indoorRoofGroup.add(lamp)}
-indoorRoofGroup.visible=false;
-const championshipGroup=new THREE.Group();scene.add(championshipGroup);
-for(const side of [-1,1]){const upper=new THREE.Mesh(new THREE.BoxGeometry(34,.35,1.5),material(0x283e49,.55,.35));upper.position.set(0,7.4,side*25);championshipGroup.add(upper);for(let x=-16;x<=16;x+=2){const rail=new THREE.Mesh(new THREE.BoxGeometry(.07,.7,.07),darkMetal);rail.position.set(x,7.8,side*24.25);championshipGroup.add(rail)}}
-const crown=new THREE.Mesh(new THREE.TorusGeometry(18,.14,8,80),darkMetal);crown.rotation.x=Math.PI/2;crown.position.y=8.7;championshipGroup.add(crown);
-championshipGroup.visible=false;
-// Dedicated stadium option: a clearly separate, large-scale bowl and roof.
-const stadiumGroup=new THREE.Group();scene.add(stadiumGroup);
-const stadiumConcrete=new THREE.MeshStandardMaterial({color:0x73818a,roughness:.62,metalness:.04,envMapIntensity:.72}),stadiumSteel=new THREE.MeshStandardMaterial({color:0x1b2b36,roughness:.27,metalness:.78,envMapIntensity:1.35});
-for(const side of [-1,1]){
- for(let row=0;row<12;row++){
-  const z=side*(17.5+row*1.13),y=.35+row*.48;
-  const tier=new THREE.Mesh(new THREE.BoxGeometry(34,.42,1.02),stadiumConcrete);
-  tier.position.set(0,y,z);tier.castShadow=true;tier.receiveShadow=true;stadiumGroup.add(tier);
-  for(let x=-16.1;x<=16.1;x+=.48){
-   const seat=new THREE.Mesh(new THREE.BoxGeometry(.36,.19,.3),seatMats[(Math.floor((x+16.1)*3)+row)%seatMats.length]);
-   seat.position.set(x,y+.28,z-side*.08);stadiumGroup.add(seat);
-  }
+ // perimeter fascia, LED strips, scoreboard
+ addBox('Scoreboard housing',architecture,[0,8.1,-17.9],[10,2.3,.5],mats.darkMetal);
+ const boardMat=mat('Scoreboard luminous display','#123544',.3,.15);boardMat.emissiveColor=new BABYLON.Color3(.015,.12,.17);
+ addBox('Scoreboard display',architecture,[0,8.1,-17.59],[9.45,1.72,.06],boardMat,{cast:false});
+ for(let x=-4;x<=4;x+=.6)addBox('Scoreboard segment',architecture,[x,8.15,-17.54],[.035,1.2,.02],mats.emergency,{cast:false});
+ for(const z of [-20.5,20.5])addBox('LED fascia strip',architecture,[0,9.6,z],[28,.08,.12],mats.gold,{cast:false});
+ // handrails along upper tiers
+ for(const side of [-1,1])for(let z=-17;z<=17;z+=.7){
+  addBox('Railing post',architecture,[side*12.8,4.25,z],[.055,.7,.055],mats.metal,{cast:false});
  }
+ for(const side of [-1,1])addBox('Railing top bar',architecture,[side*12.8,4.6,0],[.07,.07,34],mats.metal);
 }
-// Side stands make the court feel enclosed by a true stadium bowl.
-for(const side of [-1,1]){
+function buildSeats(){
+ const seatBase=BABYLON.MeshBuilder.CreateBox('Seat prototype',{width:.38,height:.18,depth:.34},scene);seatBase.material=mats.seat;
+ const seatBack=BABYLON.MeshBuilder.CreateBox('Seat back prototype',{width:.38,height:.3,depth:.07},scene);seatBack.material=mats.seat;
+ const seatLeg=BABYLON.MeshBuilder.CreateBox('Seat leg prototype',{width:.055,height:.18,depth:.06},scene);seatLeg.material=mats.darkMetal;
+ let count=0;
  for(let row=0;row<7;row++){
-  const x=side*(7.4+row*1.05),y=.28+row*.53;
-  const tier=new THREE.Mesh(new THREE.BoxGeometry(1, .42, 34),stadiumConcrete);tier.position.set(x,y,0);stadiumGroup.add(tier);
-  for(let z=-16.1;z<=16.1;z+=.55){const seat=new THREE.Mesh(new THREE.BoxGeometry(.29,.19,.35),seatMats[(Math.floor((z+16.1)*2)+row)%seatMats.length]);seat.position.set(x-side*.12,y+.27,z);stadiumGroup.add(seat)}
- }
-}
-// High cantilever roof ring and exposed trusswork.
-for(const side of [-1,1]){
- const roof=new THREE.Mesh(new THREE.BoxGeometry(39,.34,7.2),new THREE.MeshStandardMaterial({color:0x253b48,roughness:.55,metalness:.42,side:THREE.DoubleSide}));
- roof.position.set(0,10.4,side*27.8);roof.castShadow=true;stadiumGroup.add(roof);
- for(let x=-18;x<=18;x+=3){
-  const beam=new THREE.Mesh(new THREE.CylinderGeometry(.075,.075,Math.hypot(2.4,7.8),8),stadiumSteel);
-  beam.position.set(x,7.9,side*24);beam.rotation.x=side*.3;beam.rotation.z=.28;stadiumGroup.add(beam);
- }
- const fascia=new THREE.Mesh(new THREE.BoxGeometry(39,.62,.28),ledMat);fascia.position.set(0,9.95,side*31.3);stadiumGroup.add(fascia);
-}
-const stadiumScore=new THREE.Mesh(new THREE.BoxGeometry(6.8,3.2,.4),stadiumSteel);stadiumScore.position.set(0,8.1,-22.7);stadiumGroup.add(stadiumScore);
-for(const side of [-1,1]){const panel=new THREE.Mesh(new THREE.PlaneGeometry(6.2,2.6),new THREE.MeshBasicMaterial({color:0x063044}));panel.position.set(0,8.1,-22.48);if(side>0)panel.rotation.y=Math.PI;stadiumGroup.add(panel)}
-stadiumGroup.visible=false;
-
-// Fine architectural details: seat backs, metal supports, armrests, cup holders,
-// aisle stair treads, safety rails, fascia seams and concourse glazing.
-// Instanced meshes keep the extra detail affordable on phones and tablets.
-function addSeatDetailInstances(group, seats, {sideAxis='z'}={}){
- const count=seats.length;
- if(!count)return;
- const steel=new THREE.MeshStandardMaterial({color:0x263943,roughness:.34,metalness:.72,envMapIntensity:1.15});
- const shell=new THREE.MeshPhysicalMaterial({color:0x31596b,roughness:.42,metalness:.02,clearcoat:.32,clearcoatRoughness:.3,envMapIntensity:.8});
- const backGeo=new THREE.BoxGeometry(.34,.23,.055);
- const armGeo=new THREE.BoxGeometry(.045,.035,.28);
- const legGeo=new THREE.BoxGeometry(.035,.16,.035);
- const cupGeo=new THREE.CylinderGeometry(.045,.038,.055,10);
- const backs=new THREE.InstancedMesh(backGeo,shell,count);
- const arms=new THREE.InstancedMesh(armGeo,steel,count*2);
- const legs=new THREE.InstancedMesh(legGeo,steel,count*2);
- const cups=new THREE.InstancedMesh(cupGeo,steel,count);
- const dummy=new THREE.Object3D();let ai=0,li=0;
- for(let i=0;i<count;i++){
-  const s=seats[i];dummy.position.set(s.x,s.y+.13,s.z+(sideAxis==='z'?s.side*.13:0));
-  dummy.rotation.set(0,sideAxis==='z'?(s.side>0?Math.PI:0):Math.PI/2,sideAxis==='z'?-.06:0);dummy.updateMatrix();backs.setMatrixAt(i,dummy.matrix);
-  for(const sign of [-1,1]){
-   dummy.position.set(s.x+sign*.17,s.y+.025,s.z);dummy.rotation.set(0,0,0);dummy.updateMatrix();arms.setMatrixAt(ai++,dummy.matrix);
-   dummy.position.set(s.x+sign*.12,s.y-.065,s.z);dummy.scale.set(1,1,1);dummy.updateMatrix();legs.setMatrixAt(li++,dummy.matrix);
-  }
-  dummy.position.set(s.x+.105,s.y+.055,s.z-.035);dummy.scale.set(1,1,1);dummy.updateMatrix();cups.setMatrixAt(i,dummy.matrix);
- }
- for(const m of [backs,arms,legs,cups]){m.castShadow=true;m.receiveShadow=true;group.add(m)}
-}
-function addAisleAndVenueDetails(group, sideRows, endRows, stadium=false){
- const railMat=new THREE.MeshStandardMaterial({color:0x4d6570,roughness:.3,metalness:.78,envMapIntensity:1.25});
- const stepMat=new THREE.MeshStandardMaterial({color:0x9ca8aa,roughness:.78,metalness:.02});
- const ledStrip=new THREE.MeshStandardMaterial({color:0x172d38,roughness:.3,metalness:.45,emissive:0x007b91,emissiveIntensity:.32});
- const inst=(geo,mat,items)=>{if(!items.length)return;const m=new THREE.InstancedMesh(geo,mat,items.length),o=new THREE.Object3D();items.forEach((p,i)=>{o.position.set(p[0],p[1],p[2]);o.rotation.set(p[3]||0,p[4]||0,p[5]||0);o.scale.set(p[6]||1,p[7]||1,p[8]||1);o.updateMatrix();m.setMatrixAt(i,o.matrix)});m.castShadow=true;m.receiveShadow=true;group.add(m)};
- const rails=[],treads=[],leds=[],joints=[];
- for(const side of [-1,1]){
-  for(let row=0;row<endRows;row++){
-   const z=side*(17.5+row*(stadium?1.13:1.02)),y=.35+row*(stadium?.48:.48);
-   treads.push([0,y+.035,z-side*.46,0,0,0,stadium?31:29,.035,.035]);
-   leds.push([0,y+.06,z-side*.49,0,0,0,stadium?30:28,.018,.018]);
-   if(row%3===0){rails.push([stadium?16.6:15.2,y+.45,z-side*.45,0,0,0,.035,.42,.035]);rails.push([stadium?-16.6:-15.2,y+.45,z-side*.45,0,0,0,.035,.42,.035])}
-  }
-  for(let row=0;row<sideRows;row++){
-   const x=side*(stadium?7.4+row*1.05:8.8+row*1.02),y=.2+row*.5;
-   treads.push([x-side*.43,y+.035,0,0,0,0,.035,.035,stadium?31:28]);
-   leds.push([x-side*.46,y+.06,0,0,0,0,.018,.018,stadium?30:27]);
-   if(row%3===0){rails.push([x-side*.43,y+.45,16.2,0,0,0,.035,.42,.035]);rails.push([x-side*.43,y+.45,-16.2,0,0,0,.035,.42,.035])}
-  }
- }
- // Row-edge nosings and subtle LED strips make the tier geometry legible.
- inst(new THREE.BoxGeometry(1,1,1),stepMat,treads);
- inst(new THREE.BoxGeometry(1,1,1),ledStrip,leds);
- inst(new THREE.BoxGeometry(1,1,1),railMat,rails);
- // Concourse pillars, glazed entry bays, and service doors behind the upper rows.
- for(const side of [-1,1]){
-  for(let x=-15;x<=15;x+=5){
-   const pillar=new THREE.Mesh(new THREE.BoxGeometry(.22,2.4,.22),railMat);pillar.position.set(x,5.8,side*29.4);pillar.castShadow=true;group.add(pillar);
-   const bay=new THREE.Mesh(new THREE.BoxGeometry(4.5,1.45,.045),new THREE.MeshPhysicalMaterial({color:0x8bb9c8,roughness:.2,metalness:.2,transparent:true,opacity:.24,envMapIntensity:1.1}));bay.position.set(x,5.85,side*29.25);group.add(bay);
-   const door=new THREE.Mesh(new THREE.BoxGeometry(.72,1.65,.06),new THREE.MeshStandardMaterial({color:0x142b37,roughness:.45,metalness:.25}));door.position.set(x+1.3,5.55,side*29.18);group.add(door);
-  }
- }
-}
-const standardSeatPositions=[];
-for(const side of [-1,1])for(let row=0;row<5;row++)for(let x=-12.8;x<=12.8;x+=.62)standardSeatPositions.push({x,y:.1+row*.43+.12,z:side*(17+row*1.02),side});
-addSeatDetailInstances(seatGroup,standardSeatPositions);
-const venueSeatPositions=[];
-for(const side of [-1,1]){
- for(let row=0;row<9;row++)for(let x=-14.6;x<=14.6;x+=.52)venueSeatPositions.push({x,y:.25+row*.48+.1,z:side*(17.3+row*1.02),side});
- for(let row=0;row<6;row++)for(let z=-14.7;z<=14.7;z+=.62)venueSeatPositions.push({x:side*(8.8+row*1.02),y:.2+row*.5+.1,z,side});
-}
-addSeatDetailInstances(venueGroup,venueSeatPositions);
-addAisleAndVenueDetails(venueGroup,6,9,false);
-const stadiumSeatPositions=[];
-for(const side of [-1,1]){
- for(let row=0;row<12;row++)for(let x=-16.1;x<=16.1;x+=.48)stadiumSeatPositions.push({x,y:.35+row*.48+.28,z:side*(17.5+row*1.13),side});
- for(let row=0;row<7;row++)for(let z=-16.1;z<=16.1;z+=.55)stadiumSeatPositions.push({x:side*(7.4+row*1.05),y:.28+row*.53+.27,z,side});
-}
-addSeatDetailInstances(stadiumGroup,stadiumSeatPositions);
-addAisleAndVenueDetails(stadiumGroup,7,12,true);
-
-// High-detail empty grandstand finish: seat-number tabs, shell seams, aisle steps,
-// handrail posts, roof ribs, expansion joints and exposed fasteners.
-function addEmptyVenueFinish(group,{endRows,sideRows,stadium=false}){
- const seatNumberMat=new THREE.MeshStandardMaterial({color:0xd7e5e8,roughness:.38,metalness:.12,emissive:0x12232a,emissiveIntensity:.12});
- const seatSeamMat=new THREE.MeshStandardMaterial({color:0x132d39,roughness:.7,metalness:.08});
- const concreteJointMat=new THREE.MeshStandardMaterial({color:0x344954,roughness:.9,metalness:0});
- const railMat=new THREE.MeshStandardMaterial({color:0x8b9da3,roughness:.24,metalness:.82,envMapIntensity:1.4});
- const roofMat=new THREE.MeshStandardMaterial({color:0x3b505b,roughness:.42,metalness:.58,envMapIntensity:1.3});
- const numberGeo=new THREE.BoxGeometry(.055,.045,.012),seamGeo=new THREE.BoxGeometry(.012,.018,.34);
- const numbers=[],seams=[],joints=[],roofRibs=[],posts=[],handrails=[];
- for(const side of [-1,1]){
-  const rows=endRows;
-  for(let row=0;row<rows;row++){
-   const z=side*(stadium?17.5+row*1.13:17.3+row*1.02),y=.35+row*.48;
-   // Subtle joints on concrete risers and small seat-number markers at regular intervals.
-   for(let x=-14;x<=14;x+=2){
-    joints.push([x,y-.16,z+side*.475,0,0,0,.035,.24,.012]);
-    numbers.push([x+.2,y+.18,z-side*.17,0,side>0?Math.PI:0,0,1,1,1]);
-   }
-   // Roof purlins are repeated metal strips, not a single featureless slab.
-   if(stadium&&row===rows-1)for(let x=-18;x<=18;x+=1.5)roofRibs.push([x,10.58,side*27.8,0,0,0,.035,.09,7.05]);
-  }
-  for(let row=0;row<sideRows;row++){
-   const x=side*(stadium?7.4+row*1.05:8.8+row*1.02),y=.28+row*.5;
-   for(let z=-14;z<=14;z+=2){joints.push([x+side*.46,y-.16,z,0,0,0,.012,.24,.035]);numbers.push([x-side*.17,y+.18,z+.2,0,side>0?Math.PI/2:-Math.PI/2,0,1,1,1])}
-  }
-  // Long handrails with evenly spaced vertical balusters along concourse edges.
-  for(let h=0;h<3;h++){
-   const railY=5.3+h*.42,railZ=side*(stadium?29.6:28.8);
-   handrails.push([0,railY,railZ,0,0,0,stadium?32:29,.025,.025]);
-   for(let x=-15;x<=15;x+=1.25)posts.push([x,railY-.2,railZ,0,0,0,.022,.22,.022]);
-  }
- }
- const inst=(geo,mat,items)=>{if(!items.length)return;const m=new THREE.InstancedMesh(geo,mat,items.length),o=new THREE.Object3D();for(let i=0;i<items.length;i++){const p=items[i];o.position.set(p[0],p[1],p[2]);o.rotation.set(p[3]||0,p[4]||0,p[5]||0);o.scale.set(p[6]||1,p[7]||1,p[8]||1);o.updateMatrix();m.setMatrixAt(i,o.matrix)}m.castShadow=true;m.receiveShadow=true;group.add(m)};
- inst(numberGeo,seatNumberMat,numbers);
- inst(seamGeo,seatSeamMat,seams);
- inst(new THREE.BoxGeometry(1,1,1),concreteJointMat,joints);
- inst(new THREE.BoxGeometry(1,1,1),roofMat,roofRibs);
- inst(new THREE.BoxGeometry(1,1,1),railMat,posts);
- inst(new THREE.BoxGeometry(1,1,1),railMat,handrails);
- // Fine perimeter details: facade expansion joints, drainage grates and wall-panel seams.
- const facadeMat=new THREE.MeshStandardMaterial({color:0x2a404a,roughness:.58,metalness:.36});
- for(const side of [-1,1]){
-  for(let x=-16;x<=16;x+=2){
-   const joint=new THREE.Mesh(new THREE.BoxGeometry(.025,1.8,.035),facadeMat);joint.position.set(x,4.9,side*(stadium?30.3:29.1));group.add(joint);
-   const bolt=new THREE.Mesh(new THREE.SphereGeometry(.035,8,6),railMat);bolt.position.set(x,5.75,side*(stadium?30.35:29.15));group.add(bolt);
-  }
-  const drain=new THREE.Mesh(new THREE.BoxGeometry(stadium?34:30,.025,.18),new THREE.MeshStandardMaterial({color:0x1c2b32,roughness:.6,metalness:.45}));drain.position.set(0,.08,side*(stadium?16.6:16.4));group.add(drain);
-  for(let i=0;i<45;i++){const slit=new THREE.Mesh(new THREE.BoxGeometry(.018,.028,.13),railMat);slit.position.set(-16.5+i*.75,.095,side*(stadium?16.6:16.4));group.add(slit)}
- }
-}
-addEmptyVenueFinish(venueGroup,{endRows:9,sideRows:6});
-addEmptyVenueFinish(stadiumGroup,{endRows:12,sideRows:7,stadium:true});
-// Ultra-detail pass for EVERY venue: expansion joints, structural bolts, cable trays,
-// acoustic ceiling panels, light housings, glass mullions and service access details.
-// Repeated micro-geometry is instanced to keep draw calls manageable on mobile.
-function addArchitecturalMicrodetail(group, kind){
- const steel=new THREE.MeshStandardMaterial({color:0x354b56,roughness:.32,metalness:.78,envMapIntensity:1.25});
- const brushed=new THREE.MeshStandardMaterial({color:0x82949a,roughness:.27,metalness:.84,envMapIntensity:1.35});
- const dark=new THREE.MeshStandardMaterial({color:0x142832,roughness:.72,metalness:.18});
- const concreteJoint=new THREE.MeshStandardMaterial({color:0x465a63,roughness:.92});
- const luminous=new THREE.MeshStandardMaterial({color:0xe7f8ff,emissive:0x91dcff,emissiveIntensity:1.4,roughness:.22});
- const inst=(geo,mat,arr)=>{if(!arr.length)return;const mesh=new THREE.InstancedMesh(geo,mat,arr.length),o=new THREE.Object3D();for(let i=0;i<arr.length;i++){const p=arr[i];o.position.set(p[0],p[1],p[2]);o.rotation.set(p[3]||0,p[4]||0,p[5]||0);o.scale.set(p[6]||1,p[7]||1,p[8]||1);o.updateMatrix();mesh.setMatrixAt(i,o.matrix)}mesh.castShadow=true;mesh.receiveShadow=true;mesh.instanceMatrix.needsUpdate=true;group.add(mesh)};
- const bolts=[],facadeSeams=[],cables=[],lightBars=[],roofCross=[];
- const isStadium=kind==='stadium',isGrand=kind==='grand',isIndoor=kind==='indoor',isStandard=kind==='standard';
- const halfZ=isStandard?15.8:isIndoor?28:isStadium?32:30;
- const facadeX=isStandard?7.9:isIndoor?19:isStadium?18:16;
- // Individual visible bolts at structural connection plates.
- for(const side of [-1,1]){
-  for(let x=-facadeX;x<=facadeX;x+=isStandard?1.3:1.6){
-   for(const y of (isIndoor?[4.2,6.2,8.2,10.2]:[3.8,5.4,7])){
-    bolts.push([x,y,side*(halfZ-.08),0,0,0,.07,.07,.035]);
-   }
-   if(!isIndoor){facadeSeams.push([x,4.7,side*(halfZ-.13),0,0,0,.018,2.8,.025])}
-  }
-  // Surface drainage and cable-protection channels at the perimeter.
-  for(let x=-facadeX;x<facadeX;x+=.42)cables.push([x,.03,side*(isStandard?15.95:16.35),0,0,0,.018,.045,.14]);
- }
- // Roof service catwalks and repeated cross-bracing: actual members, not a flat roof silhouette.
- if(isIndoor||isGrand||isStadium){
-  const roofY=isIndoor?11.15:isStadium?9.95:7.45;
-  const span=isIndoor?18:isStadium?18:16;
-  for(let x=-span;x<=span;x+=2){
-   roofCross.push([x,roofY,0,0,0,0,.055,.055,isIndoor?25:22]);
-   roofCross.push([x,roofY-.24,0,0,0,0,.035,.035,isIndoor?24:21]);
-   for(const z of (isIndoor?[-22,-11,0,11,22]:[-25,-12,0,12,25])){
-    bolts.push([x,roofY+.08,z,0,0,0,.055,.055,.055]);
+  const y=1.05+row*.53;
+  for(let z=-17.2;z<=17.2;z+=.72){
+   for(const side of [-1,1]){
+    const x=side*(8.5+row*.78);
+    const a=seatBase.createInstance('seat '+count);a.position.set(x,y,z);a.parent=seatRoot;
+    const b=seatBack.createInstance('seat back '+count);b.position.set(x,y+.19,z-.13);b.parent=seatRoot;
+    const l=seatLeg.createInstance('seat leg '+count);l.position.set(x-.12,y-.13,z);l.parent=seatRoot;
+    const l2=seatLeg.createInstance('seat leg '+count);l2.position.set(x+.12,y-.13,z);l2.parent=seatRoot;
+    count++;
    }
   }
-  for(let x=-span;x<=span;x+=4){
-   lightBars.push([x,isIndoor?12.72:isStadium?9.55:7.05,0,0,0,0,isIndoor?2.6:2.2,.045,.22]);
-  }
- }
- inst(new THREE.SphereGeometry(1,8,6),brushed,bolts);
- inst(new THREE.BoxGeometry(1,1,1),concreteJoint,facadeSeams);
- inst(new THREE.BoxGeometry(1,1,1),dark,cables);
- inst(new THREE.BoxGeometry(1,1,1),steel,roofCross);
- inst(new THREE.BoxGeometry(1,1,1),luminous,lightBars);
- // Secondary mullions and door hardware behind the stands, with consistent spacing.
- if(!isStandard){
-  const mullions=[];
-  for(const side of [-1,1])for(let x=-facadeX;x<=facadeX;x+=.8){
-   mullions.push([x,5.75,side*(halfZ-.18),0,0,0,.025,1.35,.025]);
-  }
-  inst(new THREE.BoxGeometry(1,1,1),brushed,mullions);
- }
-}
-addArchitecturalMicrodetail(seatGroup,'standard');
-addArchitecturalMicrodetail(venueGroup,'grand');
-addArchitecturalMicrodetail(stadiumGroup,'stadium');
-addArchitecturalMicrodetail(championshipGroup,'grand');
-addArchitecturalMicrodetail(indoorRoofGroup,'indoor');
-// More convincing layered venue lighting: low-intensity architectural strips and night-session pools.
-const architecturalLights=[];
-for(const side of [-1,1]){
- for(let x=-15;x<=15;x+=5){
-  const strip=new THREE.Mesh(new THREE.BoxGeometry(3.8,.035,.055),new THREE.MeshStandardMaterial({color:0xe7f7ff,emissive:0x70dfff,emissiveIntensity:.85,roughness:.25}));
-  strip.position.set(x,5.02,side*29.12);venueGroup.add(strip);
-  const point=new THREE.PointLight(0x8bdcff,.28,7,2);point.position.set(x,5.1,side*28.5);venueGroup.add(point);architecturalLights.push(point);
- }
-}
-for(let x=-15;x<=15;x+=5){
- const fixture=new THREE.Mesh(new THREE.BoxGeometry(2.4,.09,.35),new THREE.MeshStandardMaterial({color:0xf3fbff,emissive:0xb8eaff,emissiveIntensity:1.15,roughness:.2}));
- fixture.position.set(x,9.42,0);indoorRoofGroup.add(fixture);
-}
-
-// Photorealism pass: layered façade construction, service infrastructure and stadium-grade fixtures.
-function addVenueRealismPass(group, profile){
- const metal=new THREE.MeshStandardMaterial({color:0x263943,roughness:.31,metalness:.82,envMapIntensity:1.4});
- const aluminum=new THREE.MeshStandardMaterial({color:0x91a2a8,roughness:.24,metalness:.88,envMapIntensity:1.45});
- const rubber=new THREE.MeshStandardMaterial({color:0x101b21,roughness:.86,metalness:.02});
- const glassPanel=new THREE.MeshPhysicalMaterial({color:0x9bc7d5,roughness:.16,metalness:.18,transparent:true,opacity:.28,transmission:.08,thickness:.18,ior:1.46,side:THREE.DoubleSide,envMapIntensity:1.25});
- const signMat=new THREE.MeshStandardMaterial({color:0x0a202b,roughness:.4,metalness:.25,emissive:0x062b3c,emissiveIntensity:.5});
- const exitMat=new THREE.MeshStandardMaterial({color:0xd8f3e8,roughness:.3,emissive:0x4aff9a,emissiveIntensity:.65});
- const panels=[],mullions=[],doorFrames=[],vents=[],fasteners=[],truss=[];
- const indoor=profile==='indoor',stadium=profile==='stadium',standard=profile==='standard';
- const width=standard?15:stadium?18:17;
- const depth=standard?17:indoor?27:stadium?31:29;
- const wallY=standard?3.1:indoor?7.2:stadium?6.3:6.1;
- const faceZ=depth;
- // Repeated architectural bays with inset glazing, frame members, door headers and kick plates.
- for(const side of [-1,1]){
-  for(let x=-width;x<=width;x+=4){
-   panels.push([x,wallY,side*(faceZ-.16),0,0,0,3.45,1.65,.035]);
-   mullions.push([x-1.72,wallY,side*(faceZ-.11),0,0,0,.045,1.8,.07]);
-   mullions.push([x+1.72,wallY,side*(faceZ-.11),0,0,0,.045,1.8,.07]);
-   mullions.push([x,wallY-.88,side*(faceZ-.1),0,0,0,3.5,.035,.06]);
-   // Door frame and kick plate at alternating service bays.
-   if(Math.round((x+width)/4)%2===0){
-    doorFrames.push([x+1.0,wallY-.18,side*(faceZ-.07),0,0,0,.78,1.75,.07]);
-    doorFrames.push([x+1.0,wallY-.98,side*(faceZ-.02),0,0,0,.7,.045,.025]);
-    fasteners.push([x+.65,wallY-.15,side*(faceZ-.005),0,0,0,.035,.035,.02]);
+  for(let x=-10.7;x<=10.7;x+=.72){
+   for(const side of [-1,1]){
+    const z=side*(13.4+row*.65);
+    const a=seatBase.createInstance('end seat '+count);a.position.set(x,y,z);a.parent=seatRoot;
+    const b=seatBack.createInstance('end seat back '+count);b.position.set(x,y+.19,z-side*.13);b.parent=seatRoot;b.rotation.y=side===1?Math.PI:0;
+    const l=seatLeg.createInstance('end seat leg '+count);l.position.set(x,y-.13,z);l.parent=seatRoot;count++;
    }
-   // Rectangular ventilation grilles below the upper concourse.
-   vents.push([x,wallY-1.35,side*(faceZ-.08),0,0,0,1.15,.12,.06]);
-   for(let k=0;k<7;k++)vents.push([x-.48+k*.16,wallY-1.35,side*(faceZ-.035),0,0,0,.018,.085,.018]);
   }
  }
- const inst=(geo,mat,arr)=>{if(!arr.length)return;const mesh=new THREE.InstancedMesh(geo,mat,arr.length),o=new THREE.Object3D();for(let i=0;i<arr.length;i++){const p=arr[i];o.position.set(p[0],p[1],p[2]);o.rotation.set(p[3]||0,p[4]||0,p[5]||0);o.scale.set(p[6]||1,p[7]||1,p[8]||1);o.updateMatrix();mesh.setMatrixAt(i,o.matrix)}mesh.castShadow=true;mesh.receiveShadow=true;mesh.instanceMatrix.needsUpdate=true;group.add(mesh)};
- inst(new THREE.BoxGeometry(1,1,1),glassPanel,panels);
- inst(new THREE.BoxGeometry(1,1,1),aluminum,mullions);
- inst(new THREE.BoxGeometry(1,1,1),metal,doorFrames);
- inst(new THREE.BoxGeometry(1,1,1),rubber,vents);
- inst(new THREE.CylinderGeometry(1,1,1,8),aluminum,fasteners);
- // Exit signs and emergency fixtures, deliberately restrained in brightness.
- const signs=[];
- for(const side of [-1,1])for(let x=-width+2;x<=width;x+=8){
-  signs.push([x,wallY+.95,side*(faceZ-.05),0,0,0,.55,.18,.035]);
-  const sign=new THREE.Mesh(new THREE.BoxGeometry(.5,.14,.025),exitMat);
-  sign.position.set(x,wallY+.95,side*(faceZ-.015));group.add(sign);
- }
- inst(new THREE.BoxGeometry(1,1,1),signMat,signs);
- // Roof maintenance rails, service walkways and triangular truss braces.
- if(!standard){
-  const y=indoor?11.05:stadium?9.85:7.25;
-  const span=indoor?18:stadium?18:16;
-  for(let x=-span;x<span;x+=2){
-   truss.push([x+1,y,0,0,0,0,1.95,.045,.045]);
-   truss.push([x+1,y-.55,0,0,0,0,1.95,.04,.04]);
-   truss.push([x+.5,y-.27,0,0,0,-.28,1.15,.035,.035]);
-   truss.push([x+1.5,y-.27,0,0,0,.28,1.15,.035,.035]);
-  }
-  inst(new THREE.BoxGeometry(1,1,1),metal,truss);
-  // Narrow catwalk and its safety rails below the roof.
-  const walk=new THREE.Mesh(new THREE.BoxGeometry(span*2,.08,1.05),rubber);
-  walk.position.set(0,y-.85,0);group.add(walk);
-  for(const z of [-.48,.48]){
-   const rail=new THREE.Mesh(new THREE.BoxGeometry(span*2,.035,.035),aluminum);
-   rail.position.set(0,y-.47,z);group.add(rail);
-   for(let x=-span;x<=span;x+=1.5){const post=new THREE.Mesh(new THREE.BoxGeometry(.025,.4,.025),metal);post.position.set(x,y-.66,z);group.add(post)}
-  }
- }
- // Fine LED strips sit in recessed housings instead of floating as isolated bright bars.
- for(const side of [-1,1]){
-  const housing=new THREE.Mesh(new THREE.BoxGeometry(width*2,.09,.12),metal);
-  housing.position.set(0,wallY+1.18,side*(faceZ-.03));group.add(housing);
-  const led=new THREE.Mesh(new THREE.BoxGeometry(width*2-.1,.025,.035),new THREE.MeshStandardMaterial({color:0xd7f5ff,emissive:0x8ddfff,emissiveIntensity:profile==='night'?1.6:.48,roughness:.24}));
-  led.position.set(0,wallY+1.23,side*(faceZ-.005));group.add(led);
+ seatBase.dispose();seatBack.dispose();seatLeg.dispose();
+}
+function buildLights(){
+ for(const side of [-1,1])for(const z of [-15,0,15]){
+  const x=side*12.3;
+  addBox('Floodlight tower base',lightRoot,[x,6,z],[.38,8,.38],mats.darkMetal);
+  addBox('Floodlight bank',lightRoot,[x,10.2,z],[1.9,.55,1.05],mats.metal);
+  for(let i=0;i<5;i++)addBox('LED optic',lightRoot,[x-.72+i*.36,10.2,z-.55],[.22,.18,.035],glowMat);
  }
 }
-addVenueRealismPass(seatGroup,'standard');
-addVenueRealismPass(venueGroup,'grand');
-addVenueRealismPass(stadiumGroup,'stadium');
-addVenueRealismPass(championshipGroup,'grand');
-addVenueRealismPass(indoorRoofGroup,'indoor');
-
-// Improve highlight response and shadow softness while retaining mobile-friendly rendering.
-renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-renderer.toneMappingExposure=1.02;
-sun.shadow.normalBias=.025;
-sun.shadow.radius=3;
-
-venueGroup.visible=false;
-const spotlights=[];for(const x of [-15,15])for(const z of [-16,16]){const pole=new THREE.Mesh(new THREE.CylinderGeometry(.11,.16,8.5,12),material(0x526875,.4,.5));pole.position.set(x,4.25,z);pole.castShadow=true;scene.add(pole);cube(2.2,.18,.4,material(0x283b48,.4,.4),x,8.55,z);for(let i=0;i<5;i++){const lamp=new THREE.Mesh(new THREE.BoxGeometry(.27,.07,.22),new THREE.MeshStandardMaterial({color:0xf0fbff,emissive:0x7bdcff,emissiveIntensity:.6}));lamp.position.set(x-.75+i*.375,8.42,z);scene.add(lamp)}const spot=new THREE.SpotLight(0xeaf8ff,2,35,Math.PI/5,.5,1.4);spot.position.set(x,8.3,z);spot.target.position.set(0,0,0);scene.add(spot,spot.target);spotlights.push(spot)}
-for(const z of [-17,17]){cube(4.1,2,.18,material(0x101d26,.3,.4),0,3,z);const screen=new THREE.Mesh(new THREE.PlaneGeometry(3.8,1.7),new THREE.MeshStandardMaterial({color:0x082b3a,emissive:0x0b536a,emissiveIntensity:.55}));screen.position.set(0,3,z+(z<0?.1:-.1));if(z>0)screen.rotation.y=Math.PI;scene.add(screen)}
-for(const z of [-13.7,13.7]){cube(4,.15,.45,material(0x2a424c,.5,.3),0,.27,z);for(const x of [-1.6,1.6])cube(.12,.45,.12,material(0x263a44,.5,.3),x,.03,z)}
-const ball=new THREE.Mesh(new THREE.SphereGeometry(.17,24,18),material(0xd8ed5c,.55));ball.position.set(-2.5,.28,3.2);ball.castShadow=true;scene.add(ball);for(let i=0;i<2;i++){const seam=new THREE.Mesh(new THREE.TorusGeometry(.12,.006,5,36),new THREE.MeshBasicMaterial({color:0xf7ffbe}));seam.scale.set(1,.68,1);seam.rotation.set(.7+i*.6,.4+i*.7,.3);ball.add(seam)}
-function view(v){orbit.target.set(0,.6,0);if(v==='play'){camera.position.set(4.5,7,21);orbit.target.set(0,.6,-1.2)}else if(v==='top'){camera.position.set(0,25,3.8)}else{camera.position.set(0,2.6,22)}orbit.update();document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===v))}
-[['play','play'],['topview','top'],['low','low']].forEach(([id,v])=>{document.getElementById(id).dataset.view=v;document.getElementById(id).onclick=()=>view(v)});
-const venueStyles={standard:{title:'スタンダードコート',eyebrow:'ENVIRONMENT / 01'},stadium:{title:'テニススタジアム',eyebrow:'VENUE / STADIUM'},grand:{title:'大会スタジアム',eyebrow:'VENUE / CHAMPIONSHIP'},indoor:{title:'インドアアリーナ',eyebrow:'VENUE / INDOOR ARENA'},night:{title:'ナイトスタジアム',eyebrow:'VENUE / NIGHT SESSION'}};
-let currentVenue='standard';
-function setVenue(type){if(!venueStyles[type])return;currentVenue=type;venueGroup.visible=type!=='standard'&&type!=='stadium';stadiumGroup.visible=type==='stadium';seatGroup.visible=seatsOn&&type==='standard';indoorRoofGroup.visible=type==='indoor';championshipGroup.visible=type==='grand';if(type==='standard'){camera.position.set(4.5,7,21);orbit.target.set(0,.6,-1.2)}else if(type==='indoor'){camera.position.set(0,17,39);orbit.target.set(0,3,0)}else if(type==='stadium'){camera.position.set(0,21,43);orbit.target.set(0,4.5,0)}else{camera.position.set(0,17,39);orbit.target.set(0,3,0)}orbit.update();venueGroup.traverse(o=>{if(o.material&&o.material.emissive&&o.material===ledMat)o.material.emissiveIntensity=type==='night'?2.4:.8});
-scene.background.set(type==='night'?0x071522:type==='indoor'?0x526b7b:0x9fb8c5);scene.fog.color.set(type==='night'?0x071522:type==='indoor'?0x526b7b:0x9fb8c5);
-sun.intensity=type==='night'?.35:type==='indoor'?1.5:3.2;fill.intensity=type==='night'?.35:1.15;spotlights.forEach(s=>{s.intensity=lightsOn?(type==='night'?3.5:type==='indoor'?1.3:2):0});
-document.querySelectorAll('[data-venue]').forEach(b=>b.classList.toggle('active',b.dataset.venue===type));document.querySelector('.panel h1').textContent=venueStyles[type].title;document.querySelector('.panel .eyebrow').textContent=venueStyles[type].eyebrow;
+const glowMat=mat('LED lamp glow','#eaf9ff',.25);glowMat.emissiveColor=new BABYLON.Color3(.8,.92,1);
+buildArchitecture();buildSeats();buildLights();makeCourtSurface('hard');
+const venueInfo={standard:['標準','コートを中心に、すっきりした屋外スポーツ施設の構成。'],stadium:['スタジアム','大型スタンドと構造フレームを備えた開放感のある会場。'],grand:['大会会場','大規模な屋根構造、観客席、ガラス外壁、照明設備を備えたスポーツアリーナ。'],indoor:['屋内アリーナ','屋根と外壁に包まれた屋内競技施設の雰囲気。'],night:['ナイト','夜間照明と発光ディスプレイを強調したナイトイベント仕様。']};
+let activeVenue='grand',activeSurface='hard',seatsVisible=true,lightsVisible=true;
+function setVenue(v){
+ activeVenue=v;const info=venueInfo[v];document.getElementById('venueTitle').textContent=info[0];document.getElementById('venueDesc').textContent=info[1];
+ const night=v==='night';sun.intensity=night?.35:2.05;hemi.intensity=night?.24:.68;scene.clearColor=night?new BABYLON.Color4(.025,.055,.09,1):new BABYLON.Color4(.48,.62,.69,1);
+ architecture.getChildMeshes().forEach(m=>{if(m.name==='Roof canopy')m.isVisible=v!=='standard';});
+ document.querySelectorAll('[data-venue]').forEach(b=>b.classList.toggle('active',b.dataset.venue===v));
+ camera.alpha=v==='standard'?-Math.PI/2.1:v==='stadium'?-Math.PI/2.5:v==='indoor'?-Math.PI/2.0:-Math.PI/2.18;
 }
+function setSurface(s){activeSurface=s;makeCourtSurface(s);document.querySelectorAll('[data-surface]').forEach(b=>b.classList.toggle('active',b.dataset.surface===s));}
 document.querySelectorAll('[data-venue]').forEach(b=>b.addEventListener('click',()=>setVenue(b.dataset.venue)));
-const courtStyles={hard:{apron:0x244454,title:'ハードコート'},clay:{apron:0x7d3827,title:'クレーコート'},grass:{apron:0x254d35,title:'芝コート'},indoor:{apron:0x6e5134,title:'インドアコート'}};
-function setCourtType(type){if(!surfaceTextures[type])return;courtMaterial.map=surfaceTextures[type].map;courtMaterial.roughnessMap=surfaceTextures[type].roughnessMap;courtMaterial.bumpMap=surfaceTextures[type].bumpMap;courtMaterial.normalMap=surfaceTextures[type].normalMap;courtMaterial.roughness=type==='indoor'?.48:type==='hard'?.64:type==='clay'?.9:.82;courtMaterial.clearcoat=type==='indoor'?.34:type==='hard'?.24:type==='clay'?.04:.08;courtMaterial.clearcoatRoughness=type==='indoor'?.24:type==='hard'?.34:.7;courtMaterial.envMapIntensity=type==='indoor'?1.05:type==='hard'?.82:.45;courtMaterial.bumpScale=type==='grass'?.032:type==='clay'?.024:.012;courtMaterial.normalScale.set(type==='grass'?.65:.42,type==='grass'?.65:.42);courtMaterial.needsUpdate=true;apronMat.color.setHex(courtStyles[type].apron);document.querySelectorAll('[data-court]').forEach(b=>b.classList.toggle('active',b.dataset.court===type));document.querySelector('.panel h1').textContent=courtStyles[type].title;document.querySelector('.panel .eyebrow').textContent='ENVIRONMENT / '+({hard:'01',clay:'02',grass:'03',indoor:'04'}[type]);}
-document.querySelectorAll('[data-court]').forEach(b=>b.addEventListener('click',()=>setCourtType(b.dataset.court)));
-let seatsOn=true,lightsOn=true;document.getElementById('seats').onclick=e=>{seatsOn=!seatsOn;seatGroup.visible=seatsOn&&currentVenue==='standard';e.currentTarget.classList.toggle('active',seatsOn);e.currentTarget.textContent='観客席 '+(seatsOn?'ON':'OFF')};document.getElementById('lights').onclick=e=>{lightsOn=!lightsOn;spotlights.forEach(s=>s.intensity=lightsOn?2:0);e.currentTarget.classList.toggle('active',lightsOn);e.currentTarget.textContent='照明 '+(lightsOn?'ON':'OFF')};document.getElementById('reset').onclick=()=>{view('play');orbit.reset();setVenue('standard');setCourtType('hard')};
-function animate(){requestAnimationFrame(animate);orbit.update();renderer.render(scene,camera)}animate();addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;if(innerWidth<innerHeight&&innerWidth<=800){camera.fov=55;camera.position.set(0,12,27);orbit.target.set(0,.6,0)}else{camera.fov=43}camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));orbit.update()});if(innerWidth<innerHeight&&innerWidth<=800){camera.fov=55;camera.position.set(0,12,27);camera.updateProjectionMatrix();orbit.target.set(0,.6,0);orbit.update()}
+document.querySelectorAll('[data-surface]').forEach(b=>b.addEventListener('click',()=>setSurface(b.dataset.surface)));
+document.getElementById('toggleSeats').addEventListener('click',e=>{seatsVisible=!seatsVisible;seatRoot.setEnabled(seatsVisible);e.currentTarget.classList.toggle('active',seatsVisible);e.currentTarget.textContent='座席 '+(seatsVisible?'ON':'OFF');});
+document.getElementById('toggleLights').addEventListener('click',e=>{lightsVisible=!lightsVisible;lightRoot.setEnabled(lightsVisible);e.currentTarget.classList.toggle('active',lightsVisible);e.currentTarget.textContent='照明 '+(lightsVisible?'ON':'OFF');});
+document.getElementById('resetView').addEventListener('click',()=>{camera.setTarget(new BABYLON.Vector3(0,2,0));camera.alpha=-Math.PI/2.18;camera.beta=1.05;camera.radius=43;});
+scene.onReadyObservable.addOnce(()=>document.getElementById('loading').classList.add('hide'));
+engine.runRenderLoop(()=>{if(scene.activeCamera)scene.render();});
+window.addEventListener('resize',()=>engine.resize());
+setTimeout(()=>document.getElementById('loading').classList.add('hide'),7000);
+})();
 </script>
 </body>
 </html>
