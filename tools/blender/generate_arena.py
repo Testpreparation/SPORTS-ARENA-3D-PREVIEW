@@ -93,20 +93,7 @@ def cylinder_between(name, a, b, radius, material, vertices=10):
 # Heavy foundation and concourse shell
 box("Continuous arena foundation", (0,-0.55,0), (32,0.8,44), concrete, .12)
 box("Lower concourse volume", (0,0.45,0), (29,1.1,40), concrete, .08)
-box("Court sub-base", (0,-0.05,0), (14.8,.22,27.2), rubber)
-box("Court surround", (0,.075,0), (14.3,.12,26.8), rubber)
-box("Playing surface", (0,.15,0), (11.75,.08,23.9), court_blue)
-# fine acrylic inlay panels, subtle surface segmentation
-for z in [i*1.5-10.5 for i in range(15)]:
-    box("Acrylic surface micro-panel seam", (0,.192,z), (11.7,.003,.009), court_blue)
-# tennis line layout
-for z in (-11.43,11.43):
-    box("Baseline paint", (0,.205,z), (10.97,.018,.07), line_mat)
-for x in (-4.115,4.115,-3.16,3.16):
-    box("Sideline paint", (x,.205,0), (.065,.018,22.86), line_mat)
-for z in (-6.4,6.4):
-    box("Service line paint", (0,.205,z), (6.32,.018,.06), line_mat)
-box("Center service line paint", (0,.205,0), (.06,.018,12.8), line_mat)
+# Interactive court surface and markings are rendered by Babylon.js.
 
 # tiered precast seating bowl, entirely empty (no people)
 for row in range(8):
