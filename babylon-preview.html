@@ -32,7 +32,7 @@ button.active,button:hover{background:#0b8195;border-color:#58cfe0}
 </div>
 <div class="note">ドラッグ：回転　ピンチ／ホイール：ズーム</div>
 <script>
-(() => {
+(async () => {
  const canvas=document.getElementById("renderCanvas");
  const status=document.getElementById("status");
  const engine=new BABYLON.Engine(canvas,true,{preserveDrawingBuffer:false,stencil:true,antialias:true,powerPreference:"high-performance"});
