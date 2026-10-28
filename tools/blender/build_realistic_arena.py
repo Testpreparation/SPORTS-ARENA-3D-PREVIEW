@@ -104,113 +104,113 @@ def beam(key, a, b, thickness, depth=None):
                (base+2,base+3,base+7,base+6),(base+3,base,base+4,base+7)])
 
 # Building shell and floor apron. Gameplay court is intentionally separate in Babylon.
-box("rubber",(0,-.35,0),(48,.45,62))
-box("concrete",(0,2.8,-29),(43,6,1.1))
-box("concrete",(0,2.8,29),(43,6,1.1))
-box("concrete",(-21.5,2.8,0),(1,6,57))
-box("concrete",(21.5,2.8,0),(1,6,57))
+box("rubber",(0,-.35,0),(76,.45,94))
+box("concrete",(0,3.4,-44),(68,7,1.4))
+box("concrete",(0,3.4,44),(68,7,1.4))
+box("concrete",(-34,3.4,0),(1.4,7,87))
+box("concrete",(34,3.4,0),(1.4,7,87))
 # Glazed concourse bands and vertical mullions.
-for z in (-28.35,28.35):
-    box("glass",(0,3.4,z),(39,3.0,.09))
-    for x in range(-19,20,2):
+for z in (-43.1,43.1):
+    box("glass",(0,4.1,z),(62,3.8,.09))
+    for x in range(-30,31,2):
         box("steel",(x,3.4,z),(0.055,3.15,.08))
-for x in (-21.0,21.0):
-    box("glass",(x,3.4,0),(.08,3.0,53))
-    for z in range(-26,27,2):
+for x in (-33.5,33.5):
+    box("glass",(x,4.1,0),(.08,3.8,82))
+    for z in range(-41,42,2):
         box("steel",(x,3.4,z),(.08,3.15,.055))
 # Concourse floor beams and repeated facade bays.
-for z in (-27.6,27.6):
-    box("steel",(0,5.15,z),(42,.22,.22))
-    box("concrete_light",(0,6.2,z),(43,.38,.65))
-for x in (-20.7,20.7):
-    box("steel",(x,5.15,0),(.22,.22,56))
+for z in (-42.2,42.2):
+    box("steel",(0,6.1,z),(67,.28,.28))
+    box("concrete_light",(0,7.4,z),(68,.48,.8))
+for x in (-33.2,33.2):
+    box("steel",(x,6.1,0),(.28,.28,86))
 # Raised seating bowls arranged along the LONG SIDES of the court.
 # Court long axis is Z (23.77 m); side stands therefore run parallel to Z,
 # with each tier stepping outward along X. End stands run across X.
 seat_mats=["seat_blue","seat_teal","seat_navy"]
 for side in (-1,1):
     # Long-side stands: 9 rows parallel to the court sidelines.
-    for row in range(9):
-        x=side*(7.25+row*1.12)
-        y=.25+row*.43
-        box("concrete_light",(x,y-.19,0),(1.02,.34,30.0))
-        box("steel",(x-side*.42,y-.36,0),(.06,.075,30.0))
-        z=-14.5
-        while z<=14.6:
+    for row in range(13):
+        x=side*(7.25+row*1.35)
+        y=.25+row*.48
+        box("concrete_light",(x,y-.21,0),(1.22,.38,37.0))
+        box("steel",(x-side*.50,y-.39,0),(.07,.08,37.0))
+        z=-18.0
+        while z<=18.1:
             key=seat_mats[(int((z+14.5)*3)+row*2+(1 if side>0 else 0))%len(seat_mats)]
             box(key,(x,y+.05,z),(.38,.12,.43))
             box(key,(x+side*.15,y+.22,z),(.075,.29,.43))
             box("steel",(x-side*.04,y-.04,z-.15),(.18,.035,.035))
             box("steel",(x-side*.04,y-.04,z+.15),(.18,.035,.035))
-            z+=.62
+            z+=.66
     # Aisle rails/stair breaks are aligned with the long stands, not across the court.
-    for z in (-14.8,-10.0,-5.0,0,5.0,10.0,14.8):
-        for row in range(9):
-            x=side*(7.0+row*1.12)
-            y=.42+row*.43
-            box("steel",(x,y+.28,z),(.06,.5,.055))
-            box("steel",(x,y+.52,z),(.78,.045,.055))
+    for z in (-18.2,-12.0,-6.0,0,6.0,12.0,18.2):
+        for row in range(13):
+            x=side*(7.0+row*1.35)
+            y=.42+row*.48
+            box("steel",(x,y+.31,z),(.07,.56,.06))
+            box("steel",(x,y+.58,z),(.92,.05,.06))
 # End stands: shorter banks across the court width at each baseline.
 for side in (-1,1):
-    for row in range(5):
-        z=side*(13.4+row*1.12)
+    for row in range(7):
+        z=side*(17.0+row*1.35)
         y=.22+row*.43
-        box("concrete_light",(0,y-.18,z),(25.5,.34,1.0))
-        x=-12.4
-        while x<=12.5:
+        box("concrete_light",(0,y-.20,z),(34,.38,1.2))
+        x=-16.5
+        while x<=16.6:
             key=seat_mats[(int((x+12.4)*2)+row)%len(seat_mats)]
-            box(key,(x,y+.05,z),(.43,.12,.38))
-            box(key,(x,y+.22,z+side*.15),(.43,.29,.075))
-            x+=.62
+            box(key,(x,y+.05,z),(.48,.12,.42))
+            box(key,(x,y+.24,z+side*.17),(.48,.32,.08))
+            x+=.68
 # Roof ring, perimeter beams and dense exposed trusses.
-box("steel",(0,14.0,-26),(45,.52,3.0))
-box("steel",(0,14.0,26),(45,.52,3.0))
-box("steel",(-21.5,14.0,0),(3.0,.52,52))
-box("steel",(21.5,14.0,0),(3.0,.52,52))
-for z in range(-24,25,4):
-    beam("steel",(-20.5,13.5,z),(20.5,13.5,z),.16,.2)
-    beam("steel",(-20.5,13.5,z),(0,16.2,z),.12,.16)
-    beam("steel",(0,16.2,z),(20.5,13.5,z),.12,.16)
-    beam("steel",(-20.5,13.5,z),(20.5,13.5,z+2),.075,.11)
-for x in range(-20,21,5):
-    beam("steel_light",(x,13.6,-25),(x,13.6,25),.12,.16)
-    beam("steel",(x,13.6,-25),(x,16.0,0),.09,.13)
-    beam("steel",(x,16.0,0),(x,13.6,25),.09,.13)
+box("steel",(0,17.0,-39),(70,.7,4.0))
+box("steel",(0,17.0,39),(70,.7,4.0))
+box("steel",(-33.5,17.0,0),(4.0,.7,78))
+box("steel",(33.5,17.0,0),(4.0,.7,78))
+for z in range(-36,37,4):
+    beam("steel",(-32,16.3,z),(32,16.3,z),.2,.25)
+    beam("steel",(-32,16.3,z),(0,20.2,z),.15,.2)
+    beam("steel",(0,20.2,z),(32,16.3,z),.15,.2)
+    beam("steel",(-32,16.3,z),(32,16.3,z+2),.09,.13)
+for x in range(-30,31,5):
+    beam("steel_light",(x,16.5,-38),(x,16.5,38),.14,.18)
+    beam("steel",(x,16.5,-38),(x,20.0,0),.11,.15)
+    beam("steel",(x,20.0,0),(x,16.5,38),.11,.15)
 # Acoustic roof panels, separated into long strips to preserve a believable structure.
-for x in range(-18,19,6):
-    box("concrete",(x,16.35,0),(5.7,.16,48))
+for x in range(-30,31,6):
+    box("concrete",(x,20.5,0),(5.7,.2,74))
 # Broadcast-grade arena details: service catwalks, guard rails, aisle lighting,
 # and a continuous inner fascia make the seating bowl feel like a real venue.
 for side in (-1,1):
     # Upper concourse handrails and structural stringers along both long sides.
     for row in (0,1):
-        x=side*(17.2+row*.75)
-        beam("steel_light",(x,5.8,-25.5),(x,5.8,25.5),.07,.07)
-    for z in range(-24,25,4):
-        box("accent",(side*17.0,1.15,z),(.055,.12,.72))
-        box("steel",(side*17.0,.86,z),(.09,.08,.76))
+        x=side*(28.0+row*.85)
+        beam("steel_light",(x,7.1,-37.5),(x,7.1,37.5),.08,.08)
+    for z in range(-36,37,4):
+        box("accent",(side*27.0,1.4,z),(.06,.14,.8))
+        box("steel",(side*27.0,1.05,z),(.1,.09,.84))
 # Fine roof seams and acoustic-panel joints.
-for x in range(-18,19,3):
-    box("steel_light",(x,16.45,0),(.025,.025,47.5))
+for x in range(-30,31,3):
+    box("steel_light",(x,20.65,0),(.03,.03,73.5))
 # Additional scoreboard fascia trim and corner wayfinding light bands.
 for side in (-1,1):
-    for x in (-19.5,19.5):
-        box("accent",(x,10.0,side*25.18),(.12,.16,.12))
+    for x in (-31.0,31.0):
+        box("accent",(x,12.0,side*38.1),(.15,.18,.15))
 # Subtle perimeter LED ribbon under the upper seating edge.
 for side in (-1,1):
-    box("accent",(side*16.5,5.9,0),(.08,.07,50.5))
+    box("accent",(side*26.5,7.0,0),(.1,.08,74.0))
 # LED lighting bars and high-bay fixtures.
-for z in (-20,-10,0,10,20):
-    for x in (-15,-7.5,0,7.5,15):
-        box("light",(x,15.95,z),(2.1,.08,.24))
-        box("steel",(x,15.72,z),(2.25,.07,.3))
+for z in (-30,-15,0,15,30):
+    for x in (-25,-12.5,0,12.5,25):
+        box("light",(x,19.8,z),(2.8,.1,.3))
+        box("steel",(x,19.5,z),(3.0,.08,.36))
 # Large scoreboard and fascia panels.
-box("steel",(0,8.4,-23.8),(8.8,4.2,.55))
-box("screen",(0,8.4,-23.48),(8.1,3.5,.08))
-box("accent",(0,6.12,-23.45),(8.2,.12,.09))
+box("steel",(0,11.2,-36.5),(12.0,5.5,.7))
+box("screen",(0,11.2,-36.05),(11.0,4.7,.1))
+box("accent",(0,8.25,-36.0),(11.2,.16,.1))
 for side in (-1,1):
-    box("steel",(0,9.8,side*25.5),(38,.75,.3))
-    box("accent",(0,9.8,side*25.31),(37.5,.12,.05))
+    box("steel",(0,12.2,side*38.5),(62,.95,.4))
+    box("accent",(0,12.2,side*38.25),(61,.15,.06))
 # Create one mesh object per material, with smooth normals where appropriate.
 for key,(verts,faces) in builders.items():
     if not verts: continue
