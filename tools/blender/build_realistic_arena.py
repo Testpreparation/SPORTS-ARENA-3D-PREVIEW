@@ -131,14 +131,14 @@ seat_mats=["seat_blue","seat_teal","seat_navy"]
 # realistic row rise create a broad, multi-tier grandstand rather than a small display stand.
 outer_a=31.0  # half-width in X
 outer_b=42.5  # half-length in Z
-inner_a=12.0
-inner_b=20.0
+inner_a=16.0
+inner_b=25.0
 rows=26
 segments=288
 for row in range(rows):
     # Each tier expands outward and rises gradually from the playing surface.
-    a=inner_a + row*.72
-    b=inner_b + row*.86
+    a=inner_a + row*.55
+    b=inner_b + row*.65
     y=.30 + row*.32
     # Seat benches and risers are sampled around an ellipse. Keep a modest gap at
     # the four service corners to avoid collisions with the courtside access zone.
