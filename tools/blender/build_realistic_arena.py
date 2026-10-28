@@ -97,42 +97,44 @@ for z in (-27.6,27.6):
     box("concrete_light",(0,6.2,z),(43,.38,.65))
 for x in (-20.7,20.7):
     box("steel",(x,5.15,0),(.22,.22,56))
-# Raised seating bowls: 9 rows with tier noses, seats, backs, and supports.
+# Raised seating bowls arranged along the LONG SIDES of the court.
+# Court long axis is Z (23.77 m); side stands therefore run parallel to Z,
+# with each tier stepping outward along X. End stands run across X.
 seat_mats=["seat_blue","seat_teal","seat_navy"]
 for side in (-1,1):
+    # Long-side stands: 9 rows parallel to the court sidelines.
     for row in range(9):
-        z=side*(15.5+row*1.12)
+        x=side*(7.25+row*1.12)
         y=.25+row*.43
-        box("concrete_light",(0,y-.19,z),(35,.34,1.02))
-        box("steel",(0,y-.36,z-side*.42),(35,.075,.06))
-        x=-16.5
-        while x<=16.6:
-            # Seat base, pan, back and paired supports are batched by material.
-            key=seat_mats[(int((x+16.5)*3)+row*2+(1 if side>0 else 0))%len(seat_mats)]
-            box(key,(x,y+.05,z),(0.43,.12,.38))
-            box(key,(x,y+.22,z-side*.15),(0.43,.29,.075))
-            box("steel",(x-.15,y-.04,z),(0.035,.18,.035))
-            box("steel",(x+.15,y-.04,z),(0.035,.18,.035))
-            x+=.62
-    # Aisle rails and stair divisions.
-    for x in (-17.5,-11.8,-6.0,0,6.0,11.8,17.5):
-        for row in range(9):
-            z=side*(15.0+row*1.18)
-            y=.42+row*.43
-            box("steel",(x,y+.28,z),(0.055,.5,.06))
-            box("steel",(x,y+.52,z),(0.055,.045,.78))
-# End seating banks.
-for side in (-1,1):
-    for row in range(6):
-        x=side*(8.2+row*1.15)
-        y=.22+row*.43
-        box("concrete_light",(x,y-.18,0),(1.0,.34,26))
-        z=-12.2
-        while z<=12.3:
-            key=seat_mats[(int((z+12.2)*2)+row)%len(seat_mats)]
+        box("concrete_light",(x,y-.19,0),(1.02,.34,30.0))
+        box("steel",(x-side*.42,y-.36,0),(.06,.075,30.0))
+        z=-14.5
+        while z<=14.6:
+            key=seat_mats[(int((z+14.5)*3)+row*2+(1 if side>0 else 0))%len(seat_mats)]
             box(key,(x,y+.05,z),(.38,.12,.43))
             box(key,(x+side*.15,y+.22,z),(.075,.29,.43))
+            box("steel",(x-side*.04,y-.04,z-.15),(.18,.035,.035))
+            box("steel",(x-side*.04,y-.04,z+.15),(.18,.035,.035))
             z+=.62
+    # Aisle rails/stair breaks are aligned with the long stands, not across the court.
+    for z in (-14.8,-10.0,-5.0,0,5.0,10.0,14.8):
+        for row in range(9):
+            x=side*(7.0+row*1.12)
+            y=.42+row*.43
+            box("steel",(x,y+.28,z),(.06,.5,.055))
+            box("steel",(x,y+.52,z),(.78,.045,.055))
+# End stands: shorter banks across the court width at each baseline.
+for side in (-1,1):
+    for row in range(5):
+        z=side*(13.4+row*1.12)
+        y=.22+row*.43
+        box("concrete_light",(0,y-.18,z),(25.5,.34,1.0))
+        x=-12.4
+        while x<=12.5:
+            key=seat_mats[(int((x+12.4)*2)+row)%len(seat_mats)]
+            box(key,(x,y+.05,z),(.43,.12,.38))
+            box(key,(x,y+.22,z+side*.15),(.43,.29,.075))
+            x+=.62
 # Roof ring, perimeter beams and dense exposed trusses.
 box("steel",(0,14.0,-26),(45,.52,3.0))
 box("steel",(0,14.0,26),(45,.52,3.0))
