@@ -170,6 +170,27 @@ for row in range(rows):
         # handrail pieces aligned with the local tangent
         tangent_len=2*math.pi*math.sqrt((rail_a*rail_a+rail_b*rail_b)/2)/segments*4
         box("steel_light",(x,y+.66,z),(tangent_len,.055,.07),rot)
+# A continuous lower-bowl fascia closes the exposed void beneath the raised first row.
+# It follows the same oval footprint and reads as a real concrete seating-bowl structure.
+fascia_a=inner_a-.12
+fascia_b=inner_b-.12
+fascia_segments=288
+for i in range(fascia_segments):
+    t=(2*math.pi*i)/fascia_segments
+    x=fascia_a*math.sin(t)
+    z=fascia_b*math.cos(t)
+    rot=math.atan2(fascia_a*math.cos(t),-fascia_b*math.sin(t))
+    tangent_len=2*math.pi*math.sqrt((fascia_a*fascia_a+fascia_b*fascia_b)/2)/fascia_segments
+    # Tall solid plinth rises from the arena floor to just beneath the first seating tier.
+    box("concrete",(x,.16,z),(tangent_len*1.16,1.05,.92),rot)
+# A dark recessed shadow line and a slim concrete coping finish the bowl edge.
+for i in range(fascia_segments):
+    t=(2*math.pi*i)/fascia_segments
+    x=(fascia_a+.04)*math.sin(t)
+    z=(fascia_b+.04)*math.cos(t)
+    rot=math.atan2((fascia_a+.04)*math.cos(t),-(fascia_b+.04)*math.sin(t))
+    tangent_len=2*math.pi*math.sqrt((fascia_a*fascia_a+fascia_b*fascia_b)/2)/fascia_segments
+    box("steel",(x,.69,z),(tangent_len*1.12,.055,.96),rot)
 # End/side service access gaps are kept open at the four cardinal axes.
 # Roof-mounted high-bay LED fixtures and support rails, arranged around the court.
 for x in (-27,-18,-9,0,9,18,27):
