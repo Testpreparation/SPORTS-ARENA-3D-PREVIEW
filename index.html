@@ -100,7 +100,6 @@ for(const side of [-1,1]){
   for(let x=-14.6;x<=14.6;x+=.52){
    const seat=new THREE.Mesh(new THREE.BoxGeometry(.39,.2,.34),seatMats[Math.floor(Math.random()*seatMats.length)]);
    seat.position.set(x,y+.1,z);seat.castShadow=true;venueGroup.add(seat);
-   if(Math.random()>.24){const person=new THREE.Mesh(new THREE.CapsuleGeometry(.075,.19,3,5),crowdMat[Math.floor(Math.random()*crowdMat.length)]);person.position.set(x,y+.31,z-side*.12);person.castShadow=true;venueGroup.add(person)}
   }
  }
 }
@@ -255,6 +254,60 @@ for(const side of [-1,1]){
 }
 addSeatDetailInstances(stadiumGroup,stadiumSeatPositions);
 addAisleAndVenueDetails(stadiumGroup,7,12,true);
+
+// High-detail empty grandstand finish: seat-number tabs, shell seams, aisle steps,
+// handrail posts, roof ribs, expansion joints and exposed fasteners.
+function addEmptyVenueFinish(group,{endRows,sideRows,stadium=false}){
+ const seatNumberMat=new THREE.MeshStandardMaterial({color:0xd7e5e8,roughness:.38,metalness:.12,emissive:0x12232a,emissiveIntensity:.12});
+ const seatSeamMat=new THREE.MeshStandardMaterial({color:0x132d39,roughness:.7,metalness:.08});
+ const concreteJointMat=new THREE.MeshStandardMaterial({color:0x344954,roughness:.9,metalness:0});
+ const railMat=new THREE.MeshStandardMaterial({color:0x8b9da3,roughness:.24,metalness:.82,envMapIntensity:1.4});
+ const roofMat=new THREE.MeshStandardMaterial({color:0x3b505b,roughness:.42,metalness:.58,envMapIntensity:1.3});
+ const numberGeo=new THREE.BoxGeometry(.055,.045,.012),seamGeo=new THREE.BoxGeometry(.012,.018,.34);
+ const numbers=[],seams=[],joints=[],roofRibs=[],posts=[],handrails=[];
+ for(const side of [-1,1]){
+  const rows=endRows;
+  for(let row=0;row<rows;row++){
+   const z=side*(stadium?17.5+row*1.13:17.3+row*1.02),y=.35+row*.48;
+   // Subtle joints on concrete risers and small seat-number markers at regular intervals.
+   for(let x=-14;x<=14;x+=2){
+    joints.push([x,y-.16,z+side*.475,0,0,0,.035,.24,.012]);
+    numbers.push([x+.2,y+.18,z-side*.17,0,side>0?Math.PI:0,0,1,1,1]);
+   }
+   // Roof purlins are repeated metal strips, not a single featureless slab.
+   if(stadium&&row===rows-1)for(let x=-18;x<=18;x+=1.5)roofRibs.push([x,10.58,side*27.8,0,0,0,.035,.09,7.05]);
+  }
+  for(let row=0;row<sideRows;row++){
+   const x=side*(stadium?7.4+row*1.05:8.8+row*1.02),y=.28+row*.5;
+   for(let z=-14;z<=14;z+=2){joints.push([x+side*.46,y-.16,z,0,0,0,.012,.24,.035]);numbers.push([x-side*.17,y+.18,z+.2,0,side>0?Math.PI/2:-Math.PI/2,0,1,1,1])}
+  }
+  // Long handrails with evenly spaced vertical balusters along concourse edges.
+  for(let h=0;h<3;h++){
+   const railY=5.3+h*.42,railZ=side*(stadium?29.6:28.8);
+   handrails.push([0,railY,railZ,0,0,0,stadium?32:29,.025,.025]);
+   for(let x=-15;x<=15;x+=1.25)posts.push([x,railY-.2,railZ,0,0,0,.022,.22,.022]);
+  }
+ }
+ const inst=(geo,mat,items)=>{if(!items.length)return;const m=new THREE.InstancedMesh(geo,mat,items.length),o=new THREE.Object3D();for(let i=0;i<items.length;i++){const p=items[i];o.position.set(p[0],p[1],p[2]);o.rotation.set(p[3]||0,p[4]||0,p[5]||0);o.scale.set(p[6]||1,p[7]||1,p[8]||1);o.updateMatrix();m.setMatrixAt(i,o.matrix)}m.castShadow=true;m.receiveShadow=true;group.add(m)};
+ inst(numberGeo,seatNumberMat,numbers);
+ inst(seamGeo,seatSeamMat,seams);
+ inst(new THREE.BoxGeometry(1,1,1),concreteJointMat,joints);
+ inst(new THREE.BoxGeometry(1,1,1),roofMat,roofRibs);
+ inst(new THREE.BoxGeometry(1,1,1),railMat,posts);
+ inst(new THREE.BoxGeometry(1,1,1),railMat,handrails);
+ // Fine perimeter details: facade expansion joints, drainage grates and wall-panel seams.
+ const facadeMat=new THREE.MeshStandardMaterial({color:0x2a404a,roughness:.58,metalness:.36});
+ for(const side of [-1,1]){
+  for(let x=-16;x<=16;x+=2){
+   const joint=new THREE.Mesh(new THREE.BoxGeometry(.025,1.8,.035),facadeMat);joint.position.set(x,4.9,side*(stadium?30.3:29.1));group.add(joint);
+   const bolt=new THREE.Mesh(new THREE.SphereGeometry(.035,8,6),railMat);bolt.position.set(x,5.75,side*(stadium?30.35:29.15));group.add(bolt);
+  }
+  const drain=new THREE.Mesh(new THREE.BoxGeometry(stadium?34:30,.025,.18),new THREE.MeshStandardMaterial({color:0x1c2b32,roughness:.6,metalness:.45}));drain.position.set(0,.08,side*(stadium?16.6:16.4));group.add(drain);
+  for(let i=0;i<45;i++){const slit=new THREE.Mesh(new THREE.BoxGeometry(.018,.028,.13),railMat);slit.position.set(-16.5+i*.75,.095,side*(stadium?16.6:16.4));group.add(slit)}
+ }
+}
+addEmptyVenueFinish(venueGroup,{endRows:9,sideRows:6});
+addEmptyVenueFinish(stadiumGroup,{endRows:12,sideRows:7,stadium:true});
 venueGroup.visible=false;
 const spotlights=[];for(const x of [-15,15])for(const z of [-16,16]){const pole=new THREE.Mesh(new THREE.CylinderGeometry(.11,.16,8.5,12),material(0x526875,.4,.5));pole.position.set(x,4.25,z);pole.castShadow=true;scene.add(pole);cube(2.2,.18,.4,material(0x283b48,.4,.4),x,8.55,z);for(let i=0;i<5;i++){const lamp=new THREE.Mesh(new THREE.BoxGeometry(.27,.07,.22),new THREE.MeshStandardMaterial({color:0xf0fbff,emissive:0x7bdcff,emissiveIntensity:.6}));lamp.position.set(x-.75+i*.375,8.42,z);scene.add(lamp)}const spot=new THREE.SpotLight(0xeaf8ff,2,35,Math.PI/5,.5,1.4);spot.position.set(x,8.3,z);spot.target.position.set(0,0,0);scene.add(spot,spot.target);spotlights.push(spot)}
 for(const z of [-17,17]){cube(4.1,2,.18,material(0x101d26,.3,.4),0,3,z);const screen=new THREE.Mesh(new THREE.PlaneGeometry(3.8,1.7),new THREE.MeshStandardMaterial({color:0x082b3a,emissive:0x0b536a,emissiveIntensity:.55}));screen.position.set(0,3,z+(z<0?.1:-.1));if(z>0)screen.rotation.y=Math.PI;scene.add(screen)}
