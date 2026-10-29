@@ -129,7 +129,7 @@ const G={badm:new THREE.Group(),tennis:new THREE.Group(),volley:new THREE.Group(
 {const g=G.volley;
  // Volleyball net: detailed mesh, white tapes, antennas and padded posts
  const netGroup=new THREE.Group();netGroup.position.set(0,2.43,0);g.add(netGroup);
- const meshNet=new THREE.Mesh(pl(1,9.5),netM(1,9.5,.1));meshNet.rotation.y=Math.PI/2;meshNet.position.y=-.5;meshNet.castShadow=false;netGroup.add(meshNet);
+ const meshNet=new THREE.Mesh(pl(9.5,1),netM(9.5,1,.1));meshNet.rotation.y=Math.PI/2;meshNet.position.y=-.5;meshNet.castShadow=false;netGroup.add(meshNet);
  add(netGroup,new THREE.BoxGeometry(.018,.07,9.5),white,0,-.035,0);
  add(netGroup,new THREE.BoxGeometry(.012,.05,9.5),white,0,-.975,0);
  for(const s of[-1,1]){
