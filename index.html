@@ -116,7 +116,7 @@ const tex={
  tennis:cv(g=>{base(g);g.fillStyle='#2e6b4c';g.fillRect(-18.3,-9.15,36.6,18.3);g.fillStyle='#2f66ad';g.fillRect(-11.885,-5.485,23.77,10.97);for(let i=0;i<40000;i++){g.fillStyle=`rgba(255,255,255,${R()*.08})`;g.fillRect(R()*36-18,R()*18-9,.05,.05)}wh(g);rc(g,23.77,10.97);ln(g,-11.885,4.115,11.885,4.115);ln(g,-11.885,-4.115,11.885,-4.115);ln(g,-6.4,-4.115,-6.4,4.115);ln(g,6.4,-4.115,6.4,4.115);ln(g,-6.4,0,6.4,0);ln(g,-11.885,0,-11.585,0);ln(g,11.885,0,11.585,0)}),
  volley:cv(g=>{base(g);g.fillStyle='#2a63a8';g.fillRect(-12,-7.5,24,15);g.fillStyle='#dc7a32';g.fillRect(-9,-4.5,18,9);for(let i=0;i<30000;i++){g.fillStyle=`rgba(0,0,0,${R()*.07})`;g.fillRect(R()*24-12,R()*15-7.5,.05,.05)}wh(g);rc(g,18,9);ln(g,0,-4.5,0,4.5);ln(g,-3,-4.5,-3,4.5);ln(g,3,-4.5,3,4.5)}),
  tt:cv(g=>{base(g);g.fillStyle='#1b3f86';g.fillRect(-7,-3.5,14,7);for(let i=0;i<20000;i++){g.fillStyle=`rgba(255,255,255,${R()*.06})`;g.fillRect(R()*14-7,R()*7-3.5,.04,.04)}wh(g);g.lineWidth=.05;g.strokeRect(-7,-3.5,14,7)})};
-const fieldMat=new THREE.MeshPhysicalMaterial({map:tex.badm,roughness:.4});
+const fieldMat=new THREE.MeshBasicMaterial({map:tex.badm});
 const field=new THREE.Mesh(new THREE.PlaneGeometry(W,H),fieldMat);field.rotation.x=-Math.PI/2;field.receiveShadow=true;scene.add(field);
 // props
 const white=new THREE.MeshStandardMaterial({color:0xf2f2f2,roughness:.5}),orange=new THREE.MeshStandardMaterial({color:0xff6a00,roughness:.4,metalness:.3}),glass=new THREE.MeshPhysicalMaterial({color:0xcfe8ff,transparent:true,opacity:.35,roughness:.05});
