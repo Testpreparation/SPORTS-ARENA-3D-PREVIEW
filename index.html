@@ -143,10 +143,10 @@ const G={badm:new THREE.Group(),tennis:new THREE.Group(),volley:new THREE.Group(
    add(p,cyl(.17,.025),steel,0,.015,0);
    add(p,cyl(.07,.05),steel,0,.05,0);
    add(p,cyl(.045,2.55),steel,0,1.30,0);
-   add(p,cyl(.078,1.45),mBlue,0,.78,0);
+   add(p,cyl(.078,1.45),new THREE.MeshStandardMaterial({color:0x1e56b3,roughness:.6}),0,.78,0);
    add(p,cyl(.08,.06),white,0,1.2,0);
-   add(p,cyl(.052,.03),mBlk,0,2.58,0);
-   add(p,new THREE.BoxGeometry(.07,.15,.09),mBlk,s*.075,1.82,0);
+   add(p,cyl(.052,.03),new THREE.MeshStandardMaterial({color:0x15171b,roughness:.6}),0,2.58,0);
+   add(p,new THREE.BoxGeometry(.07,.15,.09),new THREE.MeshStandardMaterial({color:0x15171b,roughness:.6}),s*.075,1.82,0);
    add(p,cyl(.025,.05),steel,s*.13,1.82,0,0,0,Math.PI/2);
  }
 }
