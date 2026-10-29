@@ -10,8 +10,54 @@ button{border:2px solid rgba(255,255,255,.35);border-radius:14px;padding:10px 15
 button:hover,button:active{background:linear-gradient(135deg,#ffd23f,#ff9a00);color:#111;transform:translateY(-1px)}
 button.on{background:linear-gradient(135deg,#ffd23f,#ff9a00);color:#111;border-color:#ffd23f}
 @media(max-width:700px){.bar{gap:5px;padding:7px;border-radius:14px}#top{left:7px;right:7px;top:calc(env(safe-area-inset-top,0px) + 7px)}#bot{left:7px;right:7px;bottom:calc(env(safe-area-inset-bottom,0px) + 7px)}button{padding:8px 10px;font-size:12px;border-radius:12px}}
+</style>
+<style>
+[hidden]{display:none!important}
+.appOverlay{position:fixed;inset:0;z-index:20;overflow:auto;display:flex;flex-direction:column;justify-content:center;background:radial-gradient(ellipse at 22% 35%,rgba(25,83,130,.55),rgba(5,10,20,.94) 68%),linear-gradient(120deg,rgba(10,25,45,.94),rgba(5,9,17,.96));color:#f2f6fa;padding:calc(env(safe-area-inset-top,0px) + 18px) calc(env(safe-area-inset-right,0px) + 22px) calc(env(safe-area-inset-bottom,0px) + 14px) calc(env(safe-area-inset-left,0px) + 22px);box-sizing:border-box}
+.profile{position:absolute;top:calc(env(safe-area-inset-top,0px) + 12px);left:calc(env(safe-area-inset-left,0px) + 16px);display:flex;align-items:center;gap:10px;padding:6px 16px 6px 6px;border-radius:40px;background:rgba(255,255,255,.94);color:#16324f;font-size:13px;box-shadow:0 4px 0 rgba(0,0,0,.18)}
+.avatar{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:#e7f2ff;border:2px solid #fff;font-size:22px}.profileTag{font-size:9px;letter-spacing:.1em;opacity:.65}
+.homeLayout{display:grid;grid-template-columns:1.1fr 1fr;align-items:center;gap:4vw;width:min(1000px,94vw);margin:35px auto 30px}
+.logo small{letter-spacing:.4em;color:#ffd23f;font-weight:800;font-size:12px}.logo h1{margin:8px 0;font-size:clamp(44px,11vmin,100px);line-height:.88;font-style:italic;font-weight:1000;letter-spacing:-.05em;background:linear-gradient(180deg,#fff,#ffd23f 62%,#ff8a00);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 4px 0 rgba(0,0,0,.4))}.logo p{font-size:11px;letter-spacing:.2em;opacity:.8}
+.menuColumn{display:flex;flex-direction:column;gap:10px;min-width:0}.menuButton{display:flex;align-items:center;gap:14px;width:100%;margin:0;padding:clamp(10px,2vh,18px) clamp(12px,2vw,24px);border-radius:18px;background:linear-gradient(135deg,rgba(255,255,255,.18),rgba(255,255,255,.05));border:2px solid rgba(255,255,255,.35);color:#f2f6fa;backdrop-filter:blur(8px);transform:skewX(-5deg);text-align:left}.menuButton span{font-size:clamp(25px,5vmin,46px)}.menuButton b{font-size:clamp(17px,3vmin,27px);flex:1}.menuButton em{font-size:10px;font-style:normal;font-weight:900;letter-spacing:.06em}.menuButton:hover,.menuButton:active{background:linear-gradient(135deg,#ffd23f,#ff9a00);color:#111;transform:skewX(-5deg) scale(1.02)}
+.subPanel h2{margin:0 0 6px;font-size:clamp(20px,4vmin,30px)}.panelDesc{font-size:13px;opacity:.8}.navBack{margin:3px 0 0;padding:10px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.1);color:#fff;font-weight:800}.settingRow{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px;border-radius:12px;background:rgba(255,255,255,.1);font-size:14px}.settingRow select{max-width:55%;padding:8px;border-radius:8px}.settingRow input{width:22px;height:22px}
+.menuFooter{position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 8px);left:20px;right:20px;display:flex;align-items:center;justify-content:space-between;font-size:10px;letter-spacing:.14em;opacity:.75}.menuFooter button{width:auto;margin:0;padding:8px 12px;font-size:12px;background:rgba(255,255,255,.12);color:#fff}
+#brand{display:none!important}
+@media(max-width:700px){.appOverlay{padding-left:14px;padding-right:14px}.homeLayout{grid-template-columns:1fr;gap:12px;width:min(620px,94vw);margin:54px auto 34px}.logo{text-align:center}.logo h1{font-size:clamp(34px,8vmin,54px);margin:4px 0}.logo p{margin:4px 0 8px;font-size:9px}.logo small{font-size:9px}.menuColumn{gap:7px}.menuButton{padding:8px 12px;border-radius:13px}.menuButton span{font-size:26px}.menuButton b{font-size:17px}.menuButton em{font-size:9px}.profile{top:calc(env(safe-area-inset-top,0px) + 7px);left:10px}.profileTag{display:none}.menuFooter{left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 4px)}}
+@media(max-height:500px) and (orientation:landscape){.homeLayout{grid-template-columns:.9fr 1.1fr;gap:4vw;margin:24px auto 20px}.logo h1{font-size:clamp(30px,8vh,58px)}.logo p{font-size:9px}.menuColumn{gap:5px}.menuButton{padding:5px 10px}.menuButton span{font-size:23px}.menuButton b{font-size:16px}.menuButton em{font-size:8px}.profile{top:4px}.menuFooter{bottom:2px}}
 </style></head><body>
-<div id="brand" aria-hidden="true"><small>SPORTS ARENA</small><strong>STADIUM</strong><span>MULTI-COURT EXPERIENCE</span></div><div class="bar" id="top"></div><div class="bar" id="bot"></div><style>#brand{position:fixed;z-index:4;left:18px;top:92px;pointer-events:none;text-shadow:0 3px 12px rgba(0,0,0,.75)}#brand small{display:block;color:#ffd23f;font-weight:900;letter-spacing:.34em;font-size:11px}#brand strong{display:block;font-size:clamp(26px,4vw,46px);line-height:1;font-weight:1000;font-style:italic;letter-spacing:-.04em;background:linear-gradient(180deg,#fff,#ffd23f 70%,#ff8a00);-webkit-background-clip:text;background-clip:text;color:transparent}#brand span{display:block;margin-top:5px;font-size:9px;letter-spacing:.2em;color:#fff;opacity:.85}@media(max-width:700px){#brand{top:90px;left:12px}#brand strong{font-size:25px}#brand span{font-size:8px}}</style>
+<div id="brand" aria-hidden="true"><small>SPORTS ARENA</small><strong>STADIUM</strong><span>MULTI-COURT EXPERIENCE</span></div>
+<div id="appMenu" class="appOverlay">
+ <div class="profile"><span class="avatar">🏟️</span><strong>SPORTS ARENA</strong><span class="profileTag">3D STADIUM</span></div>
+ <div class="homeLayout">
+  <div class="logo"><small>WELCOME TO</small><h1>SPORTS<br>ARENA</h1><p>YOUR MULTI-SPORT STADIUM</p></div>
+  <div class="menuColumn" id="mainPanel">
+   <button class="menuButton" data-screen="sports"><span>🎮</span><b>プレイ</b><em>PLAY ▶</em></button>
+   <button class="menuButton" data-screen="stadium"><span>🏟️</span><b>スタジアム</b><em>STADIUM ▶</em></button>
+   <button class="menuButton" data-screen="settings"><span>⚙️</span><b>設定</b><em>SETTINGS</em></button>
+  </div>
+  <div class="menuColumn subPanel" id="sportsPanel" hidden>
+   <h2>競技を選択</h2>
+   <button class="menuButton sportPick" data-court="badm"><span>🏸</span><b>バドミントン</b><em>SELECT ▶</em></button>
+   <button class="menuButton sportPick" data-court="tennis"><span>🎾</span><b>テニス</b><em>SELECT ▶</em></button>
+   <button class="menuButton sportPick" data-court="volley"><span>🏐</span><b>バレーボール</b><em>SELECT ▶</em></button>
+   <button class="menuButton sportPick" data-court="tt"><span>🏓</span><b>卓球</b><em>SELECT ▶</em></button>
+   <button class="navBack" data-back>← メインメニューへ戻る</button>
+  </div>
+  <div class="menuColumn subPanel" id="settingsPanel" hidden>
+   <h2>⚙ 設定</h2>
+   <label class="settingRow">表示品質<select id="qualitySelect"><option value="2">高</option><option value="1.5">標準</option><option value="1">軽量</option></select></label>
+   <label class="settingRow">視点操作<input id="orbitToggle" type="checkbox" checked></label>
+   <button class="navBack" data-back>← メインメニューへ戻る</button>
+  </div>
+  <div class="menuColumn subPanel" id="stadiumPanel" hidden>
+   <h2>スタジアム</h2><p class="panelDesc">会場を自由な視点で確認できます。</p>
+   <button class="menuButton" id="enterStadium"><span>🌐</span><b>スタジアムを開く</b><em>ENTER ▶</em></button>
+   <button class="navBack" data-back>← メインメニューへ戻る</button>
+  </div>
+ </div>
+ <div class="menuFooter"><span>SMARTPHONE · TABLET · PC</span><button id="fullScreenButton">⛶ 全画面</button></div>
+</div>
+<div id="top" class="bar" hidden></div><div id="bot" class="bar" hidden></div><style>#brand{position:fixed;z-index:4;left:18px;top:92px;pointer-events:none;text-shadow:0 3px 12px rgba(0,0,0,.75)}#brand small{display:block;color:#ffd23f;font-weight:900;letter-spacing:.34em;font-size:11px}#brand strong{display:block;font-size:clamp(26px,4vw,46px);line-height:1;font-weight:1000;font-style:italic;letter-spacing:-.04em;background:linear-gradient(180deg,#fff,#ffd23f 70%,#ff8a00);-webkit-background-clip:text;background-clip:text;color:transparent}#brand span{display:block;margin-top:5px;font-size:9px;letter-spacing:.2em;color:#fff;opacity:.85}@media(max-width:700px){#brand{top:90px;left:12px}#brand strong{font-size:25px}#brand span{font-size:8px}}</style>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script>
@@ -214,4 +260,19 @@ tod=new Date().getHours()+new Date().getMinutes()/60;
 setCourt('badm');setNight(false);
 addEventListener('resize',()=>{cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
 (function loop(){requestAnimationFrame(loop);if(tp){cam.position.lerp(tp,.07);ctl.target.lerp(tt,.07);if(cam.position.distanceTo(tp)<.2)tp=null}tick();ctl.update();renderer.render(scene,cam)})();
+</script>
+<script>
+(()=> {
+ const overlay=document.getElementById('appMenu'), top=document.getElementById('top'), bot=document.getElementById('bot');
+ const panels={main:document.getElementById('mainPanel'),sports:document.getElementById('sportsPanel'),settings:document.getElementById('settingsPanel'),stadium:document.getElementById('stadiumPanel')};
+ function showPanel(name){Object.entries(panels).forEach(([k,el])=>el.hidden=k!==name)}
+ document.querySelectorAll('[data-screen]').forEach(b=>b.addEventListener('click',()=>showPanel(b.dataset.screen)));
+ document.querySelectorAll('[data-back]').forEach(b=>b.addEventListener('click',()=>showPanel('main')));
+ function enterStadium(){overlay.hidden=true;top.hidden=false;bot.hidden=false}
+ document.getElementById('enterStadium').addEventListener('click',enterStadium);
+ document.querySelectorAll('[data-court]').forEach(b=>b.addEventListener('click',()=>{if(typeof setCourt==='function')setCourt(b.dataset.court);enterStadium()}));
+ document.getElementById('fullScreenButton').addEventListener('click',()=>{const el=document.documentElement;if(!document.fullscreenElement&&el.requestFullscreen)el.requestFullscreen().catch(()=>{});else if(document.exitFullscreen)document.exitFullscreen().catch(()=>{})});
+ document.getElementById('qualitySelect').addEventListener('change',e=>{renderer.setPixelRatio(Math.min(devicePixelRatio,Number(e.target.value)));renderer.setSize(innerWidth,innerHeight)});
+ document.getElementById('orbitToggle').addEventListener('change',e=>{ctl.enabled=e.target.checked});
+})();
 </script></body></html>
