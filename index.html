@@ -126,7 +126,30 @@ const cyl=(r,h)=>new THREE.CylinderGeometry(r,r,h,16),pl=(w,h)=>new THREE.PlaneG
 const G={badm:new THREE.Group(),tennis:new THREE.Group(),volley:new THREE.Group(),tt:new THREE.Group()};
 {const g=G.badm;for(const z of[-3.05,3.05]){add(g,cyl(.04,1.55),steel,0,.775,z);add(g,new THREE.BoxGeometry(.5,.04,.5),steel,0,.02,z*1.08)}add(g,pl(6.1,.76),netM(6.1,.76,.03),0,1.17,0,0,Math.PI/2);add(g,new THREE.BoxGeometry(.03,.05,6.1),white,0,1.545,0)}
 {const g=G.tennis;for(const z of[-6.4,6.4])add(g,cyl(.05,1.07),steel,0,.53,z);add(g,pl(12.8,.91),netM(12.8,.91,.1),0,.55,0,0,Math.PI/2);add(g,new THREE.BoxGeometry(.03,.07,12.8),white,0,1.04,0);add(g,new THREE.BoxGeometry(.04,.2,.5),white,0,.15,0).visible=false}
-{const g=G.volley;for(const z of[-5.05,5.05])add(g,cyl(.05,2.55),steel,0,1.27,z);add(g,pl(9.5,1),netM(9.5,1,.1),0,1.93,0,0,Math.PI/2);add(g,new THREE.BoxGeometry(.03,.07,9.5),white,0,2.43,0)}
+{const g=G.volley;
+ // Volleyball net: detailed mesh, white tapes, antennas and padded posts
+ const netGroup=new THREE.Group();netGroup.position.set(0,2.43,0);g.add(netGroup);
+ const meshNet=new THREE.Mesh(pl(1,9.5),netM(1,9.5,.1));meshNet.rotation.y=Math.PI/2;meshNet.position.y=-.5;meshNet.castShadow=false;netGroup.add(meshNet);
+ add(netGroup,new THREE.BoxGeometry(.018,.07,9.5),white,0,-.035,0);
+ add(netGroup,new THREE.BoxGeometry(.012,.05,9.5),white,0,-.975,0);
+ for(const s of[-1,1]){
+   add(netGroup,new THREE.BoxGeometry(.018,1,.05),white,0,-.5,s*4.72);
+   const ant=add(netGroup,cyl(.005,1.8),orange,0,-.1,s*4.78);ant.material=new THREE.MeshStandardMaterial({color:0xffffff});
+   for(let i=0;i<9;i++)add(netGroup,new THREE.BoxGeometry(.014,.1,.052),i%2?white:orange,0,-.05-i*.1,s*4.78);
+   for(const y of[-.05,-.95])add(netGroup,cyl(.011,.035),steel,0,y,s*4.78,Math.PI/2);
+ }
+ for(const s of[-1,1]){
+   const p=new THREE.Group();p.position.set(0,0,s*5.05);g.add(p);
+   add(p,cyl(.17,.025),steel,0,.015,0);
+   add(p,cyl(.07,.05),steel,0,.05,0);
+   add(p,cyl(.045,2.55),steel,0,1.30,0);
+   add(p,cyl(.078,1.45),mBlue,0,.78,0);
+   add(p,cyl(.08,.06),white,0,1.2,0);
+   add(p,cyl(.052,.03),mBlk,0,2.58,0);
+   add(p,new THREE.BoxGeometry(.07,.15,.09),mBlk,s*.075,1.82,0);
+   add(p,cyl(.025,.05),steel,s*.13,1.82,0,0,0,Math.PI/2);
+ }
+}
 {const g=G.tt,tx=T(548,305,c=>{c.fillStyle='#1d4f9e';c.fillRect(0,0,548,305);c.strokeStyle='#fff';c.lineWidth=6;c.strokeRect(3,3,542,299);c.lineWidth=3;c.beginPath();c.moveTo(0,152);c.lineTo(548,152);c.stroke()}),body=new THREE.MeshStandardMaterial({color:0x14315f,roughness:.5}),topM=new THREE.MeshPhysicalMaterial({map:tx,roughness:.3,clearcoat:.5}),bar=new THREE.MeshStandardMaterial({color:0x1e56b3,roughness:.5});
  for(const z of[-1.9,1.9]){add(g,new THREE.BoxGeometry(2.74,.03,1.525),body,0,.745,z);add(g,pl(2.74,1.525),topM,0,.7605,z,-Math.PI/2);for(const lx of[-1.2,1.2])for(const lz of[-.65,.65])add(g,cyl(.03,.73),steel,lx,.365,z+lz);add(g,pl(1.83,.1525),netM(1.83,.1525,.03),0,.836,z,0,Math.PI/2);add(g,new THREE.BoxGeometry(.015,.015,1.83),white,0,.912,z)}
  for(const z of[-3.45,3.45])add(g,new THREE.BoxGeometry(14,.75,.04),bar,0,.375,z);for(const x of[-6.95,6.95])add(g,new THREE.BoxGeometry(.04,.75,6.9),bar,x,.375,0)}
@@ -140,7 +163,7 @@ const tvc=(x,z)=>{const c=new THREE.Group();add(c,cyl(.03,1.5),mBlk,0,.75,0);for
 [[-22.5,3],[22.5,-3],[8,14.5],[-8,-14.5]].forEach(([x,z])=>tvc(x,z));
 {const g=G.badm;boards(g,22,12.6);chair(g,0,-3.7,0,true);[[-7.6,-3.9],[7.6,-3.9],[-7.6,3.9],[7.6,3.9]].forEach(([x,z])=>chair(g,x,z,face(x,z),false));tbl(g,0,5.2,3.6,Math.PI);bench(g,-3.5,-4.9,0);bench(g,3.5,-4.9,0)}
 {const g=G.tennis;boards(g,38,19.6);chair(g,0,-7.3,0,true);[[-13.6,0],[13.6,0],[-6,-6.6],[6,6.6],[-6,6.6],[6,-6.6]].forEach(([x,z])=>chair(g,x,z,face(x,z),false));bench(g,-4,8.2,Math.PI);bench(g,4,8.2,Math.PI)}
-{const g=G.volley;boards(g,26,17);chair(g,0,-6.1,0,true);chair(g,0,6.1,Math.PI,true);tbl(g,0,7.7,3.2,Math.PI);bench(g,-6,-7.7,0);bench(g,6,-7.7,0);for(const z of[-4.6,4.6])add(g,cyl(.012,1.8),orange,0,2.43,z)}
+{const g=G.volley;boards(g,26,17);chair(g,0,-6.1,0,true);chair(g,0,6.1,Math.PI,true);tbl(g,0,7.7,3.2,Math.PI);bench(g,-6,-7.7,0);bench(g,6,-7.7,0)}
 {const g=G.tt;for(const z of[-3.05,3.05])chair(g,0,z,face(0,z),false);for(const x of[-1.7,1.7]){add(g,new THREE.BoxGeometry(.7,.5,.05),mBlue,x,.95,0);add(g,cyl(.02,.7),steel,x,.35,0)}add(g,new THREE.BoxGeometry(.3,.3,.3),white,-2.2,.15,3.0)}
 const grainT=T(256,256,g=>{g.fillStyle='#808080';g.fillRect(0,0,256,256);for(let i=0;i<9000;i++){const v=R()*255|0;g.fillStyle=`rgba(${v},${v},${v},.5)`;g.fillRect(R()*256,R()*256,1.5,1.5)}},1);
 function court(k,w,h,ppm,draw,mat){const map=T(w*ppm|0,h*ppm|0,g=>{g.setTransform(ppm,0,0,ppm,w*ppm/2,h*ppm/2);draw(g);for(let i=0;i<w*h*400;i++){const v=R()<.5?0:255;g.fillStyle=`rgba(${v},${v},${v},${R()*.05})`;g.fillRect(R()*w-w/2,R()*h-h/2,.02,.02)}}),bm=grainT.clone();bm.needsUpdate=true;bm.repeat.set(w/1.2,h/1.2);
