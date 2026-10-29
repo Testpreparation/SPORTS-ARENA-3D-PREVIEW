@@ -2,487 +2,934 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>SPORTS ARENA | 3D Tennis Preview</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>体育館 3Dモデル プレビュー</title>
 <style>
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#9fb8c5;color:#f5fbff;font-family:system-ui,-apple-system,sans-serif}canvas{display:block}
-.top{position:fixed;z-index:2;top:14px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:center;pointer-events:none}.brand{display:flex;align-items:center;gap:10px}.logo{display:grid;place-items:center;width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,#c1f4ff,#2d9cc9);color:#092536;font-weight:900}.title{font-size:11px;letter-spacing:.18em;font-weight:850}.sub{font-size:9px;color:#e0edf2;letter-spacing:.12em;margin-top:3px}.pill,.panel,button{background:#091925ce;border:1px solid #ffffff28;backdrop-filter:blur(12px);box-shadow:0 8px 26px #06111a25}.pill{font-size:9px;letter-spacing:.12em;padding:9px 11px;border-radius:22px}.panel{position:fixed;left:16px;bottom:16px;width:min(300px,calc(100vw - 32px));border-radius:16px;padding:14px}.eyebrow{font-size:9px;color:#7de2ff;letter-spacing:.2em;font-weight:800}h1{font-size:22px;margin:6px 0}.desc{font-size:11px;line-height:1.65;color:#c2d4dd;margin:0}.stats{display:flex;gap:7px;margin-top:12px}.stat{flex:1;padding:8px;border-radius:9px;background:#ffffff0c;border:1px solid #ffffff17}.stat b{display:block;font-size:10px}.stat span{display:block;font-size:8px;color:#9db4c0;margin-top:3px}.controls{position:fixed;right:16px;bottom:16px;display:flex;flex-direction:column;align-items:flex-end;gap:7px}button{color:#effaff;padding:10px 12px;border-radius:10px;font-size:10px;cursor:pointer}button.active{border-color:#83e4ff;color:#8be6ff;background:#124259dd}.row{display:flex;gap:6px}.hint{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);font-size:9px;color:#e0edf2;background:#091925b8;padding:8px 11px;border-radius:22px;white-space:nowrap;pointer-events:none}#portrait{display:none}
-@media(max-width:800px) and (orientation:portrait){.top{top:10px;left:10px;right:10px;align-items:flex-start}.logo{width:30px;height:30px}.title{font-size:9px}.sub{font-size:7px}.pill{font-size:7px;padding:7px 8px;max-width:46vw;text-align:center}.panel{left:10px;right:10px;bottom:164px;width:auto;padding:10px;border-radius:12px}h1{font-size:17px;margin:4px 0}.desc{font-size:9px;line-height:1.45}.stats{margin-top:7px;gap:5px}.stat{padding:6px}.stat b{font-size:8px}.stat span{font-size:7px}.controls{left:10px;right:10px;bottom:10px;align-items:stretch;gap:5px}.venue-types,.court-types{justify-content:flex-start}.controls .row{justify-content:center;flex-wrap:wrap}.court-types,.venue-types{gap:4px;max-width:100%;overflow-x:auto;justify-content:flex-start;scrollbar-width:none}.court-types button,.venue-types button{padding:7px 9px;white-space:nowrap;flex:0 0 auto}button{font-size:9px;padding:8px 9px}.hint,#portrait{display:none}}
-@media(max-width:760px) and (orientation:landscape){.top{top:8px;left:9px;right:9px}.logo{width:28px;height:28px}.title{font-size:9px}.sub{font-size:7px}.pill{font-size:7px;padding:7px}.panel{left:9px;bottom:9px;width:210px;padding:10px}h1{font-size:16px}.desc{font-size:9px}.stats{margin-top:7px;gap:4px}.stat{padding:5px}.stat b{font-size:8px}.stat span{font-size:7px}.controls{right:9px;bottom:9px;gap:4px}.venue-types,.court-types{max-width:46vw}button{font-size:8px;padding:7px}.hint{bottom:9px;font-size:7px;padding:6px}}
+  html,body{margin:0;height:100%;background:#12151b;overflow:hidden;font-family:system-ui,-apple-system,"Hiragino Sans",sans-serif;color:#fff}
+  canvas{display:block;touch-action:none}
+  #ui{position:fixed;left:0;right:0;top:0;padding:10px;display:flex;flex-wrap:wrap;gap:6px;pointer-events:none}
+  #ui button{pointer-events:auto;border:0;border-radius:999px;padding:9px 14px;font-size:13px;font-weight:700;color:#fff;background:rgba(20,28,44,.82);backdrop-filter:blur(6px);cursor:pointer}
+  #ui button.on{background:#2f7bff}
+  #hint{position:fixed;left:10px;bottom:10px;font-size:12px;opacity:.7;pointer-events:none}
+  #load{position:fixed;inset:0;display:grid;place-items:center;background:#12151b;font-size:15px;letter-spacing:.05em}
 </style>
 </head>
 <body>
-<div class="top"><div class="brand"><div class="logo">S</div><div><div class="title">SPORTS ARENA</div><div class="sub">TENNIS · 3D ENVIRONMENT PREVIEW 01</div></div></div><div class="pill">PREVIEW ONLY · NOT THE MAIN GAME</div></div>
-<section class="panel"><div class="eyebrow">ENVIRONMENT / 01</div><h1>スタンダードコート</h1><p class="desc">リアル寄りの質感・照明・ネット・観客席を確認するための3D試作です。ドラッグで回転、ホイール／ピンチでズームできます。本番ゲームには接続していません。</p><div class="stats"><div class="stat"><b>23.77 m</b><span>COURT LENGTH</span></div><div class="stat"><b>10.97 m</b><span>DOUBLES WIDTH</span></div><div class="stat"><b>REALTIME</b><span>3D VIEW</span></div></div></section>
-<div class="controls"><div class="row venue-types"><button class="active" data-venue="standard">標準</button><button data-venue="stadium">スタジアム</button><button data-venue="grand">大会会場</button><button data-venue="indoor">屋内アリーナ</button><button data-venue="night">ナイト</button></div><div class="row court-types"><button class="active" data-court="hard">ハード</button><button data-court="clay">クレー</button><button data-court="grass">芝</button><button data-court="indoor">木目</button></div><div class="row"><button id="play" class="active">プレイ視点</button><button id="topview">全体俯瞰</button><button id="low">低い視点</button></div><div class="row"><button id="seats" class="active">観客席 ON</button><button id="lights" class="active">照明 ON</button><button id="reset">リセット</button></div></div>
-<div class="hint">ドラッグ：視点回転　／　ピンチ・ホイール：ズーム</div>
-<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js"}}</script>
-<script type="module">
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js';
-import {OrbitControls} from 'https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/controls/OrbitControls.js';
-import {RoomEnvironment} from 'https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/environments/RoomEnvironment.js';
-const scene=new THREE.Scene();scene.background=new THREE.Color(0x9fb8c5);scene.fog=new THREE.Fog(0x9fb8c5,42,100);
-const camera=new THREE.PerspectiveCamera(43,innerWidth/innerHeight,.1,180);camera.position.set(4.5,7,21);
-const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.1;document.body.appendChild(renderer.domElement);
-// A prefiltered studio environment adds physically based highlights/reflections to non-metal and metal materials.
-const pmrem=new THREE.PMREMGenerator(renderer);const environment=new RoomEnvironment();scene.environment=pmrem.fromScene(environment,0.04).texture;environment.dispose();pmrem.dispose();
-const orbit=new OrbitControls(camera,renderer.domElement);orbit.target.set(0,.6,0);orbit.enableDamping=true;orbit.dampingFactor=.06;orbit.minDistance=8;orbit.maxDistance=55;orbit.maxPolarAngle=Math.PI*.49;
-scene.add(new THREE.HemisphereLight(0xe8f7ff,0x36444b,2));
-const sun=new THREE.DirectionalLight(0xfff1d8,3.2);sun.position.set(-12,20,9);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-24;sun.shadow.camera.right=24;sun.shadow.camera.top=25;sun.shadow.camera.bottom=-25;sun.shadow.bias=-.00025;scene.add(sun);
-const fill=new THREE.DirectionalLight(0x8bdcff,1.15);fill.position.set(14,10,-12);scene.add(fill);
-const material=(color,roughness=.75,metalness=0)=>new THREE.MeshStandardMaterial({color,roughness,metalness});
-function cube(w,h,d,mat,x,y,z,shadow=true){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);m.castShadow=shadow;m.receiveShadow=true;scene.add(m);return m}
-cube(70,.5,70,material(0x526b77),0,-.45,0,false);const floor=new THREE.Mesh(new THREE.PlaneGeometry(180,180),material(0x7b8e90));floor.rotation.x=-Math.PI/2;floor.position.y=-.72;floor.receiveShadow=true;scene.add(floor);
-const apronMat=new THREE.MeshPhysicalMaterial({color:0x244454,roughness:.68,metalness:0,clearcoat:.16,clearcoatRoughness:.45,envMapIntensity:.65});cube(15.5,.12,28.3,apronMat,0,-.18,0,false);
-function makeSurfacePBR(type){
- const size=1024,cv=document.createElement('canvas'),roughCv=document.createElement('canvas'),heightCv=document.createElement('canvas');
- cv.width=cv.height=roughCv.width=roughCv.height=heightCv.width=heightCv.height=size;
- const g=cv.getContext('2d'),rg=roughCv.getContext('2d'),hg=heightCv.getContext('2d');
- const palettes={hard:['#167ba3','#0d6c94'],clay:['#b95735','#a4482b'],grass:['#36764a','#2b673d'],indoor:['#b98b54','#a57943']}[type];
- g.fillStyle=palettes[0];g.fillRect(0,0,size,size);
- rg.fillStyle=type==='indoor'?'#bcbcbc':type==='hard'?'#d0d0d0':'#dedede';rg.fillRect(0,0,size,size);
- hg.fillStyle=type==='grass'?'#858585':type==='clay'?'#858585':'#808080';hg.fillRect(0,0,size,size);
- // Material-specific base details, kept subtle so court markings remain crisp.
- if(type==='grass'){
-  for(let i=0;i<16;i++){g.fillStyle=i%2?'rgba(5,36,13,.12)':'rgba(190,235,153,.055)';g.fillRect(i*64,0,64,size)}
-  for(let i=0;i<22000;i++){const x=Math.random()*size,y=Math.random()*size;g.strokeStyle=Math.random()>.5?'rgba(208,238,164,.19)':'rgba(9,43,18,.22)';g.lineWidth=.5+Math.random()*1.1;g.beginPath();g.moveTo(x,y);g.lineTo(x+(Math.random()-.5)*2,y-2-Math.random()*7);g.stroke();const v=90+Math.random()*90;hg.fillStyle='rgb('+v+','+v+','+v+')';hg.fillRect(x,y,1,2+Math.random()*3)}
- }else if(type==='clay'){
-  for(let i=0;i<90000;i++){const x=Math.random()*size,y=Math.random()*size,r=.35+Math.random()*1.5;g.fillStyle=Math.random()>.48?'rgba(255,205,157,'+(Math.random()*.28)+')':'rgba(78,29,17,'+(Math.random()*.22)+')';g.beginPath();g.arc(x,y,r,0,Math.PI*2);g.fill();const v=90+Math.random()*95;hg.fillStyle='rgb('+v+','+v+','+v+')';hg.fillRect(x,y,1+r,1+r)}
- }else if(type==='indoor'){
-  for(let y=0;y<size;y+=42){
-   g.fillStyle='rgba(65,35,14,.2)';g.fillRect(0,y,size,2);
-   g.fillStyle='rgba(255,225,174,.12)';g.fillRect(0,y+3,size,1);
-   for(let x=(y%84?35:135);x<size;x+=210){g.fillStyle='rgba(64,35,15,.16)';g.fillRect(x,y,1,42);g.fillStyle='rgba(255,222,166,.07)';g.fillRect(x+2,y,1,42)}
-  }
-  for(let i=0;i<3800;i++){const x=Math.random()*size,y=Math.random()*size;g.strokeStyle=Math.random()>.5?'rgba(255,225,170,.1)':'rgba(73,43,20,.09)';g.lineWidth=.5+Math.random();g.beginPath();g.moveTo(x,y);g.lineTo(x+8+Math.random()*45,y+(Math.random()-.5)*1.5);g.stroke()}
- }else{
-  // Fine acrylic-resin aggregate and faint roller/paint variation for hard courts.
-  for(let i=0;i<65000;i++){const x=Math.random()*size,y=Math.random()*size,r=.35+Math.random()*1.1;g.fillStyle=Math.random()>.5?'rgba(205,242,255,'+(Math.random()*.2)+')':'rgba(0,25,45,'+(Math.random()*.18)+')';g.beginPath();g.arc(x,y,r,0,Math.PI*2);g.fill();const v=100+Math.random()*100;hg.fillStyle='rgb('+v+','+v+','+v+')';hg.fillRect(x,y,1,1)}
-  for(let i=0;i<300;i++){const y=Math.random()*size;g.fillStyle='rgba(220,248,255,.018)';g.fillRect(0,y,size,1)}
- }
- // Separate roughness and height maps: avoid using the colour image as a fake bump map.
- for(let i=0;i<26000;i++){const x=Math.random()*size,y=Math.random()*size,shade=type==='indoor'?145+Math.random()*90:155+Math.random()*85;rg.fillStyle='rgb('+shade+','+shade+','+shade+')';rg.fillRect(x,y,1+Math.random()*2,1+Math.random()*2)}
- // Add low-amplitude height grain for the hard and grass surfaces.
- if(type==='hard'||type==='grass'){for(let i=0;i<30000;i++){const x=Math.random()*size,y=Math.random()*size,v=100+Math.random()*120;hg.fillStyle='rgb('+v+','+v+','+v+')';hg.fillRect(x,y,1,1)}}
- const color=new THREE.CanvasTexture(cv),roughness=new THREE.CanvasTexture(roughCv),height=new THREE.CanvasTexture(heightCv);
- for(const t of [color,roughness,height]){t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(1,2.16);t.anisotropy=renderer.capabilities.getMaxAnisotropy()}
- color.colorSpace=THREE.SRGBColorSpace;
- // Derive a tangent-space normal map from the height map for more believable raking light.
- const normalCv=document.createElement('canvas');normalCv.width=normalCv.height=size;const ng=normalCv.getContext('2d'),src=hg.getImageData(0,0,size,size),out=ng.createImageData(size,size),data=src.data,nd=out.data;
- for(let y=0;y<size;y++)for(let x=0;x<size;x++){const i=(y*size+x)*4,l=((y*size+((x+size-1)%size))*4),r=((y*size+((x+1)%size))*4),u=(((y+size-1)%size)*size+x)*4,d=(((y+1)%size)*size+x)*4;const dx=(data[r]-data[l])/255,dy=(data[d]-data[u])/255,nx=-dx*2.2,ny=-dy*2.2,nz=1,len=Math.hypot(nx,ny,nz);nd[i]=(nx/len*.5+.5)*255;nd[i+1]=(ny/len*.5+.5)*255;nd[i+2]=(nz/len*.5+.5)*255;nd[i+3]=255}
- ng.putImageData(out,0,0);const normal=new THREE.CanvasTexture(normalCv);normal.wrapS=normal.wrapT=THREE.RepeatWrapping;normal.repeat.set(1,2.16);normal.anisotropy=renderer.capabilities.getMaxAnisotropy();
- return {map:color,roughnessMap:roughness,bumpMap:height,normalMap:normal};
-}
-const surfaceTextures={hard:makeSurfacePBR('hard'),clay:makeSurfacePBR('clay'),grass:makeSurfacePBR('grass'),indoor:makeSurfacePBR('indoor')};
-const courtMaterial=new THREE.MeshPhysicalMaterial({map:surfaceTextures.hard.map,roughnessMap:surfaceTextures.hard.roughnessMap,bumpMap:surfaceTextures.hard.bumpMap,normalMap:surfaceTextures.hard.normalMap,bumpScale:.018,normalScale:new THREE.Vector2(.42,.42),roughness:.72,metalness:0,clearcoat:.22,clearcoatRoughness:.38,envMapIntensity:.72});
-const white=material(0xf6f7f2,.7);function line(x1,z1,x2,z2,width=.05){const dx=x2-x1,dz=z2-z1,length=Math.hypot(dx,dz),m=new THREE.Mesh(new THREE.BoxGeometry(width,.02,length),white);m.position.set((x1+x2)/2,.035,(z1+z2)/2);m.rotation.y=Math.atan2(dx,dz);m.receiveShadow=true;scene.add(m)}
-const w=10.97/2,l=23.77/2,s=8.23/2;line(-w,-l,w,-l);line(-w,l,w,l);line(-w,-l,-w,l);line(w,-l,w,l);line(-s,-l,-s,l,.045);line(s,-l,s,l,.045);line(-w,-6.4,w,-6.4);line(-w,6.4,w,6.4);line(-s,0,s,0,.045);line(0,-6.4,0,6.4,.045);
-for(const x of [-5.55,5.55]){const post=new THREE.Mesh(new THREE.CylinderGeometry(.07,.09,1.15,16),material(0x20343f,.35,.5));post.position.set(x,.49,0);post.castShadow=true;scene.add(post)}
-const netMaterial=new THREE.LineBasicMaterial({color:0xe2e9e9,transparent:true,opacity:.72});for(let i=0;i<=100;i++){const x=-5.5+i*.11,sag=(x/5.5)**2*.12;scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x,.91-sag,0),new THREE.Vector3(x,.06,0)]),netMaterial))}for(let j=0;j<=14;j++){const y=.06+j*.06,pts=[];for(let i=0;i<=100;i++){const x=-5.5+i*.11;pts.push(new THREE.Vector3(x,y-(x/5.5)**2*.12*(y/.92),0))}scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),netMaterial))}cube(11.1,.08,.06,material(0xf5f5ef),0,.94,0,false);
-const wire=new THREE.MeshStandardMaterial({color:0x2a414c,wireframe:true,transparent:true,opacity:.22});const seatGroup=new THREE.Group();scene.add(seatGroup);
-for(const z of [-15.2,15.2]){const f=new THREE.Mesh(new THREE.BoxGeometry(16,.01,4.7),wire);f.position.set(0,2,z);scene.add(f);for(const x of [-8,0,8])cube(.07,4,.07,material(0x506874,.6,.3),x,2,z,false)}
-for(const x of [-8,8]){const f=new THREE.Mesh(new THREE.BoxGeometry(.01,4,30),wire);f.position.set(x,2,0);scene.add(f)}
-const seatMats=[0x285166,0x376b7b,0x24475b,0x4a7b86,0x315969].map(c=>material(c,.75));
-for(const side of [-1,1])for(let row=0;row<5;row++){const z=side*(17+row*1.02),y=.1+row*.43,tier=new THREE.Mesh(new THREE.BoxGeometry(27,.4,.9),material(0x435a66));tier.position.set(0,y-.15,z);seatGroup.add(tier);for(let x=-12.8;x<=12.8;x+=.62){const seat=new THREE.Mesh(new THREE.BoxGeometry(.45,.23,.38),seatMats[Math.floor(Math.random()*seatMats.length)]);seat.position.set(x,y+.12,z);seatGroup.add(seat);const back=new THREE.Mesh(new THREE.BoxGeometry(.45,.26,.07),seatMats[Math.floor(Math.random()*seatMats.length)]);back.position.set(x,y+.27,z-side*.14);seatGroup.add(back)}}
-for(const side of [-1,1]){const roof=new THREE.Mesh(new THREE.BoxGeometry(28,.3,4.5),material(0x2b414c,.5,.35));roof.position.set(0,3.3,side*22);seatGroup.add(roof)}
-// Venue architecture: separate from gameplay; toggled by the venue selector.
-const venueGroup=new THREE.Group();scene.add(venueGroup);
-const concrete=new THREE.MeshPhysicalMaterial({color:0x64757d,roughness:.68,metalness:.05,envMapIntensity:.7}),darkMetal=new THREE.MeshStandardMaterial({color:0x172a35,roughness:.3,metalness:.72,envMapIntensity:1.25}),glass=new THREE.MeshPhysicalMaterial({color:0x8cc6d8,roughness:.12,metalness:.12,transparent:true,opacity:.2,transmission:.12,thickness:.4,ior:1.45,side:THREE.DoubleSide,envMapIntensity:1.4}),ledMat=new THREE.MeshStandardMaterial({color:0x092532,emissive:0x00a9c9,emissiveIntensity:.8,roughness:.35});
-function venueBox(w,h,d,mat,x,y,z){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;venueGroup.add(m);return m}
-function beamBetween(a,b,r,mat){const va=new THREE.Vector3(...a),vb=new THREE.Vector3(...b),dir=new THREE.Vector3().subVectors(vb,va);const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,dir.length(),8),mat);m.position.copy(va).add(vb).multiplyScalar(.5);m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir.normalize());m.castShadow=true;venueGroup.add(m)}
-// Tall, tiered grandstands on both baselines and sides.
-for(const side of [-1,1]){
- for(let row=0;row<9;row++){
-  const z=side*(17.3+row*1.02),y=.25+row*.48;
-  venueBox(31,.42,.94,concrete,0,y-.16,z);
-  for(let x=-14.6;x<=14.6;x+=.52){
-   const seat=new THREE.Mesh(new THREE.BoxGeometry(.39,.2,.34),seatMats[Math.floor(Math.random()*seatMats.length)]);
-   seat.position.set(x,y+.1,z);seat.castShadow=true;venueGroup.add(seat);
-  }
- }
-}
-for(const side of [-1,1]){
- for(let row=0;row<6;row++){
-  const x=side*(8.8+row*1.02),y=.2+row*.5;
-  venueBox(.9,.42,31,concrete,x,y-.16,0);
-  for(let z=-14.7;z<=14.7;z+=.62){
-   const seat=new THREE.Mesh(new THREE.BoxGeometry(.34,.2,.42),seatMats[Math.floor(Math.random()*seatMats.length)]);seat.position.set(x,y+.1,z);venueGroup.add(seat);
-  }
- }
-}
-// Roof girders and translucent canopy frame for large event venues.
-for(const side of [-1,1]){
- beamBetween([-17,8,side*31],[17,8,side*31],.2,darkMetal);
- beamBetween([-17,8,side*31],[-11,11,side*22],.16,darkMetal);
- beamBetween([17,8,side*31],[11,11,side*22],.16,darkMetal);
- venueBox(34,.12,8,glass,0,10.9,side*27);
- for(let x=-16;x<=16;x+=4)beamBetween([x,8.1,side*31],[x,10.9,side*23],.075,darkMetal);
-}
-for(const side of [-1,1]){
- venueBox(31,.42,1.1,ledMat,0,5.15,side*16.5);
- const board=new THREE.Mesh(new THREE.PlaneGeometry(28,.27),new THREE.MeshBasicMaterial({color:0x00c6df}));board.position.set(0,5.16,side*15.93);if(side>0)board.rotation.y=Math.PI;venueGroup.add(board);
-}
-// Large suspended centre scoreboard, with dark glass and bright score panels.
-venueBox(5.8,2.7,.28,darkMetal,0,8.1,-21);
-for(const side of [-1,1]){const display=new THREE.Mesh(new THREE.PlaneGeometry(5.2,2.1),new THREE.MeshBasicMaterial({color:0x082b3c}));display.position.set(0,8.1,-21.16);if(side<0)display.rotation.y=Math.PI;venueGroup.add(display)}
-for(let x=-2;x<=2;x+=4)venueBox(.035,1.8,.025,material(0x58e6f7,.25,.2),x,8.1,-21.2);
-const indoorRoofGroup=new THREE.Group();scene.add(indoorRoofGroup);
-const roofPanel=new THREE.Mesh(new THREE.BoxGeometry(38,.22,54),new THREE.MeshStandardMaterial({color:0x263d4a,roughness:.65,metalness:.25,side:THREE.DoubleSide}));roofPanel.position.set(0,13,0);roofPanel.castShadow=true;roofPanel.receiveShadow=true;indoorRoofGroup.add(roofPanel);
-for(let x=-18;x<=18;x+=6){beamBetween([x,11.2,-25],[x,11.2,25],.12,darkMetal);beamBetween([x,11.2,-25],[x+3,13,-25],.08,darkMetal);beamBetween([x,11.2,25],[x+3,13,25],.08,darkMetal)}
-const roofLampMat=new THREE.MeshStandardMaterial({color:0xffffff,emissive:0x9feaff,emissiveIntensity:1.25});
-for(let x=-15;x<=15;x+=5){const lamp=new THREE.Mesh(new THREE.BoxGeometry(2.8,.07,.22),roofLampMat);lamp.position.set(x,12.82,0);indoorRoofGroup.add(lamp)}
-indoorRoofGroup.visible=false;
-const championshipGroup=new THREE.Group();scene.add(championshipGroup);
-for(const side of [-1,1]){const upper=new THREE.Mesh(new THREE.BoxGeometry(34,.35,1.5),material(0x283e49,.55,.35));upper.position.set(0,7.4,side*25);championshipGroup.add(upper);for(let x=-16;x<=16;x+=2){const rail=new THREE.Mesh(new THREE.BoxGeometry(.07,.7,.07),darkMetal);rail.position.set(x,7.8,side*24.25);championshipGroup.add(rail)}}
-const crown=new THREE.Mesh(new THREE.TorusGeometry(18,.14,8,80),darkMetal);crown.rotation.x=Math.PI/2;crown.position.y=8.7;championshipGroup.add(crown);
-championshipGroup.visible=false;
-// Dedicated stadium option: a clearly separate, large-scale bowl and roof.
-const stadiumGroup=new THREE.Group();scene.add(stadiumGroup);
-const stadiumConcrete=new THREE.MeshStandardMaterial({color:0x73818a,roughness:.62,metalness:.04,envMapIntensity:.72}),stadiumSteel=new THREE.MeshStandardMaterial({color:0x1b2b36,roughness:.27,metalness:.78,envMapIntensity:1.35});
-for(const side of [-1,1]){
- for(let row=0;row<12;row++){
-  const z=side*(17.5+row*1.13),y=.35+row*.48;
-  const tier=new THREE.Mesh(new THREE.BoxGeometry(34,.42,1.02),stadiumConcrete);
-  tier.position.set(0,y,z);tier.castShadow=true;tier.receiveShadow=true;stadiumGroup.add(tier);
-  for(let x=-16.1;x<=16.1;x+=.48){
-   const seat=new THREE.Mesh(new THREE.BoxGeometry(.36,.19,.3),seatMats[(Math.floor((x+16.1)*3)+row)%seatMats.length]);
-   seat.position.set(x,y+.28,z-side*.08);stadiumGroup.add(seat);
-  }
- }
-}
-// Side stands make the court feel enclosed by a true stadium bowl.
-for(const side of [-1,1]){
- for(let row=0;row<7;row++){
-  const x=side*(7.4+row*1.05),y=.28+row*.53;
-  const tier=new THREE.Mesh(new THREE.BoxGeometry(1, .42, 34),stadiumConcrete);tier.position.set(x,y,0);stadiumGroup.add(tier);
-  for(let z=-16.1;z<=16.1;z+=.55){const seat=new THREE.Mesh(new THREE.BoxGeometry(.29,.19,.35),seatMats[(Math.floor((z+16.1)*2)+row)%seatMats.length]);seat.position.set(x-side*.12,y+.27,z);stadiumGroup.add(seat)}
- }
-}
-// High cantilever roof ring and exposed trusswork.
-for(const side of [-1,1]){
- const roof=new THREE.Mesh(new THREE.BoxGeometry(39,.34,7.2),new THREE.MeshStandardMaterial({color:0x253b48,roughness:.55,metalness:.42,side:THREE.DoubleSide}));
- roof.position.set(0,10.4,side*27.8);roof.castShadow=true;stadiumGroup.add(roof);
- for(let x=-18;x<=18;x+=3){
-  const beam=new THREE.Mesh(new THREE.CylinderGeometry(.075,.075,Math.hypot(2.4,7.8),8),stadiumSteel);
-  beam.position.set(x,7.9,side*24);beam.rotation.x=side*.3;beam.rotation.z=.28;stadiumGroup.add(beam);
- }
- const fascia=new THREE.Mesh(new THREE.BoxGeometry(39,.62,.28),ledMat);fascia.position.set(0,9.95,side*31.3);stadiumGroup.add(fascia);
-}
-const stadiumScore=new THREE.Mesh(new THREE.BoxGeometry(6.8,3.2,.4),stadiumSteel);stadiumScore.position.set(0,8.1,-22.7);stadiumGroup.add(stadiumScore);
-for(const side of [-1,1]){const panel=new THREE.Mesh(new THREE.PlaneGeometry(6.2,2.6),new THREE.MeshBasicMaterial({color:0x063044}));panel.position.set(0,8.1,-22.48);if(side>0)panel.rotation.y=Math.PI;stadiumGroup.add(panel)}
-stadiumGroup.visible=false;
+<div id="load">モデルを生成中…</div>
+<div id="ui">
+  <button data-v="all" class="on">体育館 全景</button>
+  <button data-v="vb">バレーコート</button>
+  <button data-v="ref">ネット・審判台</button>
+  <button data-v="tt">卓球エリア</button>
+  <button data-v="table">卓球台</button>
+  <button id="net">ネット: 男子 2.43m</button>
+  <button id="q">画質: 高</button>
+</div>
+<div id="hint">ドラッグ: 回転 / ホイール・ピンチ: ズーム / Shift+ドラッグ・右ドラッグ: 移動</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/*!
+ * gym-models.js  —  体育館 / バレーボールコート / 卓球台 の高品質3Dモデル (Three.js r128 対応)
+ *
+ * 座標系は BADMINTON ARENA に合わせています:
+ *   Y = 上 / ネットは z=0 で x 方向に張る / コートの長手方向は z 軸 / 単位はメートル / 原点はコート中心の床面
+ *
+ * 主なAPI (window.GymModels):
+ *   buildVolleyballCourt(opts)   バレーコート一式(床・ライン・ネット・支柱・アンテナ・審判台・記録台・ベンチ・ボールカート)
+ *   buildTableTennisTable(opts)  卓球台1台(ネット・クランプ・脚・キャスター)
+ *   buildTableTennisZone(opts)   卓球エリア(マット・バリア・卓球台×n・フリップ得点板・タオルボックス)
+ *   buildGymHall(opts)           体育館本体(床・壁・窓・屋根・トラス・照明・ギャラリー・電光掲示板・ゴール)
+ *   buildGymComplex(opts)        上記をまとめて配置した完成版
+ *   createVolleyball() / createTableTennisBall() / createPaddle()   小物
+ */
+(function (root) {
+'use strict';
+var THREE = root.THREE || (typeof require === 'function' ? require('three') : null);
+if (!THREE) { throw new Error('gym-models.js: THREE (r128) が見つかりません'); }
 
-// Fine architectural details: seat backs, metal supports, armrests, cup holders,
-// aisle stair treads, safety rails, fascia seams and concourse glazing.
-// Instanced meshes keep the extra detail affordable on phones and tablets.
-function addSeatDetailInstances(group, seats, {sideAxis='z'}={}){
- const count=seats.length;
- if(!count)return;
- const steel=new THREE.MeshStandardMaterial({color:0x263943,roughness:.34,metalness:.72,envMapIntensity:1.15});
- const shell=new THREE.MeshPhysicalMaterial({color:0x31596b,roughness:.42,metalness:.02,clearcoat:.32,clearcoatRoughness:.3,envMapIntensity:.8});
- const backGeo=new THREE.BoxGeometry(.34,.23,.055);
- const armGeo=new THREE.BoxGeometry(.045,.035,.28);
- const legGeo=new THREE.BoxGeometry(.035,.16,.035);
- const cupGeo=new THREE.CylinderGeometry(.045,.038,.055,10);
- const backs=new THREE.InstancedMesh(backGeo,shell,count);
- const arms=new THREE.InstancedMesh(armGeo,steel,count*2);
- const legs=new THREE.InstancedMesh(legGeo,steel,count*2);
- const cups=new THREE.InstancedMesh(cupGeo,steel,count);
- const dummy=new THREE.Object3D();let ai=0,li=0;
- for(let i=0;i<count;i++){
-  const s=seats[i];dummy.position.set(s.x,s.y+.13,s.z+(sideAxis==='z'?s.side*.13:0));
-  dummy.rotation.set(0,sideAxis==='z'?(s.side>0?Math.PI:0):Math.PI/2,sideAxis==='z'?-.06:0);dummy.updateMatrix();backs.setMatrixAt(i,dummy.matrix);
-  for(const sign of [-1,1]){
-   dummy.position.set(s.x+sign*.17,s.y+.025,s.z);dummy.rotation.set(0,0,0);dummy.updateMatrix();arms.setMatrixAt(ai++,dummy.matrix);
-   dummy.position.set(s.x+sign*.12,s.y-.065,s.z);dummy.scale.set(1,1,1);dummy.updateMatrix();legs.setMatrixAt(li++,dummy.matrix);
-  }
-  dummy.position.set(s.x+.105,s.y+.055,s.z-.035);dummy.scale.set(1,1,1);dummy.updateMatrix();cups.setMatrixAt(i,dummy.matrix);
- }
- for(const m of [backs,arms,legs,cups]){m.castShadow=true;m.receiveShadow=true;group.add(m)}
-}
-function addAisleAndVenueDetails(group, sideRows, endRows, stadium=false){
- const railMat=new THREE.MeshStandardMaterial({color:0x4d6570,roughness:.3,metalness:.78,envMapIntensity:1.25});
- const stepMat=new THREE.MeshStandardMaterial({color:0x9ca8aa,roughness:.78,metalness:.02});
- const ledStrip=new THREE.MeshStandardMaterial({color:0x172d38,roughness:.3,metalness:.45,emissive:0x007b91,emissiveIntensity:.32});
- const inst=(geo,mat,items)=>{if(!items.length)return;const m=new THREE.InstancedMesh(geo,mat,items.length),o=new THREE.Object3D();items.forEach((p,i)=>{o.position.set(p[0],p[1],p[2]);o.rotation.set(p[3]||0,p[4]||0,p[5]||0);o.scale.set(p[6]||1,p[7]||1,p[8]||1);o.updateMatrix();m.setMatrixAt(i,o.matrix)});m.castShadow=true;m.receiveShadow=true;group.add(m)};
- const rails=[],treads=[],leds=[],joints=[];
- for(const side of [-1,1]){
-  for(let row=0;row<endRows;row++){
-   const z=side*(17.5+row*(stadium?1.13:1.02)),y=.35+row*(stadium?.48:.48);
-   treads.push([0,y+.035,z-side*.46,0,0,0,stadium?31:29,.035,.035]);
-   leds.push([0,y+.06,z-side*.49,0,0,0,stadium?30:28,.018,.018]);
-   if(row%3===0){rails.push([stadium?16.6:15.2,y+.45,z-side*.45,0,0,0,.035,.42,.035]);rails.push([stadium?-16.6:-15.2,y+.45,z-side*.45,0,0,0,.035,.42,.035])}
-  }
-  for(let row=0;row<sideRows;row++){
-   const x=side*(stadium?7.4+row*1.05:8.8+row*1.02),y=.2+row*.5;
-   treads.push([x-side*.43,y+.035,0,0,0,0,.035,.035,stadium?31:28]);
-   leds.push([x-side*.46,y+.06,0,0,0,0,.018,.018,stadium?30:27]);
-   if(row%3===0){rails.push([x-side*.43,y+.45,16.2,0,0,0,.035,.42,.035]);rails.push([x-side*.43,y+.45,-16.2,0,0,0,.035,.42,.035])}
-  }
- }
- // Row-edge nosings and subtle LED strips make the tier geometry legible.
- inst(new THREE.BoxGeometry(1,1,1),stepMat,treads);
- inst(new THREE.BoxGeometry(1,1,1),ledStrip,leds);
- inst(new THREE.BoxGeometry(1,1,1),railMat,rails);
- // Concourse pillars, glazed entry bays, and service doors behind the upper rows.
- for(const side of [-1,1]){
-  for(let x=-15;x<=15;x+=5){
-   const pillar=new THREE.Mesh(new THREE.BoxGeometry(.22,2.4,.22),railMat);pillar.position.set(x,5.8,side*29.4);pillar.castShadow=true;group.add(pillar);
-   const bay=new THREE.Mesh(new THREE.BoxGeometry(4.5,1.45,.045),new THREE.MeshPhysicalMaterial({color:0x8bb9c8,roughness:.2,metalness:.2,transparent:true,opacity:.24,envMapIntensity:1.1}));bay.position.set(x,5.85,side*29.25);group.add(bay);
-   const door=new THREE.Mesh(new THREE.BoxGeometry(.72,1.65,.06),new THREE.MeshStandardMaterial({color:0x142b37,roughness:.45,metalness:.25}));door.position.set(x+1.3,5.55,side*29.18);group.add(door);
-  }
- }
-}
-const standardSeatPositions=[];
-for(const side of [-1,1])for(let row=0;row<5;row++)for(let x=-12.8;x<=12.8;x+=.62)standardSeatPositions.push({x,y:.1+row*.43+.12,z:side*(17+row*1.02),side});
-addSeatDetailInstances(seatGroup,standardSeatPositions);
-const venueSeatPositions=[];
-for(const side of [-1,1]){
- for(let row=0;row<9;row++)for(let x=-14.6;x<=14.6;x+=.52)venueSeatPositions.push({x,y:.25+row*.48+.1,z:side*(17.3+row*1.02),side});
- for(let row=0;row<6;row++)for(let z=-14.7;z<=14.7;z+=.62)venueSeatPositions.push({x:side*(8.8+row*1.02),y:.2+row*.5+.1,z,side});
-}
-addSeatDetailInstances(venueGroup,venueSeatPositions);
-addAisleAndVenueDetails(venueGroup,6,9,false);
-const stadiumSeatPositions=[];
-for(const side of [-1,1]){
- for(let row=0;row<12;row++)for(let x=-16.1;x<=16.1;x+=.48)stadiumSeatPositions.push({x,y:.35+row*.48+.28,z:side*(17.5+row*1.13),side});
- for(let row=0;row<7;row++)for(let z=-16.1;z<=16.1;z+=.55)stadiumSeatPositions.push({x:side*(7.4+row*1.05),y:.28+row*.53+.27,z,side});
-}
-addSeatDetailInstances(stadiumGroup,stadiumSeatPositions);
-addAisleAndVenueDetails(stadiumGroup,7,12,true);
+/* ============================================================
+ *  ユーティリティ
+ * ============================================================ */
+var QUALITY = {
+  high:   { wood: 2048, court: [2048, 4096], ball: 1024, board: 1024, aniso: 8, shadow: 4096 },
+  normal: { wood: 1024, court: [1024, 2048], ball: 512,  board: 512,  aniso: 4, shadow: 2048 }
+};
+function getQ(name) { return QUALITY[name] || QUALITY.high; }
 
-// High-detail empty grandstand finish: seat-number tabs, shell seams, aisle steps,
-// handrail posts, roof ribs, expansion joints and exposed fasteners.
-function addEmptyVenueFinish(group,{endRows,sideRows,stadium=false}){
- const seatNumberMat=new THREE.MeshStandardMaterial({color:0xd7e5e8,roughness:.38,metalness:.12,emissive:0x12232a,emissiveIntensity:.12});
- const seatSeamMat=new THREE.MeshStandardMaterial({color:0x132d39,roughness:.7,metalness:.08});
- const concreteJointMat=new THREE.MeshStandardMaterial({color:0x344954,roughness:.9,metalness:0});
- const railMat=new THREE.MeshStandardMaterial({color:0x8b9da3,roughness:.24,metalness:.82,envMapIntensity:1.4});
- const roofMat=new THREE.MeshStandardMaterial({color:0x3b505b,roughness:.42,metalness:.58,envMapIntensity:1.3});
- const numberGeo=new THREE.BoxGeometry(.055,.045,.012),seamGeo=new THREE.BoxGeometry(.012,.018,.34);
- const numbers=[],seams=[],joints=[],roofRibs=[],posts=[],handrails=[];
- for(const side of [-1,1]){
-  const rows=endRows;
-  for(let row=0;row<rows;row++){
-   const z=side*(stadium?17.5+row*1.13:17.3+row*1.02),y=.35+row*.48;
-   // Subtle joints on concrete risers and small seat-number markers at regular intervals.
-   for(let x=-14;x<=14;x+=2){
-    joints.push([x,y-.16,z+side*.475,0,0,0,.035,.24,.012]);
-    numbers.push([x+.2,y+.18,z-side*.17,0,side>0?Math.PI:0,0,1,1,1]);
-   }
-   // Roof purlins are repeated metal strips, not a single featureless slab.
-   if(stadium&&row===rows-1)for(let x=-18;x<=18;x+=1.5)roofRibs.push([x,10.58,side*27.8,0,0,0,.035,.09,7.05]);
-  }
-  for(let row=0;row<sideRows;row++){
-   const x=side*(stadium?7.4+row*1.05:8.8+row*1.02),y=.28+row*.5;
-   for(let z=-14;z<=14;z+=2){joints.push([x+side*.46,y-.16,z,0,0,0,.012,.24,.035]);numbers.push([x-side*.17,y+.18,z+.2,0,side>0?Math.PI/2:-Math.PI/2,0,1,1,1])}
-  }
-  // Long handrails with evenly spaced vertical balusters along concourse edges.
-  for(let h=0;h<3;h++){
-   const railY=5.3+h*.42,railZ=side*(stadium?29.6:28.8);
-   handrails.push([0,railY,railZ,0,0,0,stadium?32:29,.025,.025]);
-   for(let x=-15;x<=15;x+=1.25)posts.push([x,railY-.2,railZ,0,0,0,.022,.22,.022]);
-  }
- }
- const inst=(geo,mat,items)=>{if(!items.length)return;const m=new THREE.InstancedMesh(geo,mat,items.length),o=new THREE.Object3D();for(let i=0;i<items.length;i++){const p=items[i];o.position.set(p[0],p[1],p[2]);o.rotation.set(p[3]||0,p[4]||0,p[5]||0);o.scale.set(p[6]||1,p[7]||1,p[8]||1);o.updateMatrix();m.setMatrixAt(i,o.matrix)}m.castShadow=true;m.receiveShadow=true;group.add(m)};
- inst(numberGeo,seatNumberMat,numbers);
- inst(seamGeo,seatSeamMat,seams);
- inst(new THREE.BoxGeometry(1,1,1),concreteJointMat,joints);
- inst(new THREE.BoxGeometry(1,1,1),roofMat,roofRibs);
- inst(new THREE.BoxGeometry(1,1,1),railMat,posts);
- inst(new THREE.BoxGeometry(1,1,1),railMat,handrails);
- // Fine perimeter details: facade expansion joints, drainage grates and wall-panel seams.
- const facadeMat=new THREE.MeshStandardMaterial({color:0x2a404a,roughness:.58,metalness:.36});
- for(const side of [-1,1]){
-  for(let x=-16;x<=16;x+=2){
-   const joint=new THREE.Mesh(new THREE.BoxGeometry(.025,1.8,.035),facadeMat);joint.position.set(x,4.9,side*(stadium?30.3:29.1));group.add(joint);
-   const bolt=new THREE.Mesh(new THREE.SphereGeometry(.035,8,6),railMat);bolt.position.set(x,5.75,side*(stadium?30.35:29.15));group.add(bolt);
-  }
-  const drain=new THREE.Mesh(new THREE.BoxGeometry(stadium?34:30,.025,.18),new THREE.MeshStandardMaterial({color:0x1c2b32,roughness:.6,metalness:.45}));drain.position.set(0,.08,side*(stadium?16.6:16.4));group.add(drain);
-  for(let i=0;i<45;i++){const slit=new THREE.Mesh(new THREE.BoxGeometry(.018,.028,.13),railMat);slit.position.set(-16.5+i*.75,.095,side*(stadium?16.6:16.4));group.add(slit)}
- }
+function rng(seed) {                     // 再現性のある乱数 (mulberry32)
+  var s = seed >>> 0;
+  return function () {
+    s = (s + 0x6D2B79F5) >>> 0;
+    var t = s;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
 }
-addEmptyVenueFinish(venueGroup,{endRows:9,sideRows:6});
-addEmptyVenueFinish(stadiumGroup,{endRows:12,sideRows:7,stadium:true});
-// Ultra-detail pass for EVERY venue: expansion joints, structural bolts, cable trays,
-// acoustic ceiling panels, light housings, glass mullions and service access details.
-// Repeated micro-geometry is instanced to keep draw calls manageable on mobile.
-function addArchitecturalMicrodetail(group, kind){
- const steel=new THREE.MeshStandardMaterial({color:0x354b56,roughness:.32,metalness:.78,envMapIntensity:1.25});
- const brushed=new THREE.MeshStandardMaterial({color:0x82949a,roughness:.27,metalness:.84,envMapIntensity:1.35});
- const dark=new THREE.MeshStandardMaterial({color:0x142832,roughness:.72,metalness:.18});
- const concreteJoint=new THREE.MeshStandardMaterial({color:0x465a63,roughness:.92});
- const luminous=new THREE.MeshStandardMaterial({color:0xe7f8ff,emissive:0x91dcff,emissiveIntensity:1.4,roughness:.22});
- const inst=(geo,mat,arr)=>{if(!arr.length)return;const mesh=new THREE.InstancedMesh(geo,mat,arr.length),o=new THREE.Object3D();for(let i=0;i<arr.length;i++){const p=arr[i];o.position.set(p[0],p[1],p[2]);o.rotation.set(p[3]||0,p[4]||0,p[5]||0);o.scale.set(p[6]||1,p[7]||1,p[8]||1);o.updateMatrix();mesh.setMatrixAt(i,o.matrix)}mesh.castShadow=true;mesh.receiveShadow=true;mesh.instanceMatrix.needsUpdate=true;group.add(mesh)};
- const bolts=[],facadeSeams=[],cables=[],lightBars=[],roofCross=[];
- const isStadium=kind==='stadium',isGrand=kind==='grand',isIndoor=kind==='indoor',isStandard=kind==='standard';
- const halfZ=isStandard?15.8:isIndoor?28:isStadium?32:30;
- const facadeX=isStandard?7.9:isIndoor?19:isStadium?18:16;
- // Individual visible bolts at structural connection plates.
- for(const side of [-1,1]){
-  for(let x=-facadeX;x<=facadeX;x+=isStandard?1.3:1.6){
-   for(const y of (isIndoor?[4.2,6.2,8.2,10.2]:[3.8,5.4,7])){
-    bolts.push([x,y,side*(halfZ-.08),0,0,0,.07,.07,.035]);
-   }
-   if(!isIndoor){facadeSeams.push([x,4.7,side*(halfZ-.13),0,0,0,.018,2.8,.025])}
-  }
-  // Surface drainage and cable-protection channels at the perimeter.
-  for(let x=-facadeX;x<facadeX;x+=.42)cables.push([x,.03,side*(isStandard?15.95:16.35),0,0,0,.018,.045,.14]);
- }
- // Roof service catwalks and repeated cross-bracing: actual members, not a flat roof silhouette.
- if(isIndoor||isGrand||isStadium){
-  const roofY=isIndoor?11.15:isStadium?9.95:7.45;
-  const span=isIndoor?18:isStadium?18:16;
-  for(let x=-span;x<=span;x+=2){
-   roofCross.push([x,roofY,0,0,0,0,.055,.055,isIndoor?25:22]);
-   roofCross.push([x,roofY-.24,0,0,0,0,.035,.035,isIndoor?24:21]);
-   for(const z of (isIndoor?[-22,-11,0,11,22]:[-25,-12,0,12,25])){
-    bolts.push([x,roofY+.08,z,0,0,0,.055,.055,.055]);
-   }
-  }
-  for(let x=-span;x<=span;x+=4){
-   lightBars.push([x,isIndoor?12.72:isStadium?9.55:7.05,0,0,0,0,isIndoor?2.6:2.2,.045,.22]);
-  }
- }
- inst(new THREE.SphereGeometry(1,8,6),brushed,bolts);
- inst(new THREE.BoxGeometry(1,1,1),concreteJoint,facadeSeams);
- inst(new THREE.BoxGeometry(1,1,1),dark,cables);
- inst(new THREE.BoxGeometry(1,1,1),steel,roofCross);
- inst(new THREE.BoxGeometry(1,1,1),luminous,lightBars);
- // Secondary mullions and door hardware behind the stands, with consistent spacing.
- if(!isStandard){
-  const mullions=[];
-  for(const side of [-1,1])for(let x=-facadeX;x<=facadeX;x+=.8){
-   mullions.push([x,5.75,side*(halfZ-.18),0,0,0,.025,1.35,.025]);
-  }
-  inst(new THREE.BoxGeometry(1,1,1),brushed,mullions);
- }
+function canvas(w, h) { var c = document.createElement('canvas'); c.width = w; c.height = h; return c; }
+function ctex(c, o) {
+  o = o || {};
+  var t = new THREE.CanvasTexture(c);
+  t.encoding = o.linear ? THREE.LinearEncoding : THREE.sRGBEncoding;
+  t.anisotropy = o.aniso || 8;
+  if (o.rep) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(o.rep[0], o.rep[1]); }
+  return t;
 }
-addArchitecturalMicrodetail(seatGroup,'standard');
-addArchitecturalMicrodetail(venueGroup,'grand');
-addArchitecturalMicrodetail(stadiumGroup,'stadium');
-addArchitecturalMicrodetail(championshipGroup,'grand');
-addArchitecturalMicrodetail(indoorRoofGroup,'indoor');
-// More convincing layered venue lighting: low-intensity architectural strips and night-session pools.
-const architecturalLights=[];
-for(const side of [-1,1]){
- for(let x=-15;x<=15;x+=5){
-  const strip=new THREE.Mesh(new THREE.BoxGeometry(3.8,.035,.055),new THREE.MeshStandardMaterial({color:0xe7f7ff,emissive:0x70dfff,emissiveIntensity:.85,roughness:.25}));
-  strip.position.set(x,5.02,side*29.12);venueGroup.add(strip);
-  const point=new THREE.PointLight(0x8bdcff,.28,7,2);point.position.set(x,5.1,side*28.5);venueGroup.add(point);architecturalLights.push(point);
- }
+function S(c, o) { return new THREE.MeshStandardMaterial(Object.assign({ color: c, roughness: 0.6, metalness: 0 }, o || {})); }
+function B(c, o) { return new THREE.MeshBasicMaterial(Object.assign({ color: c }, o || {})); }
+
+var Y = new THREE.Vector3(0, 1, 0), _m = new THREE.Matrix4(), _q = new THREE.Quaternion(),
+    _p = new THREE.Vector3(), _s = new THREE.Vector3(1, 1, 1), _d = new THREE.Vector3(), _e = new THREE.Euler();
+
+function add(parent, geo, mat, x, y, z, cast) {
+  var m = new THREE.Mesh(geo, mat);
+  m.position.set(x || 0, y || 0, z || 0);
+  m.castShadow = cast !== false; m.receiveShadow = true;
+  if (parent) parent.add(m);
+  return m;
 }
-for(let x=-15;x<=15;x+=5){
- const fixture=new THREE.Mesh(new THREE.BoxGeometry(2.4,.09,.35),new THREE.MeshStandardMaterial({color:0xf3fbff,emissive:0xb8eaff,emissiveIntensity:1.15,roughness:.2}));
- fixture.position.set(x,9.42,0);indoorRoofGroup.add(fixture);
+function box(p, w, h, d, mat, x, y, z, cast) { return add(p, new THREE.BoxGeometry(w, h, d), mat, x, y, z, cast); }
+function cyl(p, rt, rb, h, mat, x, y, z, seg) { return add(p, new THREE.CylinderGeometry(rt, rb, h, seg || 16), mat, x, y, z); }
+function link(parent, a, b, w, mat, round) {   // 2点間をつなぐ棒
+  _d.set(b[0] - a[0], b[1] - a[1], b[2] - a[2]);
+  var len = _d.length();
+  var geo = round ? new THREE.CylinderGeometry(w / 2, w / 2, len, 10) : new THREE.BoxGeometry(w, len, w);
+  var m = new THREE.Mesh(geo, mat);
+  m.position.set((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2);
+  m.quaternion.setFromUnitVectors(Y, _d.normalize());
+  m.castShadow = true; m.receiveShadow = true;
+  parent.add(m);
+  return m;
 }
 
-// Photorealism pass: layered façade construction, service infrastructure and stadium-grade fixtures.
-function addVenueRealismPass(group, profile){
- const metal=new THREE.MeshStandardMaterial({color:0x263943,roughness:.31,metalness:.82,envMapIntensity:1.4});
- const aluminum=new THREE.MeshStandardMaterial({color:0x91a2a8,roughness:.24,metalness:.88,envMapIntensity:1.45});
- const rubber=new THREE.MeshStandardMaterial({color:0x101b21,roughness:.86,metalness:.02});
- const glassPanel=new THREE.MeshPhysicalMaterial({color:0x9bc7d5,roughness:.16,metalness:.18,transparent:true,opacity:.28,transmission:.08,thickness:.18,ior:1.46,side:THREE.DoubleSide,envMapIntensity:1.25});
- const signMat=new THREE.MeshStandardMaterial({color:0x0a202b,roughness:.4,metalness:.25,emissive:0x062b3c,emissiveIntensity:.5});
- const exitMat=new THREE.MeshStandardMaterial({color:0xd8f3e8,roughness:.3,emissive:0x4aff9a,emissiveIntensity:.65});
- const panels=[],mullions=[],doorFrames=[],vents=[],fasteners=[],truss=[];
- const indoor=profile==='indoor',stadium=profile==='stadium',standard=profile==='standard';
- const width=standard?15:stadium?18:17;
- const depth=standard?17:indoor?27:stadium?31:29;
- const wallY=standard?3.1:indoor?7.2:stadium?6.3:6.1;
- const faceZ=depth;
- // Repeated architectural bays with inset glazing, frame members, door headers and kick plates.
- for(const side of [-1,1]){
-  for(let x=-width;x<=width;x+=4){
-   panels.push([x,wallY,side*(faceZ-.16),0,0,0,3.45,1.65,.035]);
-   mullions.push([x-1.72,wallY,side*(faceZ-.11),0,0,0,.045,1.8,.07]);
-   mullions.push([x+1.72,wallY,side*(faceZ-.11),0,0,0,.045,1.8,.07]);
-   mullions.push([x,wallY-.88,side*(faceZ-.1),0,0,0,3.5,.035,.06]);
-   // Door frame and kick plate at alternating service bays.
-   if(Math.round((x+width)/4)%2===0){
-    doorFrames.push([x+1.0,wallY-.18,side*(faceZ-.07),0,0,0,.78,1.75,.07]);
-    doorFrames.push([x+1.0,wallY-.98,side*(faceZ-.02),0,0,0,.7,.045,.025]);
-    fasteners.push([x+.65,wallY-.15,side*(faceZ-.005),0,0,0,.035,.035,.02]);
-   }
-   // Rectangular ventilation grilles below the upper concourse.
-   vents.push([x,wallY-1.35,side*(faceZ-.08),0,0,0,1.15,.12,.06]);
-   for(let k=0;k<7;k++)vents.push([x-.48+k*.16,wallY-1.35,side*(faceZ-.035),0,0,0,.018,.085,.018]);
-  }
- }
- const inst=(geo,mat,arr)=>{if(!arr.length)return;const mesh=new THREE.InstancedMesh(geo,mat,arr.length),o=new THREE.Object3D();for(let i=0;i<arr.length;i++){const p=arr[i];o.position.set(p[0],p[1],p[2]);o.rotation.set(p[3]||0,p[4]||0,p[5]||0);o.scale.set(p[6]||1,p[7]||1,p[8]||1);o.updateMatrix();mesh.setMatrixAt(i,o.matrix)}mesh.castShadow=true;mesh.receiveShadow=true;mesh.instanceMatrix.needsUpdate=true;group.add(mesh)};
- inst(new THREE.BoxGeometry(1,1,1),glassPanel,panels);
- inst(new THREE.BoxGeometry(1,1,1),aluminum,mullions);
- inst(new THREE.BoxGeometry(1,1,1),metal,doorFrames);
- inst(new THREE.BoxGeometry(1,1,1),rubber,vents);
- inst(new THREE.CylinderGeometry(1,1,1,8),aluminum,fasteners);
- // Exit signs and emergency fixtures, deliberately restrained in brightness.
- const signs=[];
- for(const side of [-1,1])for(let x=-width+2;x<=width;x+=8){
-  signs.push([x,wallY+.95,side*(faceZ-.05),0,0,0,.55,.18,.035]);
-  const sign=new THREE.Mesh(new THREE.BoxGeometry(.5,.14,.025),exitMat);
-  sign.position.set(x,wallY+.95,side*(faceZ-.015));group.add(sign);
- }
- inst(new THREE.BoxGeometry(1,1,1),signMat,signs);
- // Roof maintenance rails, service walkways and triangular truss braces.
- if(!standard){
-  const y=indoor?11.05:stadium?9.85:7.25;
-  const span=indoor?18:stadium?18:16;
-  for(let x=-span;x<span;x+=2){
-   truss.push([x+1,y,0,0,0,0,1.95,.045,.045]);
-   truss.push([x+1,y-.55,0,0,0,0,1.95,.04,.04]);
-   truss.push([x+.5,y-.27,0,0,0,-.28,1.15,.035,.035]);
-   truss.push([x+1.5,y-.27,0,0,0,.28,1.15,.035,.035]);
-  }
-  inst(new THREE.BoxGeometry(1,1,1),metal,truss);
-  // Narrow catwalk and its safety rails below the roof.
-  const walk=new THREE.Mesh(new THREE.BoxGeometry(span*2,.08,1.05),rubber);
-  walk.position.set(0,y-.85,0);group.add(walk);
-  for(const z of [-.48,.48]){
-   const rail=new THREE.Mesh(new THREE.BoxGeometry(span*2,.035,.035),aluminum);
-   rail.position.set(0,y-.47,z);group.add(rail);
-   for(let x=-span;x<=span;x+=1.5){const post=new THREE.Mesh(new THREE.BoxGeometry(.025,.4,.025),metal);post.position.set(x,y-.66,z);group.add(post)}
-  }
- }
- // Fine LED strips sit in recessed housings instead of floating as isolated bright bars.
- for(const side of [-1,1]){
-  const housing=new THREE.Mesh(new THREE.BoxGeometry(width*2,.09,.12),metal);
-  housing.position.set(0,wallY+1.18,side*(faceZ-.03));group.add(housing);
-  const led=new THREE.Mesh(new THREE.BoxGeometry(width*2-.1,.025,.035),new THREE.MeshStandardMaterial({color:0xd7f5ff,emissive:0x8ddfff,emissiveIntensity:profile==='night'?1.6:.48,roughness:.24}));
-  led.position.set(0,wallY+1.23,side*(faceZ-.005));group.add(led);
- }
+/* ジオメトリ結合 (ドローコール削減) */
+function Merger() { this.p = []; this.n = []; this.u = []; this.i = []; this.o = 0; }
+Merger.prototype.add = function (geo, m) {
+  var g = geo.clone();
+  if (m) g.applyMatrix4(m);
+  var p = g.attributes.position.array, n = g.attributes.normal.array,
+      u = g.attributes.uv ? g.attributes.uv.array : null, c = g.attributes.position.count, k;
+  for (k = 0; k < p.length; k++) { this.p.push(p[k]); this.n.push(n[k]); }
+  for (k = 0; k < c * 2; k++) this.u.push(u ? u[k] : 0);
+  if (g.index) { var ix = g.index.array; for (k = 0; k < ix.length; k++) this.i.push(ix[k] + this.o); }
+  else { for (k = 0; k < c; k++) this.i.push(k + this.o); }
+  this.o += c; g.dispose();
+  return this;
+};
+Merger.prototype.build = function (mat, cast) {
+  var g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(this.p, 3));
+  g.setAttribute('normal', new THREE.Float32BufferAttribute(this.n, 3));
+  g.setAttribute('uv', new THREE.Float32BufferAttribute(this.u, 2));
+  g.setIndex(this.o > 65535 ? new THREE.BufferAttribute(new Uint32Array(this.i), 1) : this.i);
+  var m = new THREE.Mesh(g, mat);
+  m.castShadow = !!cast; m.receiveShadow = true;
+  return m;
+};
+function mBox(mg, w, h, d, x, y, z, ry) {
+  _m.compose(_p.set(x, y, z), _q.setFromAxisAngle(Y, ry || 0), _s);
+  mg.add(new THREE.BoxGeometry(w, h, d), _m);
 }
-addVenueRealismPass(seatGroup,'standard');
-addVenueRealismPass(venueGroup,'grand');
-addVenueRealismPass(stadiumGroup,'stadium');
-addVenueRealismPass(championshipGroup,'grand');
-addVenueRealismPass(indoorRoofGroup,'indoor');
-
-// Improve highlight response and shadow softness while retaining mobile-friendly rendering.
-renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-renderer.toneMappingExposure=1.02;
-sun.shadow.normalBias=.025;
-sun.shadow.radius=3;
-
-venueGroup.visible=false;
-const spotlights=[];for(const x of [-15,15])for(const z of [-16,16]){const pole=new THREE.Mesh(new THREE.CylinderGeometry(.11,.16,8.5,12),material(0x526875,.4,.5));pole.position.set(x,4.25,z);pole.castShadow=true;scene.add(pole);cube(2.2,.18,.4,material(0x283b48,.4,.4),x,8.55,z);for(let i=0;i<5;i++){const lamp=new THREE.Mesh(new THREE.BoxGeometry(.27,.07,.22),new THREE.MeshStandardMaterial({color:0xf0fbff,emissive:0x7bdcff,emissiveIntensity:.6}));lamp.position.set(x-.75+i*.375,8.42,z);scene.add(lamp)}const spot=new THREE.SpotLight(0xeaf8ff,2,35,Math.PI/5,.5,1.4);spot.position.set(x,8.3,z);spot.target.position.set(0,0,0);scene.add(spot,spot.target);spotlights.push(spot)}
-for(const z of [-17,17]){cube(4.1,2,.18,material(0x101d26,.3,.4),0,3,z);const screen=new THREE.Mesh(new THREE.PlaneGeometry(3.8,1.7),new THREE.MeshStandardMaterial({color:0x082b3a,emissive:0x0b536a,emissiveIntensity:.55}));screen.position.set(0,3,z+(z<0?.1:-.1));if(z>0)screen.rotation.y=Math.PI;scene.add(screen)}
-for(const z of [-13.7,13.7]){cube(4,.15,.45,material(0x2a424c,.5,.3),0,.27,z);for(const x of [-1.6,1.6])cube(.12,.45,.12,material(0x263a44,.5,.3),x,.03,z)}
-const ball=new THREE.Mesh(new THREE.SphereGeometry(.17,24,18),material(0xd8ed5c,.55));ball.position.set(-2.5,.28,3.2);ball.castShadow=true;scene.add(ball);for(let i=0;i<2;i++){const seam=new THREE.Mesh(new THREE.TorusGeometry(.12,.006,5,36),new THREE.MeshBasicMaterial({color:0xf7ffbe}));seam.scale.set(1,.68,1);seam.rotation.set(.7+i*.6,.4+i*.7,.3);ball.add(seam)}
-function view(v){orbit.target.set(0,.6,0);if(v==='play'){camera.position.set(4.5,7,21);orbit.target.set(0,.6,-1.2)}else if(v==='top'){camera.position.set(0,25,3.8)}else{camera.position.set(0,2.6,22)}orbit.update();document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===v))}
-[['play','play'],['topview','top'],['low','low']].forEach(([id,v])=>{document.getElementById(id).dataset.view=v;document.getElementById(id).onclick=()=>view(v)});
-const venueStyles={standard:{title:'スタンダードコート',eyebrow:'ENVIRONMENT / 01'},stadium:{title:'テニススタジアム',eyebrow:'VENUE / STADIUM'},grand:{title:'大会スタジアム',eyebrow:'VENUE / CHAMPIONSHIP'},indoor:{title:'インドアアリーナ',eyebrow:'VENUE / INDOOR ARENA'},night:{title:'ナイトスタジアム',eyebrow:'VENUE / NIGHT SESSION'}};
-let currentVenue='standard';
-function setVenue(type){if(!venueStyles[type])return;currentVenue=type;venueGroup.visible=type!=='standard'&&type!=='stadium';stadiumGroup.visible=type==='stadium';seatGroup.visible=seatsOn&&type==='standard';indoorRoofGroup.visible=type==='indoor';championshipGroup.visible=type==='grand';if(type==='standard'){camera.position.set(4.5,7,21);orbit.target.set(0,.6,-1.2)}else if(type==='indoor'){camera.position.set(0,17,39);orbit.target.set(0,3,0)}else if(type==='stadium'){camera.position.set(0,21,43);orbit.target.set(0,4.5,0)}else{camera.position.set(0,17,39);orbit.target.set(0,3,0)}orbit.update();venueGroup.traverse(o=>{if(o.material&&o.material.emissive&&o.material===ledMat)o.material.emissiveIntensity=type==='night'?2.4:.8});
-scene.background.set(type==='night'?0x071522:type==='indoor'?0x526b7b:0x9fb8c5);scene.fog.color.set(type==='night'?0x071522:type==='indoor'?0x526b7b:0x9fb8c5);
-sun.intensity=type==='night'?.35:type==='indoor'?1.5:3.2;fill.intensity=type==='night'?.35:1.15;spotlights.forEach(s=>{s.intensity=lightsOn?(type==='night'?3.5:type==='indoor'?1.3:2):0});
-document.querySelectorAll('[data-venue]').forEach(b=>b.classList.toggle('active',b.dataset.venue===type));document.querySelector('.panel h1').textContent=venueStyles[type].title;document.querySelector('.panel .eyebrow').textContent=venueStyles[type].eyebrow;
+function mCyl(mg, r, h, x, y, z, rx, rz, seg) {
+  _m.compose(_p.set(x, y, z), _q.setFromEuler(_e.set(rx || 0, 0, rz || 0)), _s);
+  mg.add(new THREE.CylinderGeometry(r, r, h, seg || 12), _m);
 }
-document.querySelectorAll('[data-venue]').forEach(b=>b.addEventListener('click',()=>setVenue(b.dataset.venue)));
-const courtStyles={hard:{apron:0x244454,title:'ハードコート'},clay:{apron:0x7d3827,title:'クレーコート'},grass:{apron:0x254d35,title:'芝コート'},indoor:{apron:0x6e5134,title:'インドアコート'}};
-function setCourtType(type){if(!surfaceTextures[type])return;courtMaterial.map=surfaceTextures[type].map;courtMaterial.roughnessMap=surfaceTextures[type].roughnessMap;courtMaterial.bumpMap=surfaceTextures[type].bumpMap;courtMaterial.normalMap=surfaceTextures[type].normalMap;courtMaterial.roughness=type==='indoor'?.48:type==='hard'?.64:type==='clay'?.9:.82;courtMaterial.clearcoat=type==='indoor'?.34:type==='hard'?.24:type==='clay'?.04:.08;courtMaterial.clearcoatRoughness=type==='indoor'?.24:type==='hard'?.34:.7;courtMaterial.envMapIntensity=type==='indoor'?1.05:type==='hard'?.82:.45;courtMaterial.bumpScale=type==='grass'?.032:type==='clay'?.024:.012;courtMaterial.normalScale.set(type==='grass'?.65:.42,type==='grass'?.65:.42);courtMaterial.needsUpdate=true;apronMat.color.setHex(courtStyles[type].apron);document.querySelectorAll('[data-court]').forEach(b=>b.classList.toggle('active',b.dataset.court===type));document.querySelector('.panel h1').textContent=courtStyles[type].title;document.querySelector('.panel .eyebrow').textContent='ENVIRONMENT / '+({hard:'01',clay:'02',grass:'03',indoor:'04'}[type]);}
-document.querySelectorAll('[data-court]').forEach(b=>b.addEventListener('click',()=>setCourtType(b.dataset.court)));
-let seatsOn=true,lightsOn=true;document.getElementById('seats').onclick=e=>{seatsOn=!seatsOn;seatGroup.visible=seatsOn&&currentVenue==='standard';e.currentTarget.classList.toggle('active',seatsOn);e.currentTarget.textContent='観客席 '+(seatsOn?'ON':'OFF')};document.getElementById('lights').onclick=e=>{lightsOn=!lightsOn;spotlights.forEach(s=>s.intensity=lightsOn?2:0);e.currentTarget.classList.toggle('active',lightsOn);e.currentTarget.textContent='照明 '+(lightsOn?'ON':'OFF')};document.getElementById('reset').onclick=()=>{view('play');orbit.reset();setVenue('standard');setCourtType('hard')};
-function animate(){requestAnimationFrame(animate);orbit.update();renderer.render(scene,camera)}animate();addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;if(innerWidth<innerHeight&&innerWidth<=800){camera.fov=55;camera.position.set(0,12,27);orbit.target.set(0,.6,0)}else{camera.fov=43}camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));orbit.update()});if(innerWidth<innerHeight&&innerWidth<=800){camera.fov=55;camera.position.set(0,12,27);camera.updateProjectionMatrix();orbit.target.set(0,.6,0);orbit.update()}
+function mLink(mg, a, b, w, round) {
+  _d.set(b[0] - a[0], b[1] - a[1], b[2] - a[2]);
+  var len = _d.length();
+  if (len < 1e-6) return;
+  _q.setFromUnitVectors(Y, _d.normalize());
+  _m.compose(_p.set((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2), _q, _s);
+  mg.add(round ? new THREE.CylinderGeometry(w / 2, w / 2, len, 8) : new THREE.BoxGeometry(w, len, w), _m);
+}
+function scaleUV(geo, u, v) {
+  var a = geo.attributes.uv;
+  for (var i = 0; i < a.count; i++) a.setXY(i, a.getX(i) * u, a.getY(i) * v);
+  a.needsUpdate = true;
+  return geo;
+}
+function quadGeo(p0, p1, p2, p3, uRep, vRep) {      // 4頂点→1枚板
+  var g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(p0.concat(p1, p2, p3), 3));
+  g.setAttribute('uv', new THREE.Float32BufferAttribute([0, 0, uRep, 0, uRep, vRep, 0, vRep], 2));
+  g.setIndex([0, 1, 2, 0, 2, 3]);
+  g.computeVertexNormals();
+  return g;
+}
+function textTex(w, h, draw, o) { var c = canvas(w, h), g = c.getContext('2d'); draw(g, w, h); return ctex(c, o); }
+
+/* ============================================================
+ *  テクスチャ
+ * ============================================================ */
+/* 木床の板張り (板は縦方向に走る) */
+function drawPlanks(g, x0, y0, w, h, o, r) {
+  var x, y, len, ya, yb, l, n, i, gx, gy, pw;
+  for (x = x0; x < x0 + w - 0.5; x += o.pw) {
+    pw = Math.min(o.pw, x0 + w - x);
+    y = y0 - r() * o.seg;
+    while (y < y0 + h) {
+      len = o.seg * (0.55 + r() * 0.7);
+      ya = Math.max(y, y0); yb = Math.min(y + len, y0 + h);
+      if (yb > ya) {
+        l = o.l + (r() - 0.5) * o.lv;
+        g.fillStyle = 'hsl(' + (o.h + (r() - 0.5) * 3) + ',' + o.s + '%,' + l + '%)';
+        g.fillRect(x, ya, pw, yb - ya);
+        n = Math.max(2, Math.round(o.grain * pw / 6));
+        for (i = 0; i < n; i++) {
+          gx = x + r() * pw;
+          g.strokeStyle = r() > 0.5 ? 'rgba(110,62,24,' + (0.04 + r() * 0.07) + ')' : 'rgba(255,238,205,' + (0.04 + r() * 0.08) + ')';
+          g.lineWidth = 0.5 + r() * 1.1;
+          g.beginPath(); g.moveTo(gx, ya); gy = ya;
+          while (gy < yb) { gy += 12 + r() * 30; g.lineTo(gx + (r() - 0.5) * 1.4, Math.min(gy, yb)); }
+          g.stroke();
+        }
+        g.fillStyle = 'rgba(48,26,8,0.38)'; g.fillRect(x, ya, pw, Math.max(1, o.pw * 0.06));
+      }
+      y += len;
+    }
+    g.fillStyle = 'rgba(48,26,8,0.30)'; g.fillRect(x, y0, Math.max(1, o.pw * 0.05), h);
+  }
+}
+function woodTile(q, repeat) {                      // 体育館床 (8m角タイル)
+  var N = q.wood, c = canvas(N, N), g = c.getContext('2d'), px = N / 8;
+  drawPlanks(g, 0, 0, N, N, { pw: 0.08 * px, seg: 2.4 * px, h: 33, s: 50, l: 60, lv: 7, grain: 10 }, rng(11));
+  return ctex(c, { aniso: q.aniso, rep: repeat });
+}
+function plasterTex() {
+  var c = canvas(256, 256), g = c.getContext('2d'), r = rng(5), i;
+  g.fillStyle = '#e8e2d2'; g.fillRect(0, 0, 256, 256);
+  for (i = 0; i < 2600; i++) { g.fillStyle = 'rgba(' + (r() > 0.5 ? '120,110,90' : '255,255,255') + ',' + (0.03 + r() * 0.05) + ')'; g.fillRect(r() * 256, r() * 256, 2 + r() * 3, 2 + r() * 3); }
+  return ctex(c, { rep: [1, 1], aniso: 4 });
+}
+function padTex() {                                 // 壁下部のクッション
+  var c = canvas(256, 256), g = c.getContext('2d'), r = rng(9), i;
+  g.fillStyle = '#16335f'; g.fillRect(0, 0, 256, 256);
+  for (i = 0; i < 1800; i++) { g.fillStyle = 'rgba(255,255,255,' + (0.02 + r() * 0.03) + ')'; g.fillRect(r() * 256, r() * 256, 2, 2); }
+  g.fillStyle = 'rgba(0,0,0,.35)'; g.fillRect(0, 0, 3, 256); g.fillRect(0, 0, 256, 3);
+  g.fillStyle = 'rgba(255,255,255,.10)'; g.fillRect(3, 3, 2, 253); g.fillRect(3, 3, 253, 2);
+  return ctex(c, { rep: [1, 1], aniso: 4 });
+}
+function windowTex() {
+  return textTex(256, 128, function (g, w, h) {
+    var gr = g.createLinearGradient(0, 0, 0, h);
+    gr.addColorStop(0, '#9fc6ee'); gr.addColorStop(0.6, '#d9ecfb'); gr.addColorStop(1, '#ffffff');
+    g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    g.fillStyle = '#6c7480'; g.fillRect(0, 0, w, 5); g.fillRect(0, h - 5, w, 5); g.fillRect(0, 0, 4, h); g.fillRect(w - 4, 0, 4, h); g.fillRect(0, h / 2 - 2, w, 4);
+  }, { rep: [1, 1], aniso: 4 });
+}
+function roofTex() {
+  return textTex(128, 32, function (g, w, h) {
+    g.fillStyle = '#d6dadf'; g.fillRect(0, 0, w, h);
+    for (var x = 0; x < w; x += 8) { g.fillStyle = 'rgba(0,0,0,.14)'; g.fillRect(x, 0, 2, h); g.fillStyle = 'rgba(255,255,255,.3)'; g.fillRect(x + 2, 0, 2, h); }
+  }, { rep: [1, 1], aniso: 4 });
+}
+function netTexture(cellsX, cellsY, color, line) {  // 透過ネット
+  var c = canvas(64, 64), g = c.getContext('2d');
+  g.clearRect(0, 0, 64, 64); g.fillStyle = color;
+  g.fillRect(0, 0, 64, line); g.fillRect(0, 0, line, 64);
+  return ctex(c, { rep: [cellsX, cellsY], aniso: 8 });
+}
+function stripeTex() {
+  var c = canvas(16, 64), g = c.getContext('2d');
+  g.fillStyle = '#e53935'; g.fillRect(0, 0, 16, 32); g.fillStyle = '#ffffff'; g.fillRect(0, 32, 16, 32);
+  return ctex(c, { rep: [1, 9], aniso: 4 });
+}
+function bannerTex(w, h, bg, fg, text, sub) {
+  return textTex(w, h, function (g) {
+    var gr = g.createLinearGradient(0, 0, w, 0);
+    gr.addColorStop(0, bg[0]); gr.addColorStop(1, bg[1]);
+    g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    g.fillStyle = 'rgba(255,255,255,.14)'; g.fillRect(0, h * 0.82, w, h * 0.04);
+    g.fillStyle = fg; g.textBaseline = 'middle'; g.textAlign = 'left';
+    g.font = 'italic 900 ' + Math.round(h * 0.46) + 'px system-ui,sans-serif'; g.fillText('RACKET STARS', h * 0.3, h * 0.42);
+    g.font = '700 ' + Math.round(h * 0.2) + 'px system-ui,sans-serif'; g.fillStyle = '#fff'; g.fillText(sub || '★ PRO TOUR', h * 0.32, h * 0.76);
+    if (text) { g.textAlign = 'right'; g.font = '900 ' + Math.round(h * 0.34) + 'px system-ui,sans-serif'; g.fillStyle = fg; g.fillText(text, w - h * 0.3, h * 0.5); }
+  }, { aniso: 4 });
+}
+
+/* ============================================================
+ *  バレーボール (ボール)
+ * ============================================================ */
+function volleyTexture(q, bump) {
+  var W = q.ball, H = W / 2, c = canvas(W, H), g = c.getContext('2d'), y, k, x0, sw = W / 18, shift, grp, pal;
+  g.fillStyle = bump ? '#a0a0a0' : '#f4cf2a'; g.fillRect(0, 0, W, H);
+  for (y = 0; y < H; y++) {
+    shift = Math.sin(y / H * Math.PI * 2) * W * 0.03;
+    for (k = 0; k < 18; k++) {
+      grp = Math.floor(k / 3); pal = (grp % 2 === 0) ? ['#1d5fc0', '#f4cf2a', '#1d5fc0'] : ['#f4cf2a', '#1d5fc0', '#f4cf2a'];
+      x0 = ((k * sw + shift) % W + W) % W;
+      g.fillStyle = bump ? '#a8a8a8' : pal[k % 3];
+      g.fillRect(x0, y, sw + 1, 1);
+      if (x0 + sw + 1 > W) g.fillRect(x0 - W, y, sw + 1, 1);
+      g.fillStyle = bump ? '#2a2a2a' : 'rgba(25,25,25,.55)';
+      g.fillRect(x0, y, Math.max(1.5, W / 600), 1);
+      if (x0 + 2 > W) g.fillRect(x0 - W, y, 2, 1);
+    }
+  }
+  return ctex(c, { aniso: q.aniso });
+}
+var _volleyCache = {};
+function createVolleyball(o) {
+  o = o || {}; var q = getQ(o.quality), key = o.quality || 'high';
+  if (!_volleyCache[key]) {
+    _volleyCache[key] = {
+      geo: new THREE.SphereGeometry(0.105, 48, 32),
+      mat: S(0xffffff, { map: volleyTexture(q, false), bumpMap: volleyTexture(q, true), bumpScale: 0.9, roughness: 0.5 })
+    };
+  }
+  var m = new THREE.Mesh(_volleyCache[key].geo, _volleyCache[key].mat);
+  m.castShadow = true; m.receiveShadow = true; m.name = 'Volleyball';
+  return m;
+}
+
+/* ============================================================
+ *  バレーボールコート
+ * ============================================================ */
+function courtTexture(q, hw, hl, fzS, fzE) {
+  var W = 2 * hw + 2 * fzS, L = 2 * hl + 2 * fzE, cw = q.court[0], ch = q.court[1],
+      sx = cw / W, sz = ch / L, c = canvas(cw, ch), g = c.getContext('2d'), r = rng(7), i, s;
+  function X(m) { return (m + W / 2) * sx; }
+  function Z(m) { return (m + L / 2) * sz; }
+  function wood(x0, z0, x1, z1, hh, ll) {
+    drawPlanks(g, X(x0), Z(z0), (x1 - x0) * sx, (z1 - z0) * sz, { pw: 0.07 * sx, seg: 2.4 * sz, h: hh, s: 52, l: ll, lv: 6, grain: 10 }, r);
+  }
+  function rect(x0, z0, x1, z1) { g.fillRect(X(x0), Z(z0), (x1 - x0) * sx, (z1 - z0) * sz); }
+  wood(-W / 2, -L / 2, W / 2, L / 2, 34, 60);
+  g.fillStyle = 'rgba(22,78,158,0.68)'; g.fillRect(0, 0, cw, ch);           // フリーゾーン(青)
+  wood(-hw, -hl, hw, hl, 34, 66);
+  g.fillStyle = 'rgba(238,120,44,0.40)'; rect(-hw, -hl, hw, hl);           // コート(オレンジ)
+  g.fillStyle = '#ffffff'; var lw = 0.05;
+  rect(-hw, -hl, hw, -hl + lw); rect(-hw, hl - lw, hw, hl); rect(-hw, -hl, -hw + lw, hl); rect(hw - lw, -hl, hw, hl);
+  rect(-hw, -lw / 2, hw, lw / 2);                                           // センターライン
+  rect(-hw, 3 - lw, hw, 3); rect(-hw, -3, hw, -3 + lw);                     // アタックライン(3m)
+  for (s = -1; s <= 1; s += 2) {
+    for (i = 0; i < 5; i++) {                                                // アタックライン延長(破線)
+      var xa = hw + 0.2 + i * 0.35;
+      rect(s > 0 ? xa : -xa - 0.15, 3 - lw, s > 0 ? xa + 0.15 : -xa, 3);
+      rect(s > 0 ? xa : -xa - 0.15, -3, s > 0 ? xa + 0.15 : -xa, -3 + lw);
+    }
+    rect(s > 0 ? hw - lw : -hw, hl + 0.2, s > 0 ? hw : -hw + lw, hl + 0.35);       // サーブゾーン短線
+    rect(s > 0 ? hw - lw : -hw, -hl - 0.35, s > 0 ? hw : -hw + lw, -hl - 0.2);
+  }
+  [-1, 1].forEach(function (zz) {                                           // フリーゾーンのロゴ
+    g.save(); g.translate(X(0), Z(zz * (hl + fzE / 2))); g.scale(sx / 100, sz / 100); if (zz > 0) g.rotate(Math.PI);
+    g.fillStyle = 'rgba(255,255,255,0.55)'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.font = 'italic 900 70px system-ui,sans-serif'; g.fillText('RACKET STARS', 0, 0);
+    g.font = '700 26px system-ui,sans-serif'; g.fillText('VOLLEYBALL  ★  PRO TOUR', 0, 52);
+    g.restore();
+  });
+  var gl = g.createRadialGradient(cw / 2, ch / 2, 0, cw / 2, ch / 2, ch * 0.6);   // 床のツヤ
+  gl.addColorStop(0, 'rgba(255,255,255,0.10)'); gl.addColorStop(1, 'rgba(0,0,0,0.10)');
+  g.fillStyle = gl; g.fillRect(0, 0, cw, ch);
+  return ctex(c, { aniso: q.aniso });
+}
+
+function buildNet(hw, netH) {
+  var G = new THREE.Group(); G.name = 'VolleyballNet'; G.position.y = netH;        // 子要素はネット上端=0基準
+  var white = S(0xffffff, { roughness: 0.8 }), black = S(0x111111, { roughness: 0.7 }), half = 4.75;
+  var mesh = new THREE.Mesh(new THREE.PlaneGeometry(9.5, 1),
+    new THREE.MeshStandardMaterial({ color: 0x0c0c0c, map: netTexture(95, 10, '#ffffff', 5), transparent: true, alphaTest: 0.25, side: THREE.DoubleSide, roughness: 0.9 }));
+  mesh.position.y = -0.5; G.add(mesh);                                              // ネットは影を落とさない
+  box(G, 9.5, 0.07, 0.018, white, 0, -0.035, 0, false);                             // 上部白帯 7cm
+  box(G, 9.5, 0.05, 0.012, white, 0, -0.975, 0, false);                             // 下部白帯 5cm
+  var stripes = S(0xffffff, { map: stripeTex(), roughness: 0.5 });
+  [-1, 1].forEach(function (s) {
+    box(G, 0.05, 1, 0.012, white, s * hw, -0.5, 0, false);                          // サイドバンド
+    cyl(G, 0.005, 0.005, 1.8, stripes, s * (hw + 0.03), -0.1, 0, 10);               // アンテナ (ネット上80cm)
+    [-0.05, -0.95].forEach(function (yy) { cyl(G, 0.011, 0.011, 0.035, black, s * (hw + 0.03), yy, 0, 12); });
+    link(G, [s * half, 0, 0], [s * (half + 0.17), 0, 0], 0.006, black, true);       // 張力コード
+    link(G, [s * half, -1, 0], [s * (half + 0.17), -1, 0], 0.006, black, true);
+  });
+  return G;
+}
+function buildPost(side, hw) {
+  var G = new THREE.Group(); G.name = 'VolleyballPost'; G.position.x = side * (hw + 0.5);
+  var steel = S(0xb9c0c8, { metalness: 0.85, roughness: 0.32 }), navy = S(0x12295a, { roughness: 0.9 }),
+      dark = S(0x1b1f24, { roughness: 0.6, metalness: 0.4 });
+  cyl(G, 0.17, 0.17, 0.014, steel, 0, 0.007, 0, 32);
+  cyl(G, 0.07, 0.07, 0.04, dark, 0, 0.034, 0, 20);
+  cyl(G, 0.045, 0.045, 2.55, steel, 0, 1.275, 0, 20);
+  cyl(G, 0.078, 0.078, 1.45, navy, 0, 0.78, 0, 24);                                  // 保護パッド
+  cyl(G, 0.0795, 0.0795, 0.06, S(0xffffff, { roughness: 0.8 }), 0, 1.2, 0, 24);
+  cyl(G, 0.052, 0.052, 0.03, dark, 0, 2.565, 0, 20);
+  var ox = side * 0.075;                                                              // ラチェット&ハンドル(外側)
+  box(G, 0.07, 0.15, 0.09, dark, ox, 1.82, 0);
+  cyl(G, 0.025, 0.025, 0.05, steel, side * 0.13, 1.82, 0, 14).rotation.z = Math.PI / 2;
+  link(G, [side * 0.15, 1.82, 0], [side * 0.15, 1.64, 0.02], 0.012, steel, true);
+  cyl(G, 0.014, 0.014, 0.05, dark, side * 0.15, 1.62, 0.02, 10);
+  var pu = cyl(G, 0.038, 0.038, 0.018, steel, -side * 0.065, 2.43, 0, 20); pu.rotation.x = Math.PI / 2;   // 滑車
+  return G;
+}
+function buildRefStand() {
+  var G = new THREE.Group(); G.name = 'RefereeStand';
+  var fr = new Merger(), pad = new Merger(), i, sx, sz;
+  var base = [], top = [];
+  for (sx = -1; sx <= 1; sx += 2) for (sz = -1; sz <= 1; sz += 2) { base.push([sx * 0.42, 0, sz * 0.34]); top.push([sx * 0.3, 1.55, sz * 0.27]); }
+  for (i = 0; i < 4; i++) mLink(fr, base[i], top[i], 0.05);
+  [[0, 1], [2, 3], [0, 2], [1, 3]].forEach(function (p) {
+    mLink(fr, top[p[0]], top[p[1]], 0.04);
+    mLink(fr, base[p[0]], base[p[1]], 0.04);
+    mLink(fr, base[p[0]], top[p[1]], 0.025);
+  });
+  mBox(fr, 0.72, 0.03, 0.6, 0.02, 0.82, 0);                                          // ステップ板
+  mBox(fr, 0.04, 0.5, 0.05, -0.27, 1.85, -0.27); mBox(fr, 0.04, 0.5, 0.05, -0.27, 1.85, 0.27);
+  mBox(fr, 0.5, 0.03, 0.03, 0.0, 1.8, -0.31); mBox(fr, 0.5, 0.03, 0.03, 0.0, 1.8, 0.31);   // アームレスト
+  var rail = [[-0.55, 0, -0.2], [-0.28, 1.55, -0.2]], rail2 = [[-0.55, 0, 0.2], [-0.28, 1.55, 0.2]];
+  mLink(fr, rail[0], rail[1], 0.04); mLink(fr, rail2[0], rail2[1], 0.04);              // 後ろ側のハシゴ
+  for (i = 1; i <= 6; i++) { var t = i / 7; mBox(fr, 0.03, 0.03, 0.4, -0.55 + 0.27 * t, 1.55 * t, 0); }
+  var seat = S(0x142a55, { roughness: 0.85 });
+  var frame = fr.build(S(0x2b3138, { metalness: 0.7, roughness: 0.4 }), true); G.add(frame);
+  box(G, 0.62, 0.08, 0.56, seat, 0.0, 1.59, 0);                                      // 座面
+  box(G, 0.07, 0.52, 0.55, seat, -0.3, 1.9, 0);                                      // 背もたれ
+  box(G, 0.05, 0.05, 0.3, S(0x222222), 0.1, 2.32, 0);
+  return G;
+}
+function buildScorerTable() {
+  var G = new THREE.Group(); G.name = 'ScorerTable';
+  var top = S(0xe9edf2, { roughness: 0.4 }), steel = S(0x9aa3ad, { metalness: 0.8, roughness: 0.4 });
+  box(G, 0.7, 0.04, 2.3, top, 0, 0.75, 0);
+  [[-0.3, -1.1], [-0.3, 1.1], [0.3, -1.1], [0.3, 1.1]].forEach(function (p) { box(G, 0.05, 0.73, 0.05, steel, p[0], 0.365, p[1]); });
+  var cloth = new THREE.Mesh(new THREE.PlaneGeometry(2.3, 0.72),
+    S(0xffffff, { map: bannerTex(1024, 256, ['#0d2a5c', '#17418a'], '#ffd23f', 'SCORER', 'VOLLEYBALL'), side: THREE.DoubleSide, roughness: 0.9 }));
+  cloth.rotation.y = -Math.PI / 2; cloth.position.set(-0.36, 0.38, 0); G.add(cloth);  // コート側へ向いた前垂れ
+  [-0.55, 0.55].forEach(function (z, k) {                                            // フリップ式得点板
+    box(G, 0.12, 0.2, 0.34, S(0x111111), -0.1, 0.87, z);
+    var p = new THREE.Mesh(new THREE.PlaneGeometry(0.3, 0.16), B(0xffffff, { map: textTex(128, 64, function (g, w, h) { g.fillStyle = k ? '#c62828' : '#1565c0'; g.fillRect(0, 0, w, h); g.fillStyle = '#fff'; g.font = '900 52px monospace'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(k ? '12' : '15', w / 2, h / 2 + 2); }) }));
+    p.rotation.y = -Math.PI / 2; p.position.set(-0.162, 0.87, z); G.add(p);
+  });
+  box(G, 0.26, 0.012, 0.36, S(0xf6f6f6), 0.1, 0.776, 0.0);                           // 記録用紙
+  box(G, 0.3, 0.012, 0.22, S(0x222831, { metalness: 0.5 }), 0.15, 0.777, 0.95);
+  var scr = box(G, 0.3, 0.2, 0.01, B(0x9ec7ff), 0.3, 0.88, 0.95, false); scr.rotation.x = 0; scr.rotation.y = Math.PI / 2 + 0.2;
+  var ch = new Merger(), sc;
+  [-0.6, 0.6].forEach(function (z) {                                                 // イス
+    mBox(ch, 0.42, 0.05, 0.42, 0.62, 0.46, z); mBox(ch, 0.05, 0.45, 0.42, 0.82, 0.7, z);
+    [[-0.17, -0.17], [-0.17, 0.17], [0.17, -0.17], [0.17, 0.17]].forEach(function (o) { mBox(ch, 0.03, 0.44, 0.03, 0.62 + o[0], 0.22, z + o[1]); });
+  });
+  G.add(ch.build(S(0x2a3a55, { roughness: 0.7 }), true));
+  return G;
+}
+function buildBench() {
+  var G = new THREE.Group(), mg = new Merger(), lg = new Merger();
+  mBox(mg, 0.36, 0.05, 2.6, 0, 0.45, 0); mBox(mg, 0.05, 0.4, 2.6, 0.17, 0.68, 0);
+  [-1.1, 0, 1.1].forEach(function (z) { mBox(lg, 0.04, 0.44, 0.04, -0.12, 0.22, z); mBox(lg, 0.04, 0.44, 0.04, 0.12, 0.22, z); mBox(lg, 0.3, 0.03, 0.03, 0, 0.1, z); });
+  G.add(mg.build(S(0x1d3f7c, { roughness: 0.7 }), true)); G.add(lg.build(S(0xb7bec6, { metalness: 0.8, roughness: 0.4 }), true));
+  return G;
+}
+function buildBallCart(o) {
+  var G = new THREE.Group(), steel = S(0xb9c0c8, { metalness: 0.8, roughness: 0.35 }), dark = S(0x15181c, { roughness: 0.8 }), i;
+  box(G, 0.8, 0.04, 0.55, steel, 0, 0.14, 0);
+  [[-0.38, -0.25], [-0.38, 0.25], [0.38, -0.25], [0.38, 0.25]].forEach(function (p) {
+    cyl(G, 0.015, 0.015, 0.86, steel, p[0], 0.55, p[1], 8);
+    var w = cyl(G, 0.055, 0.055, 0.035, dark, p[0], 0.055, p[1], 16); w.rotation.z = Math.PI / 2;
+  });
+  var bag = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.24, 0.62, 20, 1, true),
+    new THREE.MeshStandardMaterial({ color: 0x1b3d7a, map: netTexture(10, 5, '#ffffff', 5), transparent: true, alphaTest: 0.2, side: THREE.DoubleSide, roughness: 0.9 }));
+  bag.position.set(0, 0.62, 0); bag.scale.set(1, 1, 0.75); G.add(bag);
+  var layers = [[0.2, 0.46, 6], [0.13, 0.63, 5], [0.0, 0.8, 1]];
+  layers.forEach(function (L) {
+    for (i = 0; i < L[2]; i++) {
+      var a = i / L[2] * Math.PI * 2 + L[1], b = createVolleyball(o);
+      b.position.set(Math.cos(a) * L[0] * 1.2, L[1] + 0.1, Math.sin(a) * L[0] * 0.9); b.rotation.set(i, i * 2, 0); G.add(b);
+    }
+  });
+  link(G, [-0.38, 0.98, -0.25], [-0.38, 0.98, 0.25], 0.02, steel, true);
+  link(G, [0.38, 0.98, -0.25], [0.38, 0.98, 0.25], 0.02, steel, true);
+  return G;
+}
+
+/**
+ * バレーボールコート一式
+ * opts: { hw:4.5, hl:9, freeSide:3, freeEnd:5, netH:2.43(男子)/2.24(女子), quality:'high'|'normal', furniture:true }
+ * 返り値.userData: { setNetHeight(h), net, posts, ball }
+ */
+function buildVolleyballCourt(o) {
+  o = Object.assign({ hw: 4.5, hl: 9, freeSide: 3, freeEnd: 5, netH: 2.43, quality: 'high', furniture: true }, o || {});
+  var q = getQ(o.quality), G = new THREE.Group(), hw = o.hw, hl = o.hl;
+  G.name = 'VolleyballCourt';
+  var W = 2 * hw + 2 * o.freeSide, L = 2 * hl + 2 * o.freeEnd;
+  var floor = new THREE.Mesh(new THREE.PlaneGeometry(W, L),
+    new THREE.MeshPhysicalMaterial({ map: courtTexture(q, hw, hl, o.freeSide, o.freeEnd), roughness: 0.42, metalness: 0, clearcoat: 0.45, clearcoatRoughness: 0.3, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }));
+  floor.rotation.x = -Math.PI / 2; floor.position.y = 0.003; floor.receiveShadow = true; floor.name = 'CourtFloor'; G.add(floor);
+
+  var net = buildNet(hw, o.netH); G.add(net);
+  var pl = buildPost(-1, hw), pr = buildPost(1, hw); G.add(pl, pr);
+  if (o.furniture) {
+    var rs = buildRefStand(); rs.position.set(-(hw + 1.5), 0, 0); G.add(rs);
+    var sc = buildScorerTable(); sc.position.set(hw + 2.3, 0, 0); G.add(sc);
+    var b1 = buildBench(), b2 = buildBench(); b1.position.set(hw + 3.6, 0, -3.8); b2.position.set(hw + 3.6, 0, 3.8); G.add(b1, b2);
+    var cart = buildBallCart(o); cart.position.set(-(hw + 3.4), 0, 6.2); cart.rotation.y = 0.5; G.add(cart);
+    var b = createVolleyball(o); b.position.set(2.2, 0.105, hl + 1.2); G.add(b);
+  }
+  G.userData = {
+    net: net, posts: [pl, pr], dims: { hw: hw, hl: hl, width: W, length: L },
+    setNetHeight: function (h) { net.position.y = Math.max(1.8, Math.min(2.5, h)); }
+  };
+  return G;
+}
+
+/* ============================================================
+ *  卓球
+ * ============================================================ */
+function tableTopTexture() {
+  var w = 1024, h = 2048, c = canvas(w, h), g = c.getContext('2d'), r = rng(21), i;
+  var gr = g.createLinearGradient(0, 0, w, h);
+  gr.addColorStop(0, '#0c3c8c'); gr.addColorStop(0.5, '#10459c'); gr.addColorStop(1, '#0a3380');
+  g.fillStyle = gr; g.fillRect(0, 0, w, h);
+  for (i = 0; i < 9000; i++) { g.fillStyle = 'rgba(255,255,255,' + (0.012 + r() * 0.02) + ')'; g.fillRect(r() * w, r() * h, 2, 2); }
+  var rg = g.createRadialGradient(w / 2, h / 2, 50, w / 2, h / 2, h * 0.6);       // 天板のツヤ
+  rg.addColorStop(0, 'rgba(255,255,255,0.09)'); rg.addColorStop(1, 'rgba(0,0,0,0.12)');
+  g.fillStyle = rg; g.fillRect(0, 0, w, h);
+  var m = w / 1.525, lw = 0.02 * m;                                              // 2cmライン
+  g.fillStyle = '#fff';
+  g.fillRect(0, 0, w, lw); g.fillRect(0, h - lw, w, lw); g.fillRect(0, 0, lw, h); g.fillRect(w - lw, 0, lw, h);
+  g.fillRect(w / 2 - 0.0015 * m, 0, 0.003 * m, h);                                // センター 3mm
+  return ctex(c, { aniso: 8 });
+}
+function buildTableTennisTable(o) {
+  o = Object.assign({ netHeight: 0.1525 }, o || {});
+  var G = new THREE.Group(), L = 2.74, Wd = 1.525, Hh = 0.76, th = 0.025; G.name = 'TableTennisTable';
+  var edge = S(0x0b2f6b, { roughness: 0.5 }), under = S(0x2a2f36, { roughness: 0.7 });
+  var topMat = S(0xffffff, { map: tableTopTexture(), roughness: 0.38, metalness: 0.02 });
+  var top = new THREE.Mesh(new THREE.BoxGeometry(Wd, th, L), [edge, edge, topMat, under, edge, edge]);
+  top.position.y = Hh - th / 2; top.castShadow = top.receiveShadow = true; top.name = 'TableTop'; G.add(top);
+
+  var steel = S(0xa7b0ba, { metalness: 0.85, roughness: 0.35 }), black = S(0x14171b, { roughness: 0.8 }), fr = new Merger();
+  [-0.55, 0.55].forEach(function (x) { mBox(fr, 0.04, 0.045, 2.45, x, Hh - th - 0.0225, 0); });     // 天板裏レール
+  [-1.0, 1.0].forEach(function (z) {
+    mBox(fr, 1.3, 0.04, 0.06, 0, Hh - th - 0.02, z);                                               // 上部クロス
+    [-0.62, 0.62].forEach(function (x) { mLink(fr, [x, 0.07, z], [x, Hh - th - 0.04, z], 0.05); });  // 脚
+    mBox(fr, 1.25, 0.035, 0.04, 0, 0.2, z);                                                        // 下部ストレッチャー
+    mLink(fr, [-0.62, 0.2, z], [0, Hh - th - 0.04, z * 0.55], 0.025); mLink(fr, [0.62, 0.2, z], [0, Hh - th - 0.04, z * 0.55], 0.025);
+  });
+  G.add(fr.build(steel, true));
+  [-1.0, 1.0].forEach(function (z) {
+    [-0.62, 0.62].forEach(function (x) {
+      var w = cyl(G, 0.045, 0.045, 0.024, black, x, 0.045, z + (z > 0 ? 0.0 : 0.0), 20); w.rotation.z = Math.PI / 2;   // キャスター
+      var hub = cyl(G, 0.02, 0.02, 0.03, steel, x, 0.045, z, 12); hub.rotation.z = Math.PI / 2;
+      cyl(G, 0.025, 0.03, 0.02, black, x, 0.01, z + (z > 0 ? -0.07 : 0.07), 12);                    // アジャスター
+    });
+  });
+  /* ネット */
+  var nh = o.netHeight, nw = 1.83, ng = new THREE.Group(); ng.name = 'TTNet'; G.add(ng);
+  var nm = new THREE.Mesh(new THREE.PlaneGeometry(nw, nh),
+    new THREE.MeshStandardMaterial({ color: 0x1a1f2a, map: netTexture(Math.round(nw / 0.012), Math.round(nh / 0.012), '#ffffff', 6), transparent: true, alphaTest: 0.2, side: THREE.DoubleSide, roughness: 0.9 }));
+  nm.position.set(0, Hh + nh / 2, 0); ng.add(nm);
+  box(ng, nw, 0.015, 0.004, S(0xffffff, { roughness: 0.7 }), 0, Hh + nh - 0.0075, 0, false);
+  box(ng, nw, 0.004, 0.003, S(0xffffff, { roughness: 0.7 }), 0, Hh + 0.002, 0, false);
+  [-1, 1].forEach(function (s) {
+    cyl(ng, 0.007, 0.007, nh + 0.015, steel, s * nw / 2, Hh + (nh + 0.015) / 2, 0, 10);
+    add(ng, new THREE.SphereGeometry(0.0105, 12, 8), black, s * nw / 2, Hh + nh + 0.016, 0);
+    var cx = s * (Wd / 2 + 0.035);
+    box(ng, 0.07, 0.03, 0.065, black, cx, Hh + 0.03, 0);                                          // クランプ上部
+    box(ng, 0.05, 0.025, 0.06, steel, cx, Hh - th - 0.03, 0);                                     // クランプ下部
+    cyl(ng, 0.006, 0.006, 0.07, steel, s * (Wd / 2 + 0.02), Hh - th / 2, 0, 8);                   // ねじ
+    var kn = cyl(ng, 0.017, 0.017, 0.02, black, s * (Wd / 2 + 0.02), Hh - th - 0.07, 0, 14); kn.rotation.x = 0;
+    box(ng, 0.14, 0.012, 0.025, black, s * (Wd / 2 + 0.085), Hh + 0.006, 0);                      // 支柱へのアーム
+  });
+  G.userData = { size: { length: L, width: Wd, height: Hh }, net: ng };
+  return G;
+}
+function createTableTennisBall() {
+  var m = new THREE.Mesh(new THREE.SphereGeometry(0.02, 24, 16), S(0xffffff, { roughness: 0.3, emissive: 0x222222 }));
+  m.castShadow = true; m.name = 'TTBall'; return m;
+}
+function createPaddle() {
+  var G = new THREE.Group(); G.name = 'Paddle';
+  var sh = new THREE.Shape(); sh.absellipse(0, 0, 0.0755, 0.08, 0, Math.PI * 2, false, 0);
+  var sh2 = new THREE.Shape(); sh2.absellipse(0, 0, 0.0765, 0.0805, 0, Math.PI * 2, false, 0);
+  function ex(shape, d, z, mat) { var g = new THREE.ExtrudeGeometry(shape, { depth: d, bevelEnabled: false, curveSegments: 40 }); var m = new THREE.Mesh(g, mat); m.position.z = z; m.castShadow = true; G.add(m); return m; }
+  var pim = canvas(32, 32), pg = pim.getContext('2d'); pg.fillStyle = '#888'; pg.fillRect(0, 0, 32, 32); pg.fillStyle = '#ddd'; pg.beginPath(); pg.arc(16, 16, 9, 0, 6.3); pg.fill();
+  var pt = ctex(pim, { linear: true, rep: [1 / 0.0035, 1 / 0.0035], aniso: 4 });
+  ex(sh, 0.006, -0.003, S(0xc99b5e, { roughness: 0.6 }));                                                   // ブレード(木)
+  ex(sh2, 0.002, 0.003, S(0xe9dca8, { roughness: 0.9 }));                                                   // スポンジ(表)
+  ex(sh2, 0.0014, 0.005, S(0xc1121f, { roughness: 0.55, bumpMap: pt, bumpScale: 1.5 }));                    // ラバー赤
+  ex(sh2, 0.002, -0.005, S(0xe9dca8, { roughness: 0.9 }));
+  ex(sh2, 0.0014, -0.0064, S(0x151515, { roughness: 0.55, bumpMap: pt, bumpScale: 1.5 }));                  // ラバー黒
+  var pts = [[0.0095, 0], [0.0105, -0.02], [0.0125, -0.06], [0.0138, -0.085], [0.0155, -0.1], [0.0, -0.1]].map(function (p) { return new THREE.Vector2(p[0], p[1]); });
+  var hd = new THREE.Mesh(new THREE.LatheGeometry(pts.reverse(), 24), S(0xb98450, { roughness: 0.55 }));
+  hd.scale.set(1.35, 1, 0.72); hd.position.y = -0.0775; hd.castShadow = true; G.add(hd);
+  cyl(G, 0.0105, 0.0105, 0.012, S(0x151515), 0, -0.081, 0, 16).scale.set(1.35, 1, 0.72);
+  return G;
+}
+
+function flipScore() {
+  var G = new THREE.Group(), dark = S(0x111418, { roughness: 0.6 });
+  box(G, 0.34, 0.03, 0.2, dark, 0, 0.0, 0); box(G, 0.03, 0.26, 0.03, dark, 0, 0.14, 0);
+  [-0.095, 0.095].forEach(function (x, k) {
+    box(G, 0.17, 0.2, 0.025, dark, x, 0.3, 0);
+    [-1, 1].forEach(function (s) {
+      var p = new THREE.Mesh(new THREE.PlaneGeometry(0.15, 0.18), B(0xffffff, { map: textTex(128, 128, function (g, w, h) { g.fillStyle = k ? '#c62828' : '#1565c0'; g.fillRect(0, 0, w, h); g.fillStyle = '#fff'; g.font = '900 100px monospace'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(String(k ? 6 : 8), w / 2, h / 2 + 4); }) }));
+      p.position.set(x, 0.3, s * 0.0135); if (s < 0) p.rotation.y = Math.PI; G.add(p);
+    });
+  });
+  return G;
+}
+function towelBox() {
+  var G = new THREE.Group();
+  box(G, 0.3, 0.04, 0.3, S(0xcfd5dc), 0, 0.64, 0); box(G, 0.3, 0.16, 0.3, S(0xf4f6f8, { roughness: 0.8 }), 0, 0.74, 0);
+  [[-0.12, -0.12], [-0.12, 0.12], [0.12, -0.12], [0.12, 0.12]].forEach(function (p) { box(G, 0.025, 0.62, 0.025, S(0x9aa3ad, { metalness: 0.7, roughness: 0.4 }), p[0], 0.31, p[1]); });
+  box(G, 0.26, 0.04, 0.26, S(0xffffff, { roughness: 1 }), 0, 0.84, 0);
+  return G;
+}
+
+/**
+ * 卓球エリア
+ * opts: { cols:2, rows:2, cellX:4.3, cellZ:7.4, quality }
+ */
+function buildTableTennisZone(o) {
+  o = Object.assign({ cols: 2, rows: 2, cellX: 4.3, cellZ: 7.4, quality: 'high' }, o || {});
+  var q = getQ(o.quality), G = new THREE.Group(), cx = o.cols * o.cellX, cz = o.rows * o.cellZ, i, j; G.name = 'TableTennisZone';
+  var mat = new THREE.Mesh(new THREE.PlaneGeometry(cx + 0.8, cz + 0.8), S(0xffffff, {
+    roughness: 0.78, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2,
+    map: textTex(512, 512, function (g, w, h) {
+      var r = rng(3), k; g.fillStyle = '#8c2a2f'; g.fillRect(0, 0, w, h);
+      for (k = 0; k < 6000; k++) { g.fillStyle = 'rgba(' + (r() > 0.5 ? '0,0,0' : '255,255,255') + ',' + (0.03 + r() * 0.05) + ')'; g.fillRect(r() * w, r() * h, 2, 2); }
+      g.strokeStyle = 'rgba(0,0,0,.12)'; g.lineWidth = 2; for (k = 0; k < w; k += 16) { g.beginPath(); g.moveTo(k, 0); g.lineTo(k, h); g.stroke(); }
+    }, { rep: [(cx + 0.8) / 2, (cz + 0.8) / 2], aniso: q.aniso }) }));
+  mat.rotation.x = -Math.PI / 2; mat.position.y = 0.006; mat.receiveShadow = true; G.add(mat);
+
+  /* バリア (ボード + 脚) */
+  var bTex = bannerTex(q.board, q.board / 2, ['#0d2a5c', '#17418a'], '#ffd23f', '', 'TABLE TENNIS');
+  var boards = new Merger(), legs = new Merger();
+  function seg(x, z, ry) {
+    mBox(boards, 1.4, 0.75, 0.03, x, 0.425, z, ry);
+    var c = Math.cos(ry), s = Math.sin(ry);
+    [-0.6, 0.6].forEach(function (d) {
+      var lx = x + c * d, lz = z - s * d;
+      mBox(legs, 0.04, 0.05, 0.32, lx, 0.025, lz, ry + Math.PI / 2 * 0);
+      mBox(legs, 0.03, 0.8, 0.03, lx, 0.4, lz, ry);
+    });
+  }
+  function lineX(z, skip) { for (i = 0; i < Math.round((cx) / 1.4); i++) { if (skip && i === Math.floor(cx / 1.4 / 2)) continue; seg(-cx / 2 + 0.7 + i * 1.4, z, 0); } }
+  function lineZ(x, skip) { for (i = 0; i < Math.round((cz) / 1.4); i++) { if (skip && i === Math.floor(cz / 1.4 / 2)) continue; seg(x, -cz / 2 + 0.7 + i * 1.4, Math.PI / 2); } }
+  for (j = 0; j <= o.rows; j++) lineX(-cz / 2 + j * o.cellZ, j > 0 && j < o.rows);
+  for (j = 0; j <= o.cols; j++) lineZ(-cx / 2 + j * o.cellX, j > 0 && j < o.cols);
+  G.add(boards.build(S(0xffffff, { map: bTex, roughness: 0.6 }), true));
+  G.add(legs.build(S(0xaab2bb, { metalness: 0.8, roughness: 0.4 }), true));
+
+  /* 卓球台 + 備品 */
+  var tables = [];
+  for (i = 0; i < o.cols; i++) for (j = 0; j < o.rows; j++) {
+    var px = -cx / 2 + (i + 0.5) * o.cellX, pz = -cz / 2 + (j + 0.5) * o.cellZ;
+    var t = buildTableTennisTable(); t.position.set(px, 0.006, pz); G.add(t); tables.push(t);
+    var fs = flipScore(); fs.position.set(px + 1.55, 0.625, pz); fs.rotation.y = -Math.PI / 2; G.add(fs);
+    box(G, 0.4, 0.02, 0.3, S(0xcfd5dc), px + 1.55, 0.6, pz);
+    [[-0.17, -0.12], [-0.17, 0.12], [0.17, -0.12], [0.17, 0.12]].forEach(function (d) { box(G, 0.025, 0.59, 0.025, S(0x9aa3ad, { metalness: 0.7, roughness: 0.4 }), px + 1.55 + d[0], 0.295, pz + d[1]); });
+    var tb = towelBox(); tb.position.set(px - 1.6, 0, pz - 1.9); G.add(tb);
+    var p1 = createPaddle(); p1.position.set(px + 0.3, 0.775, pz - 0.5); p1.rotation.set(-Math.PI / 2, 0, 0.6); G.add(p1);
+    var bl = createTableTennisBall(); bl.position.set(px - 0.2, 0.78, pz + 0.4); G.add(bl);
+  }
+  G.userData = { tables: tables, size: { width: cx, depth: cz } };
+  return G;
+}
+
+/* ============================================================
+ *  体育館
+ * ============================================================ */
+function drawScoreboard(g, w, h, home, guest, set) {
+  g.fillStyle = '#080808'; g.fillRect(0, 0, w, h);
+  g.fillStyle = '#7fd1ff'; g.font = '700 42px system-ui,sans-serif'; g.textAlign = 'center'; g.fillText('HOME', w * 0.2, 56); g.fillText('GUEST', w * 0.8, 56);
+  g.fillStyle = '#ffb02e'; g.font = '900 150px monospace'; g.fillText(('0' + home).slice(-2), w * 0.2, 200); g.fillText(('0' + guest).slice(-2), w * 0.8, 200);
+  g.fillStyle = '#7dff8a'; g.font = '800 56px monospace'; g.fillText('SET', w / 2, 90); g.font = '900 120px monospace'; g.fillText(String(set), w / 2, 200);
+  g.fillStyle = 'rgba(0,0,0,.4)'; var k; for (k = 0; k < w; k += 4) g.fillRect(k, 0, 1, h); for (k = 0; k < h; k += 4) g.fillRect(0, k, w, 1);
+}
+function buildScoreboard() {
+  var G = new THREE.Group(), c = canvas(1024, 256), g = c.getContext('2d'), tx = ctex(c, { aniso: 4 });
+  drawScoreboard(g, 1024, 256, 0, 0, 1); tx.needsUpdate = true;
+  box(G, 6.2, 1.7, 0.3, S(0x1a1d22, { roughness: 0.5, metalness: 0.4 }), 0, 0, 0, false);
+  var d = new THREE.Mesh(new THREE.PlaneGeometry(5.8, 1.45), B(0xffffff, { map: tx })); d.position.z = 0.155; G.add(d);
+  G.userData.set = function (h, gu, s) { drawScoreboard(g, 1024, 256, h, gu, s); tx.needsUpdate = true; };
+  return G;
+}
+function buildClock() {
+  var G = new THREE.Group(), now = new Date();
+  var tx = textTex(256, 256, function (g, w, h) {
+    g.fillStyle = '#f8f8f4'; g.beginPath(); g.arc(128, 128, 124, 0, 6.3); g.fill();
+    g.strokeStyle = '#222'; g.lineWidth = 6; g.stroke();
+    var k, a; for (k = 0; k < 12; k++) { a = k / 12 * Math.PI * 2; g.beginPath(); g.moveTo(128 + Math.sin(a) * 102, 128 - Math.cos(a) * 102); g.lineTo(128 + Math.sin(a) * 118, 128 - Math.cos(a) * 118); g.lineWidth = 6; g.stroke(); }
+    function hand(ang, len, wd) { g.beginPath(); g.moveTo(128, 128); g.lineTo(128 + Math.sin(ang) * len, 128 - Math.cos(ang) * len); g.lineWidth = wd; g.lineCap = 'round'; g.stroke(); }
+    hand(((now.getHours() % 12) + now.getMinutes() / 60) / 12 * Math.PI * 2, 62, 9); hand(now.getMinutes() / 60 * Math.PI * 2, 92, 6);
+    g.strokeStyle = '#d32f2f'; hand(now.getSeconds() / 60 * Math.PI * 2, 100, 3);
+  }, { aniso: 4 });
+  cyl(G, 0.52, 0.52, 0.08, S(0x222222), 0, 0, -0.04, 32).rotation.x = Math.PI / 2;
+  var f = new THREE.Mesh(new THREE.CircleGeometry(0.5, 40), B(0xffffff, { map: tx })); f.position.z = 0.002; G.add(f);
+  return G;
+}
+function buildExitSign() {
+  var G = new THREE.Group();
+  box(G, 0.6, 0.22, 0.06, S(0x0a3d1f), 0, 0, 0, false);
+  var f = new THREE.Mesh(new THREE.PlaneGeometry(0.56, 0.14), B(0xffffff, { map: textTex(256, 64, function (g, w, h) { g.fillStyle = '#12a150'; g.fillRect(0, 0, w, h); g.fillStyle = '#fff'; g.font = '900 38px system-ui,sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('EXIT 非常口', w / 2, h / 2 + 2); }, { aniso: 4 }) }));
+  f.position.z = 0.032; G.add(f); return G;
+}
+function buildDoor() {
+  var G = new THREE.Group(), fr = S(0x5d6670, { metalness: 0.6, roughness: 0.45 }), leaf = S(0x8e98a3, { metalness: 0.5, roughness: 0.5 });
+  box(G, 2.5, 0.12, 0.2, fr, 0, 2.4, 0.1); box(G, 0.12, 2.4, 0.2, fr, -1.25, 1.2, 0.1); box(G, 0.12, 2.4, 0.2, fr, 1.25, 1.2, 0.1);
+  [-0.55, 0.55].forEach(function (x) {
+    box(G, 1.08, 2.3, 0.06, leaf, x, 1.15, 0.06);
+    box(G, 0.42, 0.7, 0.01, B(0xcfe4f6), x, 1.65, 0.1, false);
+    box(G, 0.7, 0.04, 0.05, S(0xdfe3e8, { metalness: 0.8, roughness: 0.3 }), x, 1.0, 0.12);
+  });
+  return G;
+}
+function buildHoop() {
+  var G = new THREE.Group(), steel = S(0x2d343c, { metalness: 0.7, roughness: 0.4 });
+  var bt = textTex(256, 128, function (g, w, h) {
+    g.fillStyle = 'rgba(200,230,255,.55)'; g.fillRect(0, 0, w, h); g.strokeStyle = '#fff'; g.lineWidth = 7; g.strokeRect(3, 3, w - 6, h - 6);
+    g.strokeStyle = '#e53935'; g.lineWidth = 5; g.strokeRect(w * 0.33, h * 0.36, w * 0.34, h * 0.42);
+  }, { aniso: 4 });
+  var bb = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 1.05), new THREE.MeshStandardMaterial({ map: bt, transparent: true, side: THREE.DoubleSide, roughness: 0.2, metalness: 0.1 }));
+  G.add(bb);
+  box(G, 1.84, 0.05, 0.08, steel, 0, 0.55, -0.04); box(G, 1.84, 0.05, 0.08, steel, 0, -0.55, -0.04);
+  var ring = add(G, new THREE.TorusGeometry(0.225, 0.011, 8, 32), S(0xff6a00, { roughness: 0.4, metalness: 0.4 }), 0, -0.3, 0.46);
+  ring.rotation.x = Math.PI / 2;
+  box(G, 0.14, 0.02, 0.2, S(0xff6a00), 0, -0.3, 0.2);
+  var net = new THREE.Mesh(new THREE.CylinderGeometry(0.225, 0.14, 0.42, 16, 1, true),
+    new THREE.MeshStandardMaterial({ color: 0xffffff, map: netTexture(16, 4, '#ffffff', 6), transparent: true, alphaTest: 0.25, side: THREE.DoubleSide }));
+  net.position.set(0, -0.52, 0.46); G.add(net);
+  link(G, [-0.7, 0.5, -0.04], [-0.7, 1.4, -0.9], 0.06, steel); link(G, [0.7, 0.5, -0.04], [0.7, 1.4, -0.9], 0.06, steel);
+  link(G, [-0.7, -0.5, -0.04], [-0.7, 0.8, -0.9], 0.05, steel); link(G, [0.7, -0.5, -0.04], [0.7, 0.8, -0.9], 0.05, steel);
+  return G;
+}
+function buildBleachers(len, rows, W) {
+  var G = new THREE.Group(), wood = new Merger(), steel = new Merger(), rd = 0.85, rh = 0.45, i, k, z, zs = [];
+  for (z = -len / 2; z <= len / 2 + 0.01; z += len / 8) zs.push(z);
+  for (i = 0; i < rows; i++) {
+    var yT = rh * (i + 1), xc = -W / 2 + (rows - i - 0.5) * rd, xf = -W / 2 + (rows - i) * rd;
+    mBox(wood, rd, 0.05, len, xc, yT - 0.025, 0); mBox(wood, 0.03, rh, len, xf - 0.015, yT - rh / 2, 0);
+    mBox(wood, 0.3, 0.04, len, xc - 0.2, yT + 0.4, 0);
+    zs.forEach(function (zz) { mBox(steel, 0.05, yT, 0.05, xf - 0.05, yT / 2, zz); mBox(steel, 0.05, yT + 0.4, 0.05, xc - 0.34, (yT + 0.4) / 2, zz); });
+  }
+  zs.forEach(function (zz) {
+    mLink(steel, [-W / 2 + rows * rd, 0.05, zz], [-W / 2, rows * rh - 0.05, zz], 0.06);
+    mBox(steel, rows * rd, 0.05, 0.05, -W / 2 + rows * rd / 2, 0.12, zz);
+  });
+  var xr = -W / 2 + rows * rd + 0.05;                                                // 最前列の手すり
+  zs.forEach(function (zz) { mBox(steel, 0.04, 1.0, 0.04, xr, 0.5, zz); });
+  mBox(steel, 0.04, 0.04, len, xr, 1.0, 0); mBox(steel, 0.03, 0.03, len, xr, 0.55, 0);
+  G.add(wood.build(S(0xcaa06a, { roughness: 0.7 }), false)); G.add(steel.build(S(0x39414a, { metalness: 0.7, roughness: 0.45 }), false));
+  return G;
+}
+
+/**
+ * 体育館本体
+ * opts: { width:40, length:40, wallH:8.5, ridgeH:12.2, quality, bleachers:true, lights:true }
+ */
+function buildGymHall(o) {
+  o = Object.assign({ width: 40, length: 40, wallH: 8.5, ridgeH: 12.2, quality: 'high', bleachers: true, lights: true }, o || {});
+  var q = getQ(o.quality), W = o.width, L = o.length, wH = o.wallH, rH = o.ridgeH, G = new THREE.Group(), i, j; G.name = 'GymHall';
+  var plaster = S(0xffffff, { map: plasterTex(), roughness: 0.95, side: THREE.DoubleSide });
+  var padM = S(0xffffff, { map: padTex(), roughness: 0.85 });
+  var winM = B(0xffffff, { map: windowTex() });
+
+  /* 床 */
+  var floor = new THREE.Mesh(new THREE.PlaneGeometry(W, L), new THREE.MeshPhysicalMaterial({ map: woodTile(q, [W / 8, L / 8]), roughness: 0.42, clearcoat: 0.4, clearcoatRoughness: 0.35 }));
+  floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; floor.name = 'HallFloor'; G.add(floor);
+
+  /* 壁 (ローカルで +z が室内向き) */
+  function wall(len, winH) {
+    var w = new THREE.Group();
+    var lo = new THREE.Mesh(scaleUV(new THREE.PlaneGeometry(len, 2.2), len / 1.2, 2.2 / 1.1), padM); lo.position.y = 1.1; lo.receiveShadow = true; w.add(lo);
+    var up = new THREE.Mesh(scaleUV(new THREE.PlaneGeometry(len, wH - 2.2), len / 4, (wH - 2.2) / 4), plaster); up.position.y = 2.2 + (wH - 2.2) / 2; up.receiveShadow = true; w.add(up);
+    box(w, len, 0.08, 0.1, S(0xd0c6ae, { roughness: 0.8 }), 0, 2.2, 0.04, false);
+    if (winH) {
+      var win = new THREE.Mesh(scaleUV(new THREE.PlaneGeometry(len - 1, 2.3), (len - 1) / 2.5, 1), winM); win.position.set(0, 6.7, 0.02); w.add(win);
+      box(w, len - 0.9, 0.12, 0.14, S(0x6c7480, { metalness: 0.6 }), 0, 5.5, 0.05, false); box(w, len - 0.9, 0.12, 0.14, S(0x6c7480, { metalness: 0.6 }), 0, 7.9, 0.05, false);
+    }
+    return w;
+  }
+  var wzp = wall(W, false); wzp.position.z = L / 2; wzp.rotation.y = Math.PI; G.add(wzp);
+  var wzn = wall(W, false); wzn.position.z = -L / 2; G.add(wzn);
+  var wxp = wall(L, true); wxp.position.x = W / 2; wxp.rotation.y = -Math.PI / 2; G.add(wxp);
+  var wxn = wall(L, true); wxn.position.x = -W / 2; wxn.rotation.y = Math.PI / 2; G.add(wxn);
+
+  /* 妻面(三角) */
+  [-1, 1].forEach(function (s) {
+    var g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute([-W / 2, wH, s * L / 2, W / 2, wH, s * L / 2, 0, rH, s * L / 2], 3));
+    g.setAttribute('uv', new THREE.Float32BufferAttribute([0, 0, W / 4, 0, W / 8, (rH - wH) / 4], 2));
+    g.setIndex(s > 0 ? [0, 2, 1] : [0, 1, 2]); g.computeVertexNormals();
+    var m = new THREE.Mesh(g, plaster); m.receiveShadow = true; G.add(m);
+  });
+
+  /* 屋根 */
+  var roofM = S(0xffffff, { map: roofTex(), roughness: 0.85, side: THREE.DoubleSide });
+  var rg1 = quadGeo([-W / 2, wH, -L / 2], [-W / 2, wH, L / 2], [0, rH, L / 2], [0, rH, -L / 2], L / 0.25, 8);
+  var rg2 = quadGeo([W / 2, wH, L / 2], [W / 2, wH, -L / 2], [0, rH, -L / 2], [0, rH, L / 2], L / 0.25, 8);
+  G.add(new THREE.Mesh(rg1, roofM), new THREE.Mesh(rg2, roofM));
+
+  /* トラス / 母屋 / 柱 */
+  var tr = new Merger(), tz = [], n = Math.round(L / 5), yb = wH + 1.4;
+  function yTop(x) { return wH + (rH - wH) * (1 - Math.abs(x) / (W / 2)); }
+  var xe = (W / 2) * (1 - (yb - wH) / (rH - wH));
+  for (i = 0; i < n; i++) tz.push(-L / 2 + (i + 0.5) * L / n);
+  tz.forEach(function (z) {
+    mLink(tr, [-W / 2, wH, z], [0, rH, z], 0.14); mLink(tr, [W / 2, wH, z], [0, rH, z], 0.14);
+    mLink(tr, [-xe, yb, z], [xe, yb, z], 0.12);
+    var np = 8, k, x0, x1;
+    for (k = 0; k <= np; k++) { x0 = -xe + k * (2 * xe / np); mLink(tr, [x0, yb, z], [x0, yTop(x0), z], 0.07); }
+    for (k = 0; k < np; k++) {
+      x0 = -xe + k * (2 * xe / np); x1 = -xe + (k + 1) * (2 * xe / np);
+      if (x1 <= 0.001) mLink(tr, [x0, yb, z], [x1, yTop(x1), z], 0.06); else mLink(tr, [x1, yb, z], [x0, yTop(x0), z], 0.06);
+    }
+  });
+  for (j = 1; j <= 7; j++) {                                                           // 母屋(屋根を支える横材)
+    var f = j / 8, xs = -W / 2 + f * (W / 2), ys = wH + f * (rH - wH);
+    mBox(tr, 0.1, 0.1, L, xs, ys - 0.06, 0); mBox(tr, 0.1, 0.1, L, -xs, ys - 0.06, 0);
+  }
+  tz.forEach(function (z) { [-1, 1].forEach(function (s) { mBox(tr, 0.42, wH, 0.46, s * (W / 2 - 0.21), wH / 2, z); }); });   // 壁柱(ピラスター)
+  G.add(tr.build(S(0xdfe3e8, { metalness: 0.3, roughness: 0.55 }), false));
+
+  /* 照明器具 + 吊り棒 + ダクト */
+  var hs = new Merger(), gl = new Merger(), rods = new Merger();
+  tz.forEach(function (z) {
+    [-11, -5.5, 0, 5.5, 11].forEach(function (x) {
+      var y = yb - 0.55;
+      mBox(hs, 1.4, 0.1, 0.4, x, y, z); mBox(gl, 1.3, 0.02, 0.34, x, y - 0.06, z);
+      [-0.55, 0.55].forEach(function (d) { mLink(rods, [x + d, y + 0.05, z], [x + d, yb, z], 0.01, true); });
+    });
+  });
+  G.add(hs.build(S(0x2a2e34, { metalness: 0.5, roughness: 0.5 }), false)); G.add(gl.build(B(0xfff5df), false)); G.add(rods.build(S(0x555b63), false));
+  [-9, 9].forEach(function (x) {
+    var d = add(G, new THREE.CylinderGeometry(0.42, 0.42, L - 4, 24), S(0xc3cad2, { metalness: 0.85, roughness: 0.35 }), x, yb - 1.7, 0, false);
+    d.rotation.x = Math.PI / 2;
+    tz.forEach(function (z) { box(G, 0.05, 1.6, 0.05, S(0x333a42), x, yb - 0.9, z, false); });
+  });
+
+  /* ギャラリー(折りたたみ式観覧席) */
+  if (o.bleachers) { var bl = buildBleachers(22, 5, W); G.add(bl); }
+
+  /* 電光掲示板 / 時計 / 非常口 / ドア / バスケゴール(跳ね上げ) / 横断幕 */
+  var sb = buildScoreboard(); sb.position.set(-10, 6.4, L / 2 - 0.2); sb.rotation.y = Math.PI; G.add(sb);
+  var ck = buildClock(); ck.position.set(10, 6.0, L / 2 - 0.05); ck.rotation.y = Math.PI; G.add(ck);
+  var d1 = buildDoor(); d1.position.set(3, 0, L / 2 - 0.1); d1.rotation.y = Math.PI; G.add(d1);
+  var d2 = buildDoor(); d2.position.set(12, 0, -L / 2); G.add(d2);
+  var e1 = buildExitSign(); e1.position.set(3, 2.85, L / 2 - 0.05); e1.rotation.y = Math.PI; G.add(e1);
+  var e2 = buildExitSign(); e2.position.set(12, 2.85, -L / 2 + 0.05); G.add(e2);
+  var h1 = buildHoop(); h1.position.set(0, 7.2, -L / 2 + 0.95); G.add(h1);
+  var h2 = buildHoop(); h2.position.set(0, 7.2, L / 2 - 0.95); h2.rotation.y = Math.PI; G.add(h2);
+  [[-12, ['#0d2a5c', '#17418a'], '#ffd23f', 'FINALS'], [12, ['#7a1020', '#b3203a'], '#ffffff', 'CHAMPIONS'], [0, ['#0b5d4a', '#118a6c'], '#ffe27a', '2026']].forEach(function (b, idx) {
+    var m = new THREE.Mesh(new THREE.PlaneGeometry(6, 1.5), S(0xffffff, { map: bannerTex(1024, 256, b[1], b[2], b[3]), roughness: 0.9, side: THREE.DoubleSide }));
+    m.position.set(b[0], 4.8, -L / 2 + 0.06); G.add(m);
+  });
+
+  /* 照明 */
+  if (o.lights) {
+    var hemi = new THREE.HemisphereLight(0xffffff, 0xa88d68, 0.62); G.add(hemi);
+    [[-9, -9], [9, -9], [-9, 9], [9, 9], [0, 0], [14, 0]].forEach(function (p) {
+      var pl = new THREE.PointLight(0xfff1d6, 0.5, 38, 1.6); pl.position.set(p[0], yb - 1.0, p[1]); G.add(pl);
+    });
+    var key = new THREE.DirectionalLight(0xfff4e2, 0.55); key.position.set(7, 11.2, 5); key.target.position.set(0, 0, 0);
+    key.castShadow = true; key.shadow.mapSize.set(q.shadow, q.shadow);
+    var sc = key.shadow.camera; sc.left = -24; sc.right = 24; sc.top = 24; sc.bottom = -24; sc.near = 1; sc.far = 40; key.shadow.bias = -0.0004;
+    G.add(key, key.target);
+  }
+  G.userData = { scoreboard: sb.userData, size: { width: W, length: L, wallH: wH, ridgeH: rH } };
+  return G;
+}
+
+/**
+ * 体育館 + バレーコート + 卓球エリアの完成版
+ * opts: { quality, hall:{}, volley:{}, tt:{}, ttPosition:[x,z] }
+ */
+function buildGymComplex(o) {
+  o = Object.assign({ quality: 'high', hall: {}, volley: {}, tt: {}, ttPosition: [13.9, 0] }, o || {});
+  var G = new THREE.Group(); G.name = 'GymComplex';
+  var hall = buildGymHall(Object.assign({ quality: o.quality }, o.hall));
+  var vb = buildVolleyballCourt(Object.assign({ quality: o.quality }, o.volley));
+  var tt = buildTableTennisZone(Object.assign({ quality: o.quality }, o.tt));
+  tt.position.set(o.ttPosition[0], 0, o.ttPosition[1]);
+  G.add(hall, vb, tt);
+  G.userData = { hall: hall, volleyball: vb, tableTennis: tt };
+  return G;
+}
+
+/* 任意: 既存シーンを屋内向けに調整 */
+function applyIndoorLook(scene, opts) {
+  opts = opts || {};
+  scene.background = new THREE.Color(0x1a1e27); scene.fog = null;
+  if (opts.sun) { opts.sun.intensity = 0.0; }
+  if (opts.hemi) { opts.hemi.intensity = 0.2; }
+}
+
+var API = {
+  buildVolleyballCourt: buildVolleyballCourt, buildTableTennisTable: buildTableTennisTable,
+  buildTableTennisZone: buildTableTennisZone, buildGymHall: buildGymHall, buildGymComplex: buildGymComplex,
+  createVolleyball: createVolleyball, createTableTennisBall: createTableTennisBall, createPaddle: createPaddle,
+  applyIndoorLook: applyIndoorLook
+};
+root.GymModels = API;
+if (typeof module !== 'undefined' && module.exports) { module.exports = API; }
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+(function(){
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
+renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+document.body.prepend(renderer.domElement);
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x1a1e27);
+const camera=new THREE.PerspectiveCamera(58,1,.1,200);
+
+let complex=null,quality='high',men=true;
+function build(){
+  if(complex){scene.remove(complex);}
+  complex=GymModels.buildGymComplex({quality});
+  scene.add(complex);
+  complex.userData.volleyball.userData.setNetHeight(men?2.43:2.24);
+}
+
+/* ---- 簡易オービットコントロール ---- */
+const st={t:new THREE.Vector3(3,1.5,0),r:30,th:.9,ph:1.2};
+const goal={t:st.t.clone(),r:st.r,th:st.th,ph:st.ph};
+function setCam(){
+  camera.position.set(st.t.x+st.r*Math.sin(st.ph)*Math.sin(st.th),st.t.y+st.r*Math.cos(st.ph),st.t.z+st.r*Math.sin(st.ph)*Math.cos(st.th));
+  camera.lookAt(st.t);
+}
+function from(px,py,pz,tx,ty,tz){
+  const d=new THREE.Vector3(px-tx,py-ty,pz-tz),r=d.length();
+  goal.t.set(tx,ty,tz);goal.r=r;goal.th=Math.atan2(d.x,d.z);goal.ph=Math.acos(d.y/r);
+}
+const V={
+  all:()=>from(-17,8,17,3,2,0),
+  vb:()=>from(-9,4.2,13,0,1.2,0),
+  ref:()=>from(-9.5,2.8,4.5,-5,1.7,0),
+  tt:()=>from(8.5,5.2,10.5,13.9,.8,0),
+  table:()=>from(13.7,1.9,-.9,11.75,.8,-3.7)
+};
+document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('[data-v]').forEach(x=>x.classList.remove('on'));b.classList.add('on');V[b.dataset.v]();
+});
+V.all();Object.assign(st,{r:goal.r,th:goal.th,ph:goal.ph});st.t.copy(goal.t);
+
+let drag=null;const pts=new Map();let pinch=0;
+const el=renderer.domElement;
+el.addEventListener('pointerdown',e=>{el.setPointerCapture(e.pointerId);pts.set(e.pointerId,{x:e.clientX,y:e.clientY});drag={x:e.clientX,y:e.clientY,pan:e.shiftKey||e.button===2};});
+el.addEventListener('pointerup',e=>{pts.delete(e.pointerId);drag=null;pinch=0;});
+el.addEventListener('contextmenu',e=>e.preventDefault());
+el.addEventListener('pointermove',e=>{
+  if(!pts.has(e.pointerId))return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pts.size===2){const a=[...pts.values()],d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);if(pinch)goal.r=Math.max(1.2,Math.min(70,goal.r*pinch/d));pinch=d;return;}
+  if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.x=e.clientX;drag.y=e.clientY;
+  if(drag.pan){const k=goal.r*.0016,right=new THREE.Vector3().setFromMatrixColumn(camera.matrix,0);goal.t.addScaledVector(right,-dx*k);goal.t.y+=dy*k;}
+  else{goal.th-=dx*.006;goal.ph=Math.max(.15,Math.min(Math.PI*.49,goal.ph-dy*.006));}
+});
+el.addEventListener('wheel',e=>{e.preventDefault();goal.r=Math.max(1.2,Math.min(70,goal.r*Math.exp(e.deltaY*.001)));},{passive:false});
+
+document.getElementById('net').onclick=function(){men=!men;this.textContent=men?'ネット: 男子 2.43m':'ネット: 女子 2.24m';complex.userData.volleyball.userData.setNetHeight(men?2.43:2.24);};
+document.getElementById('q').onclick=function(){quality=quality==='high'?'normal':'high';this.textContent='画質: '+(quality==='high'?'高':'標準');document.getElementById('load').style.display='grid';setTimeout(()=>{build();document.getElementById('load').style.display='none';},30);};
+
+function resize(){renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();}
+addEventListener('resize',resize);resize();
+
+setTimeout(()=>{build();document.getElementById('load').style.display='none';},30);
+(function loop(){
+  requestAnimationFrame(loop);
+  const k=.12;st.t.lerp(goal.t,k);st.r+=(goal.r-st.r)*k;st.th+=(goal.th-st.th)*k;st.ph+=(goal.ph-st.ph)*k;
+  setCam();renderer.render(scene,camera);
+})();
+})();
 </script>
 </body>
 </html>
